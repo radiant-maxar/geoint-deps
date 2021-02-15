@@ -1,0 +1,64 @@
+FROM centos:7
+
+# Required arguments.
+ARG rpmbuild_dist
+ARG rpmbuild_gpg_name
+ARG rpmbuild_uid
+
+# Arguments with defaults.
+ARG rpmbuild_user=rpmbuild
+ARG rpmbuild_gid=${rpmbuild_uid}
+ARG rpmbuild_group=${rpmbuild_user}
+ARG rpmbuild_home=/${rpmbuild_user}
+ARG rpmbuild_lang=en_US.utf8
+ARG rpmbuild_locale=en_US.utf8
+
+# Ensure proper language/locale environment settings, and place key arguments
+# in environment to allow access in child containers.
+ENV LANG=${rpmbuild_lang} \
+    LC_ALL=${rpmbuild_locale} \
+    RPMBUILD_DIST=${rpmbuild_dist} \
+    RPMBUILD_GID=${rpmbuild_gid} \
+    RPMBUILD_GROUP=${rpmbuild_group} \
+    RPMBUILD_GPG_NAME=${rpmbuild_gpg_name} \
+    RPMBUILD_HOME=${rpmbuild_home} \
+    RPMBUILD_UID=${rpmbuild_uid} \
+    RPMBUILD_USER=${rpmbuild_user}
+
+# Install basic development and RPM authoring tools.
+RUN yum -q -y update && \
+    yum -q -y install \
+      autoconf \
+      automake \
+      bzip2 \
+      centos-release-scl \
+      createrepo \
+      epel-release \
+      gcc \
+      gcc-c++ \
+      gdb \
+      git \
+      git-core \
+      groff \
+      less \
+      lcov \
+      libtool \
+      make \
+      m4 \
+      redhat-lsb-core \
+      redhat-rpm-config \
+      rpm-build \
+      rpm-sign \
+      rpmdevtools \
+      rpmlint \
+      unzip \
+      vim \
+      wget \
+      which \
+      zip && \
+    yum -q -y clean all
+
+# Copy 
+COPY scripts/rpmbuild-user.sh \
+     scripts/pgdg-repo.sh \
+     /usr/local/bin

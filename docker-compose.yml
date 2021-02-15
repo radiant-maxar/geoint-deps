@@ -1,0 +1,54 @@
+---
+version: '3.8'
+
+x-rpmbuild:
+  dist: &rpmbuild_dist '.el7'
+  email: &rpmbuild_email "foundation-geoint-packaging@maxar.com"
+  name: &rpmbuild_name "Foundation Geoint Packaging"
+  vendor: &rpmbuild_vendor "Maxar Technologies"
+
+x-versions:
+  osmosis: &osmosis_version '0.48.3-1'
+  postgres: &postgres_version '10'
+  sbt: &sbt_version '1.2.8-1'
+
+x-build-args: &rpmbuild_build_args
+  rpmbuild_dist: *rpmbuild_dist
+  rpmbuild_gpg_name: *rpmbuild_name
+
+x-build-labels: &rpmbuild_build_labels
+  maintainer: *rpmbuild_email
+  vendor: *rpmbuild_vendor
+
+x-volumes: &rpmbuild_volumes
+  - "./RPMS:/rpmbuild/RPMS:rw"
+  - "./SOURCES:/rpmbuild/SOURCES:rw"
+  - "./SPECS:/rpmbuild/SPECS:ro"
+  - "./scripts:/rpmbuild/scripts:ro"
+
+x-vagrant:
+  images:
+    base: !!omap
+      - rpmbuild:
+          args: *rpmbuild_build_args
+      - rpmbuild-generic: {}
+  rpms:
+    osmosis:
+      image: rpmbuild-generic
+      version: *osmosis_version
+    sbt:
+      image: rpmbuild-generic
+      version: *sbt_version
+
+services:
+  rpmbuild:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rpmbuild
+      args:
+        <<: *rpmbuild_build_args
+        rpmbuild_uid: "${RPMBUILD_UID}"
+      labels:
+        <<: *rpmbuild_build_labels
+    command: 'true'
+    volumes: *rpmbuild_volumes
