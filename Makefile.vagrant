@@ -40,11 +40,12 @@ BASE_CONTAINERS := \
 
 .PHONY: \
 	all \
+        distclean \
 	osmosis \
 	sbt \
 	$(BASE_CONTAINERS)
 
-clean:
+distclean:
 	$(VAGRANT) destroy -f --no-parallel || true
 	rm -fr RPMS/noarch RPMS/x86_64 SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
 

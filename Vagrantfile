@@ -11,7 +11,7 @@ Vagrant.require_version '>= 2.0.0'
 settings = YAML::load_file('docker-compose.yml')
 vagrant_settings = settings.fetch('x-vagrant', {})
 $images = vagrant_settings.fetch('images', {})
-$organization = 'maxar-geoint'
+$project = 'geoint-deps'
 $rpms = vagrant_settings.fetch('rpms', {})
 $pg_version = settings.fetch('x-versions')['postgres']
 $pg_dotless = $pg_version.gsub('.', '')
@@ -98,7 +98,7 @@ def build_container(config, name, options)
       end
 
       # Add any tags to the build arguments.
-      image_name = "#{$organization}/#{name}"
+      image_name = "#{$project}_#{name}"
 
       options.fetch('tags', ['latest']).each do |tag|
         build_args << '--tag'
@@ -122,7 +122,7 @@ def rpmbuild(config, name, options)
   config.vm.define name, autostart: autostart do |container|
     shared_folders(container, name, options, rpmbuild: true)
 
-    image_name = "#{$organization}/#{options['image']}"
+    image_name = "#{$project}_#{options['image']}"
 
     container.vm.provider :docker do |d|
       d.image = image_name

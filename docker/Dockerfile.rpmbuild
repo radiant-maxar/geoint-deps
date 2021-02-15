@@ -61,4 +61,4 @@ RUN yum -q -y update && \
 # Copy 
 COPY scripts/rpmbuild-user.sh \
      scripts/pgdg-repo.sh \
-     /usr/local/bin
+     /usr/local/bin/

@@ -1,0 +1,32 @@
+DOCKER_VERSION := $(shell docker --version 2>/dev/null)
+DOCKER_COMPOSE_VERSION := $(shell docker-compose --version 2>/dev/null)
+
+RPMBUILD_UID := $(shell id -u)
+RPMBUILD_GID := $(shell id -g)
+
+all:
+ifndef DOCKER_VERSION
+    $(error "command docker is not available, please install Docker")
+endif
+ifndef DOCKER_COMPOSE_VERSION
+    $(error "command docker-compose is not available, please install Docker")
+endif
+
+.env: $(ENV_BASE)
+	echo RPMBUILD_GID=$(RPMBUILD_GID) > .env
+	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+
+distclean: .env
+	docker-compose down --volumes --rmi all
+	rm -fr .env RPMS/noarch RPMS/x86_64 SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
+
+rpmbuild: .env
+	docker-compose up -d rpmbuild
+
+rpmbuild-generic: .env
+	docker-compose up -d rpmbuild-generic
+
+.PHONY: \
+	all \
+        distclean \
+	rpmbuild

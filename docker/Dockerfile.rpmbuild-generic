@@ -1,0 +1,14 @@
+ARG rpmbuild_image=rpmbuild
+ARG rpmbuild_project=geoint-deps
+FROM ${rpmbuild_project}_${rpmbuild_image}:latest
+ARG packages
+
+# If any package dependencies are needed, install them.
+RUN if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+    yum -q -y clean all && \
+    /usr/local/bin/rpmbuild-user.sh && \
+    rm -f /usr/local/bin/rpmbuild-user.sh
+
+# Use unprivileged RPM build user and work directory by default.
+USER ${RPMBUILD_USER}
+WORKDIR ${RPMBUILD_HOME}

@@ -26,6 +26,33 @@ x-volumes: &rpmbuild_volumes
   - "./SPECS:/rpmbuild/SPECS:ro"
   - "./scripts:/rpmbuild/scripts:ro"
 
+## Docker Compose
+services:
+  rpmbuild:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rpmbuild
+      args:
+        <<: *rpmbuild_build_args
+        rpmbuild_uid: "${RPMBUILD_UID}"
+        rpmbuild_gid: "${RPMBUILD_GID}"
+      labels:
+        <<: *rpmbuild_build_labels
+    command: 'tail -f /dev/null'
+    volumes: *rpmbuild_volumes
+  rpmbuild-generic:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rpmbuild-generic
+      labels:
+        <<: *rpmbuild_build_labels
+    command: 'tail -f /dev/null'
+    depends_on:
+      - rpmbuild
+    volumes: *rpmbuild_volumes
+
+
+## Vagrant
 x-vagrant:
   images:
     base: !!omap
@@ -39,16 +66,3 @@ x-vagrant:
     sbt:
       image: rpmbuild-generic
       version: *sbt_version
-
-services:
-  rpmbuild:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.rpmbuild
-      args:
-        <<: *rpmbuild_build_args
-        rpmbuild_uid: "${RPMBUILD_UID}"
-      labels:
-        <<: *rpmbuild_build_labels
-    command: 'true'
-    volumes: *rpmbuild_volumes
