@@ -1,7 +1,3 @@
-# Default commands for Docker and Vagrant.
-DOCKER ?= docker
-VAGRANT ?= vagrant
-
 ## Macro functions.
 
 # All versions use a YAML reference so they only have to be defined once,
@@ -19,13 +15,15 @@ docker_logs = $(DOCKER) logs --follow $$(cat $(call container_id,$(1)))
 # Variants for getting RPM file names.
 RPMBUILD_DIST := $(call config_reference,rpmbuild_dist)
 rpm_file = RPMS/$(2)/$(1)-$(call config_version,$(1))$(RPMBUILD_DIST).$(2).rpm
-rpm_file2 = RPMS/$(3)/$(1)-$(call config_version,$(2))$(RPMBUILD_DIST).$(3).rpm
-rpm_file3 = RPMS/$(2)/$(1)-$(call config_version,$(1))-$(call config_release,$(1))$(RPMBUILD_DIST).$(2).rpm
-rpm_file4 = RPMS/$(3)/$(1)-$(call config_version,$(2))$(4).$(3).rpm
 
 # Gets the RPM package name from the filename.
 rpm_package = $(shell echo $(1) | awk '{ split($$0, a, "-"); l = length(a); pkg = a[1]; for (i=2; i<l-1; ++i) pkg = pkg "-" a[i]; print pkg }')
-PG_DOTLESS := $(shell echo $(call config_version,pg) | tr -d '.')
+
+## Variables
+# Default commands for Docker and Vagrant.
+DOCKER ?= docker
+VAGRANT ?= vagrant
+POSTGRES_DOTLESS := $(shell echo $(call config_version,postgres) | tr -d '.')
 
 # RPM files at desired versions.
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
@@ -33,21 +31,17 @@ SBT_RPM := $(call rpm_file,sbt,noarch)
 
 
 ## General targets
-
-BASE_CONTAINERS := \
-	rpmbuild \
-	rpmbuild-generic
-
 .PHONY: \
 	all \
         distclean \
 	osmosis \
 	sbt \
-	$(BASE_CONTAINERS)
+	rpmbuild \
+	rpmbuild-generic
 
 distclean:
 	$(VAGRANT) destroy -f --no-parallel || true
-	rm -fr RPMS/noarch RPMS/x86_64 SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
+	rm -fr RPMS/noarch RPMS/x86_64 SOURCES/*.asc SOURCES/*.sha256 SOURCES/*.tgz SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
 
 
 ## Container targets

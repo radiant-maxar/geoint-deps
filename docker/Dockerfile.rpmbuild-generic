@@ -1,6 +1,6 @@
+ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild
-ARG rpmbuild_project=geoint-deps
-FROM ${rpmbuild_project}_${rpmbuild_image}:latest
+FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG packages
 
 # If any package dependencies are needed, install them.

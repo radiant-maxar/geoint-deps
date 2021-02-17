@@ -1,30 +1,33 @@
 ---
 version: '3.8'
 
-x-rpmbuild:
+x-channel:
   dist: &rpmbuild_dist '.el7'
+  channel_name: &rpmbuild_channel stable
   email: &rpmbuild_email "foundation-geoint-packaging@maxar.com"
-  name: &rpmbuild_name "Foundation Geoint Packaging"
+  packager_name: &rpmbuild_name "Foundation Geoint Packaging"
+  postgres_version:  &postgres_version '10'
   vendor: &rpmbuild_vendor "Maxar Technologies"
-
-x-versions:
-  osmosis: &osmosis_version '0.48.3-1'
-  postgres: &postgres_version '10'
-  sbt: &sbt_version '1.2.8-1'
 
 x-build-args: &rpmbuild_build_args
   rpmbuild_dist: *rpmbuild_dist
-  rpmbuild_gpg_name: *rpmbuild_name
+  rpmbuild_email: *rpmbuild_email
+  rpmbuild_name: *rpmbuild_name
 
 x-build-labels: &rpmbuild_build_labels
   maintainer: *rpmbuild_email
   vendor: *rpmbuild_vendor
+
+x-versions:
+  osmosis: &osmosis_version '0.48.3-1'
+  sbt: &sbt_version '1.3.8-1'
 
 x-volumes: &rpmbuild_volumes
   - "./RPMS:/rpmbuild/RPMS:rw"
   - "./SOURCES:/rpmbuild/SOURCES:rw"
   - "./SPECS:/rpmbuild/SPECS:ro"
   - "./scripts:/rpmbuild/scripts:ro"
+
 
 ## Docker Compose
 services:
@@ -44,6 +47,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.rpmbuild-generic
+      args:
+        rpmbuild_channel: *rpmbuild_channel
       labels:
         <<: *rpmbuild_build_labels
     command: 'tail -f /dev/null'
@@ -58,7 +63,9 @@ x-vagrant:
     base: !!omap
       - rpmbuild:
           args: *rpmbuild_build_args
-      - rpmbuild-generic: {}
+      - rpmbuild-generic:
+          args:
+            rpmbuild_channel: *rpmbuild_channel
   rpms:
     osmosis:
       image: rpmbuild-generic

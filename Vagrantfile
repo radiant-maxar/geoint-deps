@@ -11,10 +11,10 @@ Vagrant.require_version '>= 2.0.0'
 settings = YAML::load_file('docker-compose.yml')
 vagrant_settings = settings.fetch('x-vagrant', {})
 $images = vagrant_settings.fetch('images', {})
-$project = 'geoint-deps'
+$project = 'deps-' + settings['x-channel']['channel_name']
 $rpms = vagrant_settings.fetch('rpms', {})
-$pg_version = settings.fetch('x-versions')['postgres']
-$pg_dotless = $pg_version.gsub('.', '')
+$postgres_version = settings['x-channel']['postgres_version']
+$postgres_dotless = $postgres_version.gsub('.', '')
 
 # Special workaround to have the `rpmbuild` UID and GID to match that of
 # the user invoking Vagrant, which simplifies file permissions for host
@@ -32,7 +32,7 @@ def build_requirements(spec_file)
   File.open(spec_file).read.each_line do |line|
     if line.start_with?('BuildRequires:')
       requirement = line.split[1]
-      requirement = requirement.gsub('%{pg_dotless}', $pg_dotless)
+      requirement = requirement.gsub('%{postgres_dotless}', $postgres_dotless)
       build_requirements << requirement
     end
   end
@@ -160,7 +160,7 @@ def rpmbuild(config, name, options)
 
       # Pass through any variables we want to undefine; by default,
       # we allow `rpmbuild` to retrieve the source.
-      options.fetch('undefines', ['_disable_source_fetch']).each do |macro|
+      options.fetch('undefines', []).each do |macro|
         rpmbuild_cmd << '--undefine'
         rpmbuild_cmd << macro
       end

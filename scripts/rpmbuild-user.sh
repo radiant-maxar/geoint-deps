@@ -17,13 +17,17 @@ EOF
 
 # RPM macros.
 cat > "${RPMBUILD_HOME}/.rpmmacros" <<EOF
+%_disable_source_fetch %{nil}
 %_gpg_digest_algo ${RPMBUILD_GPG_DIGEST_ALGO:-sha512}
-%_gpg_name ${RPMBUILD_GPG_NAME}
+%_gpg_name ${RPMBUILD_NAME}
 %_gpg_path ${RPMBUILD_GPG_PATH:-${RPMBUILD_HOME}/.gnupg}
 %_hardened_build 1
 %_topdir ${RPMBUILD_HOME}
 %debug_package %{nil}
 %dist ${RPMBUILD_DIST}
+%rpmbuild_email ${RPMBUILD_EMAIL}
+%rpmbuild_name ${RPMBUILD_NAME}
+%rpmbuild_release 1
 EOF
 
 # Ensure proper permissions.

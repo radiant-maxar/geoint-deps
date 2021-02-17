@@ -2,7 +2,8 @@ FROM centos:7
 
 # Required arguments.
 ARG rpmbuild_dist
-ARG rpmbuild_gpg_name
+ARG rpmbuild_email
+ARG rpmbuild_name
 ARG rpmbuild_uid
 
 # Arguments with defaults.
@@ -18,10 +19,11 @@ ARG rpmbuild_locale=en_US.utf8
 ENV LANG=${rpmbuild_lang} \
     LC_ALL=${rpmbuild_locale} \
     RPMBUILD_DIST=${rpmbuild_dist} \
+    RPMBUILD_EMAIL=${rpmbuild_email} \
     RPMBUILD_GID=${rpmbuild_gid} \
     RPMBUILD_GROUP=${rpmbuild_group} \
-    RPMBUILD_GPG_NAME=${rpmbuild_gpg_name} \
     RPMBUILD_HOME=${rpmbuild_home} \
+    RPMBUILD_NAME=${rpmbuild_name} \
     RPMBUILD_UID=${rpmbuild_uid} \
     RPMBUILD_USER=${rpmbuild_user}
 

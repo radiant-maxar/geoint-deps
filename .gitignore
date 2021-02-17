@@ -1,0 +1,8 @@
+.env
+.vagrant
+RPMS/noarch
+RPMS/x86_64
+SOURCES/*.asc
+SOURCES/*.sha256
+SOURCES/*.tgz
+SOURCES/*.tar.*
