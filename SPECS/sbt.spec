@@ -55,5 +55,5 @@ popd
 
 
 %changelog
-* %(%{_bindir}/date "+%%a %%b %%d %%Y") %{rpmbuild_name} <%{rpmbuild_email}> - %{version}-%{release}
-- %{version}-%{release}
+* %(%{_bindir}/date "+%%a %%b %%d %%Y") %{rpmbuild_name} <%{rpmbuild_email}> - %{version}-%{rpmbuild_release}
+- %{version}-%{rpmbuild_release}

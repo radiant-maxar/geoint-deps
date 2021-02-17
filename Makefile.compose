@@ -13,6 +13,7 @@ rpm_file = RPMS/$(2)/$(1)-$(call config_version,$(1))$(RPMBUILD_DIST).$(2).rpm
 # Gets the RPM package name from the filename.
 rpm_package = $(shell echo $(1) | awk '{ split($$0, a, "-"); l = length(a); pkg = a[1]; for (i=2; i<l-1; ++i) pkg = pkg "-" a[i]; print pkg }')
 rpmbuild_version = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$1 }')
+rpmbuild_release = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$2 }')
 
 ## Variables
 DOCKER_VERSION := $(shell docker --version 2>/dev/null)
@@ -54,7 +55,7 @@ rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
 
 # RPM targets
-osmosis: rpmbuild-generic
+osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 
 .PHONY: \
@@ -66,4 +67,7 @@ sbt: rpmbuild-generic $(SBT_RPM)
 	sbt
 
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
-	docker-compose exec rpmbuild-generic rpmbuild --define "rpmbuild_version $(call rpmbuild_version,$*)" -bb SPECS/$(call rpm_package,$*).spec
+	docker-compose exec -T rpmbuild-generic rpmbuild \
+	--define "rpmbuild_version $(call rpmbuild_version,$*)" \
+	--define "rpmbuild_release $(call rpmbuild_release,$*)" \
+	-bb SPECS/$(call rpm_package,$*).spec
