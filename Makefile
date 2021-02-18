@@ -28,6 +28,7 @@ RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
+FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI,x86_64)
 GEOS_RPM := $(call rpm_file,geos,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
@@ -47,6 +48,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-sqlite
 
 RPMBUILD_RPMS := \
+	FileGDBAPI \
 	geos \
 	libgeotiff \
 	osmosis \
@@ -107,6 +109,7 @@ rpmbuild-sqlite: .env
 
 ## RPM targets
 
+FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)

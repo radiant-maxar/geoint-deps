@@ -17,6 +17,7 @@ x-base-args: &rpmbuild_base_args
   rpmbuild_gid: "${RPMBUILD_GID}"
 
 x-build-images:
+  FileGDBAPI: &FileGDBAPI_image rpmbuild-generic
   geos: &geos_image rpmbuild-geos
   libgeotiff: &libgeotiff_image rpmbuild-libgeotiff
   osmosis: &osmosis_image rpmbuild-generic
@@ -43,6 +44,7 @@ x-service-defaults: &service_defaults
   volumes: *service_volumes
 
 x-versions:
+  FileGDBAPI: &FileGDBAPI_version '1.5.1-1'
   geos: &geos_version '3.9.1-1'
   libgeotiff: &libgeotiff_version '1.6.0-1'
   osmosis: &osmosis_version '0.48.3-1'
@@ -136,6 +138,15 @@ x-vagrant:
           args:
             rpmbuild_channel: *rpmbuild_channel
   rpms:
+    FileGDBAPI:
+      image: *FileGDBAPI_image
+      version: *FileGDBAPI_version
+    geos:
+      image: *geos_image
+      version: *geos_version
+    libgeotiff:
+      image: *libgeotiff_image
+      version: *libgeotiff_version
     osmosis:
       image: *osmosis_image
       version: *osmosis_version
