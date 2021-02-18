@@ -33,6 +33,7 @@ popd
 
 %install
 %{__install} -d -m 0755 %{buildroot}%{_datadir}/%{name}
+%{__install} -d -m 0755 %{buildroot}%{_datadir}/%{name}/bin
 %{__install} -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
 %{__install} -d -m 0755 %{buildroot}%{_bindir}
 
@@ -40,11 +41,11 @@ popd
 %{__cp} -pv conf/* %{buildroot}%{_sysconfdir}/%{name}
 %{__ln_s} %{_sysconfdir}/%{name} %{buildroot}%{_datadir}/%{name}/conf
 
-# Link /usr/bin/sbt to /usr/share/sbt/bin/sbt.
-%{__cp} -rpv bin %{buildroot}%{_datadir}/%{name}
-%{__ln_s} %{_datadir}/%{name}/bin/sbt %{buildroot}%{_bindir}/sbt
+%{__install} -m 0755 bin/java9-rt-export.jar bin/sbt-launch.jar bin/sbt \
+  %{buildroot}%{_datadir}/%{name}/bin/
 
-%{__cp} -rpv lib %{buildroot}%{_datadir}/%{name}
+# Link /usr/bin/sbt to /usr/share/sbt/bin/sbt.
+%{__ln_s} %{_datadir}/%{name}/bin/sbt %{buildroot}%{_bindir}/sbt
 
 
 %files

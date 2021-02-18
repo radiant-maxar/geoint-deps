@@ -19,7 +19,9 @@ rpm_file = RPMS/$(2)/$(1)-$(call config_version,$(1))$(RPMBUILD_DIST).$(2).rpm
 # Gets the RPM package name from the filename.
 rpm_package = $(shell echo $(1) | awk '{ split($$0, a, "-"); l = length(a); pkg = a[1]; for (i=2; i<l-1; ++i) pkg = pkg "-" a[i]; print pkg }')
 
+
 ## Variables
+
 # Default commands for Docker and Vagrant.
 DOCKER ?= docker
 VAGRANT ?= vagrant
@@ -34,11 +36,12 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 ## General targets
 .PHONY: \
 	all \
-        distclean \
+	distclean \
+	rpmbuild \
+	rpmbuild-generic \
 	osmosis \
 	sbt \
-	rpmbuild \
-	rpmbuild-generic
+	sqlite
 
 distclean:
 	$(VAGRANT) destroy -f --no-parallel || true
@@ -68,7 +71,7 @@ sqlite: rpmbuild-generic $(SQLITE_RPM)
 .vagrant/machines/%/docker/id:
 	$(VAGRANT) up $*
 
-# Runs container and follow logs until it completes.
+# Runs container with Vagrant and follow logs until it completes.
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
 	$(VAGRANT) up $(call rpm_package,$*)
 	$(call docker_logs,$(call rpm_package,$*))

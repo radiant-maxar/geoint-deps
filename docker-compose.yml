@@ -14,13 +14,18 @@ x-build-args: &rpmbuild_build_args
   rpmbuild_email: *rpmbuild_email
   rpmbuild_name: *rpmbuild_name
 
+x-build-images:
+  osmosis: &osmosis_image rpmbuild-generic
+  sbt: &sbt_image rpmbuild-generic
+  sqlite: &sqlite_image rpmbuild-generic
+
 x-build-labels: &rpmbuild_build_labels
   maintainer: *rpmbuild_email
   vendor: *rpmbuild_vendor
 
 x-versions:
   osmosis: &osmosis_version '0.48.3-1'
-  sbt: &sbt_version '1.3.8-1'
+  sbt: &sbt_version '1.4.7-1'
   sqlite: &sqlite_version '3.34.1-1'
 
 x-volumes: &rpmbuild_volumes
@@ -71,11 +76,11 @@ x-vagrant:
             rpmbuild_channel: *rpmbuild_channel
   rpms:
     osmosis:
-      image: rpmbuild-generic
+      image: *osmosis_image
       version: *osmosis_version
     sbt:
-      image: rpmbuild-generic
+      image: *sbt_image
       version: *sbt_version
     sqlite:
-      image: rpmbuild-generic
+      image: *sqlite_image
       version: *sqlite_version

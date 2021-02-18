@@ -1,11 +1,14 @@
-# bcond default logic is nicely backwards...
-%bcond_without check
-
+# Extract SQLite version numbers and zerofill some for use only in manipulating
+# the source code archive.
 %global sqlite_major_version %(echo %{rpmbuild_version} | awk -F. '{ print $1 }')
 %global sqlite_minor_version %(echo %{rpmbuild_version} | awk -F. '{ print $2 }')
 %global sqlite_minor_zversion %(printf "%%02d" %{sqlite_minor_version})
 %global sqlite_subminor_version %(echo %{rpmbuild_version} | awk -F. '{ print $3 }')
 %global sqlite_subminor_zversion %(printf "%%02d" %{sqlite_subminor_version})
+
+%define realver %{sqlite_major_version}%{sqlite_minor_zversion}%{sqlite_subminor_zversion}00
+%define docver %{realver}
+%define year 2021
 
 # Tcl is required to run SQLite tests.
 %if 0%{?rhel} < 8
@@ -14,10 +17,6 @@
 %global tcl_version 8.6
 %endif
 %global tcl_sitearch %{_libdir}/tcl%{tcl_version}
-
-%define realver %{sqlite_major_version}%{sqlite_minor_zversion}%{sqlite_subminor_zversion}00
-%define docver %{realver}
-%define year 2021
 
 Summary: Library that implements an embeddable SQL database engine
 Name: sqlite
@@ -49,8 +48,6 @@ BuildRequires: ncurses-devel
 BuildRequires: readline-devel
 BuildRequires: tcl-devel
 
-Requires: %{name}-libs = %{version}-%{release}
-
 # Ensure updates from pre-split work on multi-lib systems
 Obsoletes: %{name} < 3.11.0-1
 Conflicts: %{name} < 3.11.0-1
@@ -73,16 +70,6 @@ Requires: pkgconfig
 This package contains the header files and development documentation
 for %{name}. If you like to develop programs using %{name}, you will need
 to install %{name}-devel.
-
-%package libs
-Summary: Shared library for the sqlite3 embeddable SQL database engine.
-
-# Ensure updates from pre-split work on multi-lib systems
-Obsoletes: %{name} < 3.11.0-1
-Conflicts: %{name} < 3.11.0-1
-
-%description libs
-This package contains the shared library for %{name}.
 
 %package doc
 Summary: Documentation for sqlite
@@ -140,13 +127,14 @@ This package contains the analysis program for %{name}.
 %patch5 -p1
 
 # Remove backup-file
-%{__rm} -f %{name}-doc-%{docver}/sqlite.css~ || :
+%{__rm} -f %{name}-doc-%{docver}/sqlite.css~ || true
+
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS $RPM_LD_FLAGS -DSQLITE_ENABLE_COLUMN_METADATA=1 \
                -DSQLITE_DISABLE_DIRSYNC=1 -DSQLITE_SECURE_DELETE=1 \
                -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -DSQLITE_ENABLE_DBSTAT_VTAB=1 \
-               -DSQLITE_ENABLE_FTS3_PARENTHESIS=1"
+               -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -fno-strict-aliasing"
 export TCLLIBDIR=%{tcl_sitearch}/sqlite3
 %configure --enable-all \
            --enable-threadsafe \
@@ -178,7 +166,6 @@ export TCLLIBDIR=%{tcl_sitearch}/sqlite3
 %{__install} -D -m 0755 sqldiff %{buildroot}/%{_bindir}/sqldiff
 
 
-%if %{with check}
 %check
 # XXX shell tests are broken due to loading system libsqlite3, work around...
 export LD_LIBRARY_PATH=`pwd`/.libs
@@ -203,16 +190,13 @@ export MALLOC_CHECK_=3
 %{__rm} test/csv01.test
 %endif
 
-make test
-%endif #with check
+%{__make} test
 
 
 %files
+%doc README.md
 %{_bindir}/sqlite3
 %{_mandir}/man?/*
-
-%files libs
-%doc README.md
 %{_libdir}/*.so.*
 
 %files devel
