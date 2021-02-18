@@ -28,6 +28,7 @@ RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
+GEOS_RPM := $(call rpm_file,geos,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
@@ -36,6 +37,29 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
 
 ## General targets
+
+RPMBUILD_CONTAINERS := \
+	rpmbuild \
+	rpmbuild-generic \
+	rpmbuild-geos \
+	rpmbuild-libgeotiff \
+	rpmbuild-proj \
+	rpmbuild-sqlite
+
+RPMBUILD_RPMS := \
+	geos \
+	libgeotiff \
+	osmosis \
+	proj \
+	sbt \
+	sqlite
+
+.PHONY: \
+	all \
+	distclean \
+	$(RPMBUILD_CONTAINERS) \
+	$(RPMBUILD_RPMS)
+
 all:
 ifndef DOCKER_VERSION
     $(error "command docker is not available, please install Docker")
@@ -44,32 +68,19 @@ ifndef DOCKER_COMPOSE_VERSION
     $(error "command docker-compose is not available, please install Docker")
 endif
 
-.PHONY: \
-	all \
-	distclean \
-	rpmbuild \
-	rpmbuild-generic \
-	rpmbuild-libgeotiff \
-	rpmbuild-proj \
-	rpmbuild-sqlite \
-	libgeotiff \
-	osmosis \
-	proj \
-	sbt \
-	sqlite \
+distclean: .env
+	$(DOCKER_COMPOSE) down --volumes --rmi all
+	rm -fr .env RPMS/noarch RPMS/x86_64 SOURCES/*.asc SOURCES/*.sha256 SOURCES/*.tgz SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
+
 
 .env: SPECS/*.spec
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
 	echo LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
-
-distclean: .env
-	$(DOCKER_COMPOSE) down --volumes --rmi all
-	rm -fr .env RPMS/noarch RPMS/x86_64 SOURCES/*.asc SOURCES/*.sha256 SOURCES/*.tgz SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
-
 
 ## Container targets
 
@@ -79,6 +90,9 @@ rpmbuild: .env
 
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
+
+rpmbuild-geos: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-geos
 
 rpmbuild-libgeotiff: .env proj
 	$(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
@@ -93,6 +107,7 @@ rpmbuild-sqlite: .env
 
 ## RPM targets
 
+geos: rpmbuild-geos $(GEOS_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)

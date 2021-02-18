@@ -194,6 +194,10 @@ export MALLOC_CHECK_=3
 %{__make} test
 
 
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+
 %files
 %doc README.md
 %{_bindir}/sqlite3

@@ -17,6 +17,7 @@ x-base-args: &rpmbuild_base_args
   rpmbuild_gid: "${RPMBUILD_GID}"
 
 x-build-images:
+  geos: &geos_image rpmbuild-geos
   libgeotiff: &libgeotiff_image rpmbuild-libgeotiff
   osmosis: &osmosis_image rpmbuild-generic
   sbt: &sbt_image rpmbuild-generic
@@ -42,6 +43,7 @@ x-service-defaults: &service_defaults
   volumes: *service_volumes
 
 x-versions:
+  geos: &geos_version '3.9.1-1'
   libgeotiff: &libgeotiff_version '1.6.0-1'
   osmosis: &osmosis_version '0.48.3-1'
   proj: &proj_version '7.2.1-1'
@@ -70,6 +72,15 @@ services:
     build:
       <<: *build_defaults
       args:
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-geos:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${GEOS_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-sqlite:
     <<: *service_defaults
@@ -112,10 +123,16 @@ x-vagrant:
       - rpmbuild-generic:
           args:
             rpmbuild_channel: *rpmbuild_channel
+      - rpmbuild-geos:
+          args:
+            rpmbuild_channel: *rpmbuild_channel
       - rpmbuild-sqlite:
           args:
             rpmbuild_channel: *rpmbuild_channel
       - rpmbuild-proj:
+          args:
+            rpmbuild_channel: *rpmbuild_channel
+      - rpmbuild-libgeotiff:
           args:
             rpmbuild_channel: *rpmbuild_channel
   rpms:

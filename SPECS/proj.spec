@@ -108,6 +108,10 @@ tar -xf %{SOURCE2} --directory %{buildroot}%{_datadir}/%{name}
 %ctest3
 
 
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+
 %files
 %license COPYING
 %doc NEWS AUTHORS README.md

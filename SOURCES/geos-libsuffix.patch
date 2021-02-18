@@ -1,0 +1,63 @@
+diff -rupN --no-dereference geos-3.9.1/CMakeLists.txt geos-3.9.1-new/CMakeLists.txt
+--- geos-3.9.1/CMakeLists.txt	2021-02-10 19:10:27.000000000 +0100
++++ geos-3.9.1-new/CMakeLists.txt	2021-02-11 15:26:25.358373951 +0100
+@@ -308,16 +308,16 @@ configure_file(cmake/geos-config.cmake
+ 
+ install(TARGETS geos geos_cxx_flags
+   EXPORT geos-targets
+-  LIBRARY DESTINATION lib
+-  ARCHIVE DESTINATION lib
++  LIBRARY DESTINATION lib${LIB_SUFFIX}
++  ARCHIVE DESTINATION lib${LIB_SUFFIX}
+   RUNTIME DESTINATION bin
+   INCLUDES DESTINATION include
+   )
+ 
+ install(TARGETS geos_c
+   EXPORT geos-targets
+-  LIBRARY DESTINATION lib
+-  ARCHIVE DESTINATION lib
++  LIBRARY DESTINATION lib${LIB_SUFFIX}
++  ARCHIVE DESTINATION lib${LIB_SUFFIX}
+   RUNTIME DESTINATION bin
+   INCLUDES DESTINATION include
+   )
+@@ -325,12 +325,12 @@ install(TARGETS geos_c
+ install(EXPORT geos-targets
+   FILE geos-targets.cmake
+   NAMESPACE GEOS::
+-  DESTINATION lib/cmake/GEOS)
++  DESTINATION lib${LIB_SUFFIX}/cmake/GEOS)
+ 
+ install(FILES
+   "${CMAKE_CURRENT_BINARY_DIR}/geos-config.cmake"
+   "${CMAKE_CURRENT_BINARY_DIR}/geos-config-version.cmake"
+-  DESTINATION lib/cmake/GEOS)
++  DESTINATION lib${LIB_SUFFIX}/cmake/GEOS)
+ install(DIRECTORY
+   "${CMAKE_CURRENT_LIST_DIR}/include/geos"
+   "${CMAKE_CURRENT_BINARY_DIR}/include/geos"
+diff -rupN --no-dereference geos-3.9.1/tools/CMakeLists.txt geos-3.9.1-new/tools/CMakeLists.txt
+--- geos-3.9.1/tools/CMakeLists.txt	2021-02-10 19:10:27.000000000 +0100
++++ geos-3.9.1-new/tools/CMakeLists.txt	2021-02-11 15:26:25.358373951 +0100
+@@ -36,7 +36,7 @@ if(NOT MSVC)
+ 
+   install(FILES
+     ${CMAKE_CURRENT_BINARY_DIR}/geos.pc
+-    DESTINATION lib/pkgconfig)
++    DESTINATION lib${LIB_SUFFIX}/pkgconfig)
+ 
+ endif()
+ 
+diff -rupN --no-dereference geos-3.9.1/tools/geos-config.cmake geos-3.9.1-new/tools/geos-config.cmake
+--- geos-3.9.1/tools/geos-config.cmake	2021-02-04 00:19:53.000000000 +0100
++++ geos-3.9.1-new/tools/geos-config.cmake	2021-02-11 15:26:25.359373949 +0100
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ 
+ prefix=@ESCAPED_INSTALL_PREFIX@
+-libdir=${prefix}/lib
++libdir=${prefix}/lib@LIB_SUFFIX
+ 
+ usage()
+ {
