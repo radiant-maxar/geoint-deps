@@ -9,6 +9,7 @@ config_version = $(call config_reference,$(1)_version)
 # Variants for getting RPM file names.
 RPMBUILD_DIST := $(call config_reference,rpmbuild_dist)
 rpm_file = RPMS/$(2)/$(1)-$(call config_version,$(1))$(RPMBUILD_DIST).$(2).rpm
+rpm_file2 = RPMS/$(3)/$(1)-$(call config_version,$(2))$(RPMBUILD_DIST).$(3).rpm
 
 # Gets the RPM package name from the filename.
 rpm_package = $(shell echo $(1) | awk '{ split($$0, a, "-"); l = length(a); pkg = a[1]; for (i=2; i<l-1; ++i) pkg = pkg "-" a[i]; print pkg }')
@@ -33,6 +34,7 @@ GEOS_RPM := $(call rpm_file,geos,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
+PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
@@ -53,6 +55,7 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	osmosis \
 	proj \
+	proj6 \
 	sbt \
 	sqlite
 
@@ -114,11 +117,19 @@ geos: rpmbuild-geos $(GEOS_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
+proj6: rpmbuild-proj $(PROJ6_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 
 ## Build patterns
+
+# Special exception for PROJ 6 version; required by Tasking Manager 4.
+RPMS/x86_64/proj-6%.rpm:
+	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,proj6) rpmbuild \
+	--define "rpmbuild_version $(call rpmbuild_version,proj6)" \
+	--define "rpmbuild_release $(call rpmbuild_release,proj6)" \
+	-bb SPECS/proj6.spec
 
 # Runs container with docker-compose to build rpm.
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:

@@ -4,8 +4,8 @@ version: '3.8'
 x-rpmbuild:
   dist: &rpmbuild_dist '.el7'
   channel_name: &rpmbuild_channel stable
-  email: &rpmbuild_email "foundation-geoint-packaging@maxar.com"
-  packager_name: &rpmbuild_name "Foundation Geoint Packaging"
+  email: &rpmbuild_email "foundationgeoint-packaging@maxar.com"
+  packager_name: &rpmbuild_name "FoundationGEOINT Packaging"
   postgres_version: &postgres_version '10'
   vendor: &rpmbuild_vendor "Maxar Technologies"
   base_args: &rpmbuild_base_args
@@ -20,6 +20,7 @@ x-rpmbuild:
     labels:
       maintainer: *rpmbuild_email
       vendor: *rpmbuild_vendor
+  # Configuration for every dependency RPM.
   rpms:
     FileGDBAPI:
       image: &FileGDBAPI_image rpmbuild-generic
@@ -39,6 +40,9 @@ x-rpmbuild:
     proj:
       image: &proj_image rpmbuild-proj
       version: &proj_version '7.2.1-1'
+    proj6:
+      image: &proj6_image rpmbuild-proj
+      version: &proj6_version '6.3.2-1'
     sqlite:
       image: &sqlite_image rpmbuild-sqlite
       version: &sqlite_version '3.34.1-1'
