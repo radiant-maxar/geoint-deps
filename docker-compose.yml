@@ -1,56 +1,56 @@
 ---
 version: '3.8'
 
-x-channel:
+x-rpmbuild:
   dist: &rpmbuild_dist '.el7'
   channel_name: &rpmbuild_channel stable
   email: &rpmbuild_email "foundation-geoint-packaging@maxar.com"
   packager_name: &rpmbuild_name "Foundation Geoint Packaging"
-  postgres_version:  &postgres_version '10'
+  postgres_version: &postgres_version '10'
   vendor: &rpmbuild_vendor "Maxar Technologies"
-
-x-base-args: &rpmbuild_base_args
-  rpmbuild_dist: *rpmbuild_dist
-  rpmbuild_email: *rpmbuild_email
-  rpmbuild_name: *rpmbuild_name
-  rpmbuild_uid: "${RPMBUILD_UID}"
-  rpmbuild_gid: "${RPMBUILD_GID}"
-
-x-build-images:
-  FileGDBAPI: &FileGDBAPI_image rpmbuild-generic
-  geos: &geos_image rpmbuild-geos
-  libgeotiff: &libgeotiff_image rpmbuild-libgeotiff
-  osmosis: &osmosis_image rpmbuild-generic
-  sbt: &sbt_image rpmbuild-generic
-  proj: &proj_image rpmbuild-proj
-  sqlite: &sqlite_image rpmbuild-sqlite
-
-x-build-defaults: &build_defaults
-  context: .
-  dockerfile: docker/Dockerfile.rpmbuild-generic
-  labels:
-    maintainer: *rpmbuild_email
-    vendor: *rpmbuild_vendor
-
-x-service-volumes: &service_volumes
-  - "./RPMS:/rpmbuild/RPMS:rw"
-  - "./SOURCES:/rpmbuild/SOURCES:rw"
-  - "./SPECS:/rpmbuild/SPECS:ro"
-  - "./scripts:/rpmbuild/scripts:ro"
-
-x-service-defaults: &service_defaults
-  command: 'tail -f /dev/null'
-  init: true
-  volumes: *service_volumes
-
-x-versions:
-  FileGDBAPI: &FileGDBAPI_version '1.5.1-1'
-  geos: &geos_version '3.9.1-1'
-  libgeotiff: &libgeotiff_version '1.6.0-1'
-  osmosis: &osmosis_version '0.48.3-1'
-  proj: &proj_version '7.2.1-1'
-  sbt: &sbt_version '1.4.7-1'
-  sqlite: &sqlite_version '3.34.1-1'
+  base_args: &rpmbuild_base_args
+    rpmbuild_dist: *rpmbuild_dist
+    rpmbuild_email: *rpmbuild_email
+    rpmbuild_name: *rpmbuild_name
+    rpmbuild_uid: "${RPMBUILD_UID}"
+    rpmbuild_gid: "${RPMBUILD_GID}"
+  build_defaults: &build_defaults
+    context: .
+    dockerfile: docker/Dockerfile.rpmbuild-generic
+    labels:
+      maintainer: *rpmbuild_email
+      vendor: *rpmbuild_vendor
+  rpms:
+    FileGDBAPI:
+      image: &FileGDBAPI_image rpmbuild-generic
+      version: &FileGDBAPI_version '1.5.1-1'
+    geos:
+      image: &geos_image rpmbuild-geos
+      version: &geos_version '3.9.1-1'
+    libgeotiff:
+      image: &libgeotiff_image rpmbuild-libgeotiff
+      version: &libgeotiff_version '1.6.0-1'
+    osmosis:
+      image: &osmosis_image rpmbuild-generic
+      version: &osmosis_version '0.48.3-1'
+    sbt:
+      image: &sbt_image rpmbuild-generic
+      version: &sbt_version '1.4.7-1'
+    proj:
+      image: &proj_image rpmbuild-proj
+      version: &proj_version '7.2.1-1'
+    sqlite:
+      image: &sqlite_image rpmbuild-sqlite
+      version: &sqlite_version '3.34.1-1'
+  service_volumes: &service_volumes
+    - "./RPMS:/rpmbuild/RPMS:rw"
+    - "./SOURCES:/rpmbuild/SOURCES:rw"
+    - "./SPECS:/rpmbuild/SPECS:ro"
+    - "./scripts:/rpmbuild/scripts:ro"
+  service_defaults: &service_defaults
+    command: 'tail -f /dev/null'
+    init: true
+    volumes: *service_volumes
 
 
 ## Docker Compose

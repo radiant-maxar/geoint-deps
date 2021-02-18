@@ -11,9 +11,11 @@ Vagrant.require_version '>= 2.0.0'
 settings = YAML::load_file('docker-compose.yml')
 vagrant_settings = settings.fetch('x-vagrant', {})
 $images = vagrant_settings.fetch('images', {})
-$project = 'deps-' + settings['x-channel']['channel_name']
+$rpmbuild = settings.fetch('x-rpmbuild', {})
+$rpmbuild_channel = $rpmbuild['channel_name']
+$project = 'deps-' + $rpmbuild_channel
 $rpms = vagrant_settings.fetch('rpms', {})
-$postgres_version = settings['x-channel']['postgres_version']
+$postgres_version = $rpmbuild['postgres_version']
 $postgres_dotless = $postgres_version.gsub('.', '')
 
 # Special workaround to have the `rpmbuild` UID and GID to match that of
@@ -78,6 +80,7 @@ def build_container(config, name, options)
       # Start build arguments.
       build_args = []
       args = options.fetch('args', {})
+      args['rpmbuild_channel'] = $rpmbuild_channel
 
       # Pull out `BuildRequires:` packages and add them to a `packages`
       # build argument for the container if they exist.
