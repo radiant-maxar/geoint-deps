@@ -41,28 +41,23 @@ RUN yum -q -y update && \
       gdb \
       git \
       git-core \
-      glibc-devel \
       groff \
       less \
       lcov \
       libtool \
       make \
       m4 \
-      ncurses-devel \
-      readline-devel \
       redhat-lsb-core \
       redhat-rpm-config \
       rpm-build \
       rpm-sign \
       rpmdevtools \
       rpmlint \
-      tcl-devel \
       unzip \
       vim \
       wget \
       which \
-      zip \
-      zlib-devel && \
+      zip && \
     yum -q -y clean all
 
 # Copy in necessary scripts.

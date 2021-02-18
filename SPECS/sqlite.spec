@@ -47,6 +47,7 @@ BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: readline-devel
 BuildRequires: tcl-devel
+BuildRequires: zlib-devel
 
 # Ensure updates from pre-split work on multi-lib systems
 Obsoletes: %{name} < 3.11.0-1

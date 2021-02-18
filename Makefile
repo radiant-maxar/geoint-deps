@@ -47,14 +47,16 @@ endif
 	distclean \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-sqlite \
 	osmosis \
 	sbt \
 	sqlite \
 
-.env: $(ENV_BASE)
+.env: SPECS/*.spec
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
 distclean: .env
 	$(DOCKER_COMPOSE) down --volumes --rmi all
@@ -70,12 +72,15 @@ rpmbuild: .env
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
 
+rpmbuild-sqlite: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
+
 
 ## RPM targets
 
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
-sqlite: rpmbuild-generic $(SQLITE_RPM)
+sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 
 ## Build patterns

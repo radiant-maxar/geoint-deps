@@ -9,30 +9,40 @@ x-channel:
   postgres_version:  &postgres_version '10'
   vendor: &rpmbuild_vendor "Maxar Technologies"
 
-x-build-args: &rpmbuild_build_args
+x-base-args: &rpmbuild_base_args
   rpmbuild_dist: *rpmbuild_dist
   rpmbuild_email: *rpmbuild_email
   rpmbuild_name: *rpmbuild_name
+  rpmbuild_uid: "${RPMBUILD_UID}"
+  rpmbuild_gid: "${RPMBUILD_GID}"
 
 x-build-images:
   osmosis: &osmosis_image rpmbuild-generic
   sbt: &sbt_image rpmbuild-generic
-  sqlite: &sqlite_image rpmbuild-generic
+  sqlite: &sqlite_image rpmbuild-sqlite
 
-x-build-labels: &rpmbuild_build_labels
-  maintainer: *rpmbuild_email
-  vendor: *rpmbuild_vendor
+x-build-defaults: &build_defaults
+  context: .
+  dockerfile: docker/Dockerfile.rpmbuild-generic
+  labels:
+    maintainer: *rpmbuild_email
+    vendor: *rpmbuild_vendor
+
+x-service-volumes: &service_volumes
+  - "./RPMS:/rpmbuild/RPMS:rw"
+  - "./SOURCES:/rpmbuild/SOURCES:rw"
+  - "./SPECS:/rpmbuild/SPECS:ro"
+  - "./scripts:/rpmbuild/scripts:ro"
+
+x-service-defaults: &service_defaults
+  command: 'tail -f /dev/null'
+  init: true
+  volumes: *service_volumes
 
 x-versions:
   osmosis: &osmosis_version '0.48.3-1'
   sbt: &sbt_version '1.4.7-1'
   sqlite: &sqlite_version '3.34.1-1'
-
-x-volumes: &rpmbuild_volumes
-  - "./RPMS:/rpmbuild/RPMS:rw"
-  - "./SOURCES:/rpmbuild/SOURCES:rw"
-  - "./SPECS:/rpmbuild/SPECS:ro"
-  - "./scripts:/rpmbuild/scripts:ro"
 
 
 ## Docker Compose
@@ -42,36 +52,41 @@ services:
       context: .
       dockerfile: docker/Dockerfile.rpmbuild
       args:
-        <<: *rpmbuild_build_args
-        rpmbuild_uid: "${RPMBUILD_UID}"
-        rpmbuild_gid: "${RPMBUILD_GID}"
+        <<: *rpmbuild_base_args
       labels:
-        <<: *rpmbuild_build_labels
+        maintainer: *rpmbuild_email
+        vendor: *rpmbuild_vendor
     command: 'tail -f /dev/null'
     init: true
-    volumes: *rpmbuild_volumes
+    user: nobody
   rpmbuild-generic:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.rpmbuild-generic
-      args:
-        rpmbuild_channel: *rpmbuild_channel
-      labels:
-        <<: *rpmbuild_build_labels
-    command: 'tail -f /dev/null'
+    <<: *service_defaults
     depends_on:
       - rpmbuild
-    init: true
-    volumes: *rpmbuild_volumes
-
+    build:
+      <<: *build_defaults
+      args:
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-sqlite:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${SQLITE_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
 
 ## Vagrant
 x-vagrant:
   images:
     base: !!omap
       - rpmbuild:
-          args: *rpmbuild_build_args
+          args: *rpmbuild_base_args
       - rpmbuild-generic:
+          args:
+            rpmbuild_channel: *rpmbuild_channel
+      - rpmbuild-sqlite:
           args:
             rpmbuild_channel: *rpmbuild_channel
   rpms:

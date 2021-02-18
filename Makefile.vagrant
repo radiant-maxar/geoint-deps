@@ -39,6 +39,7 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 	distclean \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-sqlite \
 	osmosis \
 	sbt \
 	sqlite
@@ -57,12 +58,16 @@ rpmbuild-generic: \
 	rpmbuild \
 	.vagrant/machines/rpmbuild-generic/docker/id
 
+rpmbuild-sqlite: \
+	rpmbuild-generic \
+	.vagrant/machines/rpmbuild-sqlite/docker/id
+
 
 ## RPM targets
 
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
-sqlite: rpmbuild-generic $(SQLITE_RPM)
+sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 
 ## Build patterns

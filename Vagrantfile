@@ -196,7 +196,9 @@ Vagrant.configure(2) do |config|
   end
 
   collect_rpms(
-    ['rpmbuild-generic']
+    ['rpmbuild-generic',
+     'rpmbuild-sqlite',
+    ]
   ).each do |name, options|
     rpmbuild(config, name, options)
   end
