@@ -31,6 +31,9 @@ x-rpmbuild:
     libgeotiff:
       image: &libgeotiff_image rpmbuild-libgeotiff
       version: &libgeotiff_version '1.6.0-1'
+    libkml:
+      image: &libkml_image rpmbuild-libkml
+      version: &libkml_version '1.3.0-1'
     osmosis:
       image: &osmosis_image rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
@@ -86,7 +89,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${GEOS_PACKAGES}"
+        packages: "${RPMBUILD_GEOS_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-sqlite:
     <<: *service_defaults
@@ -95,7 +98,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${SQLITE_PACKAGES}"
+        packages: "${RPMBUILD_SQLITE_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-proj:
     <<: *service_defaults
@@ -104,7 +107,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${PROJ_PACKAGES}"
+        packages: "${RPMBUILD_PROJ_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
         sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-proj
@@ -115,10 +118,19 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${LIBGEOTIFF_PACKAGES}"
+        packages: "${RPMBUILD_LIBGEOTIFF_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
         proj_version: *proj_version
       dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
+  rpmbuild-libkml:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_LIBKML_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
 
 ## Vagrant
 x-vagrant:

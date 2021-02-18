@@ -32,6 +32,7 @@ RPMBUILD_GID := $(shell id -g)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI,x86_64)
 GEOS_RPM := $(call rpm_file,geos,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
+LIBKML_RPM := $(call rpm_file,libkml,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
@@ -46,6 +47,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-generic \
 	rpmbuild-geos \
 	rpmbuild-libgeotiff \
+	rpmbuild-libkml \
 	rpmbuild-proj \
 	rpmbuild-sqlite
 
@@ -53,6 +55,7 @@ RPMBUILD_RPMS := \
 	FileGDBAPI \
 	geos \
 	libgeotiff \
+	libkml \
 	osmosis \
 	proj \
 	proj6 \
@@ -82,10 +85,11 @@ distclean: .env
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
-	echo GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
-	echo LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
-	echo PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
-	echo SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
+	echo RPMBUILD_GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
+	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
+	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
+	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
+	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
 ## Container targets
 
@@ -102,6 +106,9 @@ rpmbuild-geos: .env
 rpmbuild-libgeotiff: .env proj
 	$(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
 
+rpmbuild-libkml: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-libkml
+
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 
@@ -115,6 +122,7 @@ rpmbuild-sqlite: .env
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
+libkml: rpmbuild-libkml $(LIBKML_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)
