@@ -1,0 +1,32 @@
+From 23b9c5dd60672be0187eda92853e4ae4a92de1d5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ralf=20Cors=C3=A9pius?= <corsepiu@fedoraproject.org>
+Date: Wed, 12 Aug 2020 18:09:36 +0200
+Subject: [PATCH 1/6] xmldoc nonet.
+
+---
+ Makefile.in | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index 5ace8da1..7e1ee858 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -275,13 +275,14 @@ gpsbabel.pdf: gpsbabel.fo
+ gpsbabel.html: FORCE # gpsbabel
+ 	# perl xmldoc/makedoc
+ 	xsltproc \
++	  --nonet \
+ 	  --output $@ \
+ 	  --stringparam toc.section.depth "1" \
+ 	  --stringparam html.cleanup "1" \
+ 	  --stringparam make.clean.html "1" \
+ 	  --stringparam html.valid.html "1" \
+ 	  --stringparam html.stylesheet \
+-	  "https://www.gpsbabel.org/style3.css" \
++	  "gpsbabel.org-style3.css" \
+ 	  http://docbook.sourceforge.net/release/xsl/current/xhtml/docbook.xsl \
+ 	xmldoc/readme.xml
+ 
+-- 
+2.26.2
+

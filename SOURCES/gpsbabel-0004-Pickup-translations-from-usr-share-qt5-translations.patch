@@ -1,0 +1,36 @@
+From d83a4ab92e1f3c8f238dd90fe133b83490737d12 Mon Sep 17 00:00:00 2001
+From: tsteven4 <tsteven4@fedoraproject.org>
+Date: Thu, 23 May 2019 06:36:58 +0200
+Subject: [PATCH 4/6] Pickup translations from /usr/share/qt5/translations
+
+---
+ gui/mainwindow.cc | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/gui/mainwindow.cc b/gui/mainwindow.cc
+index 22b2b449..73ccad78 100644
+--- a/gui/mainwindow.cc
++++ b/gui/mainwindow.cc
+@@ -78,6 +78,9 @@ const int BabelData::deviceType_ = 1;
+ 
+ #define FAKE_LANGUAGE_MENU 0
+ 
++#ifndef QTTRANSLATIONDIR
++#define QTTRANSLATIONDIR "/usr/share/qt5/translations"
++#endif
+ //------------------------------------------------------------------------
+ QString MainWindow::findBabelVersion()
+ {
+@@ -219,8 +222,7 @@ MainWindow::MainWindow(QWidget* parent): QMainWindow(parent)
+ 
+   ui_.outputWindow->setReadOnly(true);
+ 
+-  langPath_ = QApplication::applicationDirPath();
+-  langPath_.append("/translations/");
++  langPath_ = QTTRANSLATIONDIR;
+ 
+   // Start up in the current system language.
+   loadLanguage(QLocale::system().name());
+-- 
+2.26.2
+

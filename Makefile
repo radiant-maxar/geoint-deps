@@ -17,7 +17,6 @@ rpmbuild_image = $(call config_reference,$(call rpm_package,$(1))_image)
 rpmbuild_version = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$1 }')
 rpmbuild_release = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$2 }')
 
-
 ## Variables
 DOCKER ?= docker
 DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
@@ -31,6 +30,7 @@ RPMBUILD_GID := $(shell id -g)
 # RPM files at desired versions.
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI,x86_64)
 GEOS_RPM := $(call rpm_file,geos,x86_64)
+GPSBABEL_RPM := $(call rpm_file,gpsbabel,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 LIBKML_RPM := $(call rpm_file,libkml,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
@@ -39,21 +39,20 @@ PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
-
-## General targets
-
+# Build containers and RPMs.
 RPMBUILD_CONTAINERS := \
 	rpmbuild \
 	rpmbuild-generic \
 	rpmbuild-geos \
+	rpmbuild-gpsbabel \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-proj \
 	rpmbuild-sqlite
-
 RPMBUILD_RPMS := \
 	FileGDBAPI \
 	geos \
+	gpsbabel \
 	libgeotiff \
 	libkml \
 	osmosis \
@@ -61,6 +60,8 @@ RPMBUILD_RPMS := \
 	proj6 \
 	sbt \
 	sqlite
+
+## General targets
 
 .PHONY: \
 	all \
@@ -80,12 +81,14 @@ distclean: .env
 	$(DOCKER_COMPOSE) down --volumes --rmi all
 	rm -fr .env RPMS/noarch RPMS/x86_64 SOURCES/*.asc SOURCES/*.sha256 SOURCES/*.tgz SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
 
-
+# Environment file for docker-compose; required packages for build containers
+# are provided here.
 .env: SPECS/*.spec
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
 	echo RPMBUILD_GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
+	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
@@ -103,6 +106,9 @@ rpmbuild-generic: .env
 rpmbuild-geos: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-geos
 
+rpmbuild-gpsbabel: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-gpsbabel
+
 rpmbuild-libgeotiff: .env proj
 	$(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
 
@@ -115,12 +121,11 @@ rpmbuild-proj: .env sqlite
 rpmbuild-sqlite: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
 
-
-
 ## RPM targets
 
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
+gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
@@ -128,7 +133,6 @@ proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
-
 
 ## Build patterns
 

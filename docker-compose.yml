@@ -28,6 +28,9 @@ x-rpmbuild:
     geos:
       image: &geos_image rpmbuild-geos
       version: &geos_version '3.9.1-1'
+    gpsbabel:
+      image: &gpsbabel_image rpmbuild-gpsbabel
+      version: &gpsbabel_version '1.7.0-1'
     libgeotiff:
       image: &libgeotiff_image rpmbuild-libgeotiff
       version: &libgeotiff_version '1.6.0-1'
@@ -59,8 +62,6 @@ x-rpmbuild:
     init: true
     volumes: *service_volumes
 
-
-## Docker Compose
 services:
   rpmbuild:
     build:
@@ -90,6 +91,15 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_GEOS_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-gpsbabel:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_GPSBABEL_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-sqlite:
     <<: *service_defaults

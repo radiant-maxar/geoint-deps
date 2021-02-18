@@ -1,0 +1,13 @@
+diff --git a/jeeps/gpsusbstub.cc b/jeeps/gpsusbstub.cc
+index 086ae7a..35664b6 100644
+--- a/jeeps/gpsusbstub.cc
++++ b/jeeps/gpsusbstub.cc
+@@ -34,7 +34,7 @@ typedef struct gpsdevh gpsdevh;
+ int
+ gusb_init(const char* portname, gpsdevh** dh)
+ {
+-  Fatal() << no_usb;
++  FatalMsg() << no_usb;
+   return 0;
+ }
+ 
