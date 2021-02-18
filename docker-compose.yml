@@ -19,6 +19,7 @@ x-base-args: &rpmbuild_base_args
 x-build-images:
   osmosis: &osmosis_image rpmbuild-generic
   sbt: &sbt_image rpmbuild-generic
+  proj: &proj_image rpmbuild-proj
   sqlite: &sqlite_image rpmbuild-sqlite
 
 x-build-defaults: &build_defaults
@@ -41,6 +42,7 @@ x-service-defaults: &service_defaults
 
 x-versions:
   osmosis: &osmosis_version '0.48.3-1'
+  proj: &proj_version '7.2.1-1'
   sbt: &sbt_version '1.4.7-1'
   sqlite: &sqlite_version '3.34.1-1'
 
@@ -76,6 +78,17 @@ services:
       args:
         packages: "${SQLITE_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-proj:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-sqlite
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${PROJ_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+        sqlite_version: *sqlite_version
+      dockerfile: docker/Dockerfile.rpmbuild-proj
 
 ## Vagrant
 x-vagrant:
@@ -89,10 +102,16 @@ x-vagrant:
       - rpmbuild-sqlite:
           args:
             rpmbuild_channel: *rpmbuild_channel
+      - rpmbuild-proj:
+          args:
+            rpmbuild_channel: *rpmbuild_channel
   rpms:
     osmosis:
       image: *osmosis_image
       version: *osmosis_version
+    proj:
+      image: *proj_image
+      version: *proj_version
     sbt:
       image: *sbt_image
       version: *sbt_version

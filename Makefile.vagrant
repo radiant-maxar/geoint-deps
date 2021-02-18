@@ -29,6 +29,7 @@ POSTGRES_DOTLESS := $(shell echo $(call config_version,postgres) | tr -d '.')
 
 # RPM files at desired versions.
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
+PROJ_RPM := $(call rpm_file,proj,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
@@ -39,8 +40,10 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 	distclean \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-proj \
 	rpmbuild-sqlite \
 	osmosis \
+	proj \
 	sbt \
 	sqlite
 
@@ -58,6 +61,10 @@ rpmbuild-generic: \
 	rpmbuild \
 	.vagrant/machines/rpmbuild-generic/docker/id
 
+rpmbuild-proj: \
+	sqlite \
+	.vagrant/machines/rpmbuild-proj/docker/id
+
 rpmbuild-sqlite: \
 	rpmbuild-generic \
 	.vagrant/machines/rpmbuild-sqlite/docker/id
@@ -66,6 +73,7 @@ rpmbuild-sqlite: \
 ## RPM targets
 
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
+proj: rpmbuild-proj $(PROJ_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 

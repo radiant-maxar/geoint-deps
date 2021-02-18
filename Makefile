@@ -29,6 +29,7 @@ RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
+PROJ_RPM := $(call rpm_file,proj,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
@@ -47,8 +48,10 @@ endif
 	distclean \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-proj \
 	rpmbuild-sqlite \
 	osmosis \
+	proj \
 	sbt \
 	sqlite \
 
@@ -56,6 +59,7 @@ endif
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
 distclean: .env
@@ -72,13 +76,18 @@ rpmbuild: .env
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
 
+rpmbuild-proj: .env sqlite
+	$(DOCKER_COMPOSE) up -d rpmbuild-proj
+
 rpmbuild-sqlite: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
+
 
 
 ## RPM targets
 
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
+proj: rpmbuild-proj $(PROJ_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
