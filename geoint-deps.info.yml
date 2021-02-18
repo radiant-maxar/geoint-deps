@@ -1,0 +1,18 @@
+---
+name: geoint-deps
+description: Build system for FoundationGEOINT
+source: https://gitub.com/DigitalGlobe/geoint-deps
+team: FoundationGEOINT Team
+data_classification:
+  - public
+language:
+  - python
+  - shell
+  - yaml
+poc:
+  - name: Justin Bronn
+    email: justin.bronn@maxar.com
+  - name: David Hummel
+    email: david.hummel@maxar.com
+  - name: Seth Putnam
+    email: seth.putnam@maxar.com
