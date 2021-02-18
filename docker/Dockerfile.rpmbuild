@@ -41,26 +41,33 @@ RUN yum -q -y update && \
       gdb \
       git \
       git-core \
+      glibc-devel \
       groff \
       less \
       lcov \
       libtool \
       make \
       m4 \
+      ncurses-devel \
+      readline-devel \
       redhat-lsb-core \
       redhat-rpm-config \
       rpm-build \
       rpm-sign \
       rpmdevtools \
       rpmlint \
+      tcl-devel \
       unzip \
       vim \
       wget \
       which \
-      zip && \
+      zip \
+      zlib-devel && \
     yum -q -y clean all
 
-# Copy 
-COPY scripts/rpmbuild-user.sh \
+# Copy in necessary scripts.
+COPY scripts/nodesource-repo.sh \
      scripts/pgdg-repo.sh \
+     scripts/rpmbuild-user.sh \
+     scripts/yarn-repo.sh \
      /usr/local/bin/

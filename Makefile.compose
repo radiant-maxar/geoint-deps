@@ -16,7 +16,8 @@ rpmbuild_version = $(shell echo $(call config_version,$(call rpm_package,$(1))) 
 rpmbuild_release = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$2 }')
 
 ## Variables
-DOCKER_VERSION := $(shell docker --version 2>/dev/null)
+DOCKER ?= docker
+DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
 DOCKER_COMPOSE ?= docker-compose
 DOCKER_COMPOSE_VERSION := $(shell $(DOCKER_COMPOSE) --version 2>/dev/null)
 POSTGRES_DOTLESS := $(shell echo $(call config_version,postgres) | tr -d '.')
@@ -26,10 +27,11 @@ RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
-SBT_VERSION := $(call config_version,sbt)
 SBT_RPM := $(call rpm_file,sbt,noarch)
+SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
 
+## General targets
 all:
 ifndef DOCKER_VERSION
     $(error "command docker is not available, please install Docker")
@@ -37,6 +39,14 @@ endif
 ifndef DOCKER_COMPOSE_VERSION
     $(error "command docker-compose is not available, please install Docker")
 endif
+
+.PHONY: \
+	all \
+	distclean \
+	osmosis \
+	rpmbuild \
+	rpmbuild-generic \
+	sbt
 
 .env: $(ENV_BASE)
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
@@ -57,14 +67,8 @@ rpmbuild-generic: .env
 # RPM targets
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
+sqlite: rpmbuild-generic $(SQLITE_RPM)
 
-.PHONY: \
-	all \
-	distclean \
-	osmosis \
-	rpmbuild \
-	rpmbuild-generic \
-	sbt
 
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
 	docker-compose exec -T rpmbuild-generic rpmbuild \

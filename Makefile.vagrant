@@ -28,6 +28,7 @@ POSTGRES_DOTLESS := $(shell echo $(call config_version,postgres) | tr -d '.')
 # RPM files at desired versions.
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 SBT_RPM := $(call rpm_file,sbt,noarch)
+SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
 
 ## General targets
@@ -58,6 +59,7 @@ rpmbuild-generic: \
 
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
+sqlite: rpmbuild-generic $(SQLITE_RPM)
 
 
 ## Build patterns

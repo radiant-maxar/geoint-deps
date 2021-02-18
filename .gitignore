@@ -6,3 +6,4 @@ SOURCES/*.asc
 SOURCES/*.sha256
 SOURCES/*.tgz
 SOURCES/*.tar.*
+SOURCES/*.zip
