@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-POSTGRES_VERSION="$1"
+POSTGRES_VERSION="${1}"
 POSTGRES_DOTLESS="$(echo "${POSTGRES_VERSION}" | awk '{ gsub(/\./, ""); print substr($0, 1, 2) }')"
 POSTGRES_MAJOR_VERSION="$(echo "${POSTGRES_VERSION}" | awk -F. '{ if ($1 >= 10) print $1; else print $0 }')"
 PGDG_KEY="${PGDG_KEY:-/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG}"
@@ -40,18 +40,12 @@ GaCXCY8h3xi6VIhJBBgRAgAJBQJHg/JKAhsMAAoJEB8W0uFELfD4K4cAoJ4yug8y
 -----END PGP PUBLIC KEY BLOCK-----
 EOF
 
-cat > "$PGDG_REPO" <<EOF
-[pgdg-common]
-name=PostgreSQL common RPMs for RHEL/CentOS \$releasever - \$basearch
-baseurl=https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-\$releasever-\$basearch
-enabled=1
-gpgcheck=1
-gpgkey=file://${PGDG_KEY}
-
+cat > "${PGDG_REPO}" <<EOF
 [pgdg${POSTGRES_DOTLESS}]
 name=PostgreSQL ${POSTGRES_MAJOR_VERSION} \$releasever - \$basearch
 baseurl=https://download.postgresql.org/pub/repos/yum/${POSTGRES_MAJOR_VERSION}/redhat/rhel-\$releasever-\$basearch
 enabled=1
+exclude=CGAL* geos* gdal* ogdi* ogr* osm* postgis* proj* SFCGAL*
 gpgcheck=1
 gpgkey=file://${PGDG_KEY}
 

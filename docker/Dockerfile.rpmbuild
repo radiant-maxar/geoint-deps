@@ -62,6 +62,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
 
 # Copy in necessary scripts.
 COPY scripts/nodesource-repo.sh \
+     scripts/postgres-install.sh \
      scripts/pgdg-repo.sh \
      scripts/rpmbuild-user.sh \
      scripts/yarn-repo.sh \

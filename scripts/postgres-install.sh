@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-
+POSTGRES_VERSION="${1}"
 POSTGRES_DOTLESS="$(echo "${POSTGRES_VERSION}" | awk '{ gsub(/\./, ""); print substr($0, 1, 2) }')"
 POSTGRES_MAJOR_VERSION="$(echo "${POSTGRES_VERSION}" | awk -F. '{ if ($1 >= 10) print $1; else print $0 }')"
 

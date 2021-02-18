@@ -115,6 +115,9 @@ rpmbuild-libgeotiff: .env proj
 rpmbuild-libkml: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-libkml
 
+rpmbuild-pgdg: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-pgdg
+
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 

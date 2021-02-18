@@ -141,3 +141,13 @@ services:
       args:
         packages: "${RPMBUILD_LIBKML_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-pgdg:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild
+    build:
+      <<: *build_defaults
+      args:
+        postgres_version: *postgres_version
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-pgdg
