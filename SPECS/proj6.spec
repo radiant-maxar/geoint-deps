@@ -61,7 +61,7 @@ This package contains additional datum shift grids.
 %install
 %cmake3_install
 %{__install} -p -m 0644 \
- data/{alaska,conus,hawaii,ntv1_can.dat,prvi,stgeorge,stlrnc,stpaul,FL,MD,TN,WI,README.DATUMGRID} \
+ data/{alaska,conus,hawaii,ntv1_can.dat,prvi,stgeorge,stlrnc,stpaul,FL,MD,TN,WI,WO,README.DATUMGRID} \
  %{buildroot}%{_datadir}/%{name}
 # Generate pkgconfig file cause CMake was used instead of autotools.
 %{__install} -d -m 0755 %{buildroot}%{_libdir}/pkgconfig
