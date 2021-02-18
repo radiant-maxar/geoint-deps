@@ -17,6 +17,7 @@ x-base-args: &rpmbuild_base_args
   rpmbuild_gid: "${RPMBUILD_GID}"
 
 x-build-images:
+  libgeotiff: &libgeotiff_image rpmbuild-libgeotiff
   osmosis: &osmosis_image rpmbuild-generic
   sbt: &sbt_image rpmbuild-generic
   proj: &proj_image rpmbuild-proj
@@ -41,6 +42,7 @@ x-service-defaults: &service_defaults
   volumes: *service_volumes
 
 x-versions:
+  libgeotiff: &libgeotiff_version '1.6.0-1'
   osmosis: &osmosis_version '0.48.3-1'
   proj: &proj_version '7.2.1-1'
   sbt: &sbt_version '1.4.7-1'
@@ -89,6 +91,17 @@ services:
         rpmbuild_channel: *rpmbuild_channel
         sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-proj
+  rpmbuild-libgeotiff:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-proj
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${LIBGEOTIFF_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+        proj_version: *proj_version
+      dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
 
 ## Vagrant
 x-vagrant:

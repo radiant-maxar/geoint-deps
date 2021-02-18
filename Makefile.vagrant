@@ -28,6 +28,7 @@ VAGRANT ?= vagrant
 POSTGRES_DOTLESS := $(shell echo $(call config_version,postgres) | tr -d '.')
 
 # RPM files at desired versions.
+LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
@@ -40,8 +41,10 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 	distclean \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-libgeotiff \
 	rpmbuild-proj \
 	rpmbuild-sqlite \
+	libgeotiff \
 	osmosis \
 	proj \
 	sbt \
@@ -61,6 +64,10 @@ rpmbuild-generic: \
 	rpmbuild \
 	.vagrant/machines/rpmbuild-generic/docker/id
 
+rpmbuild-libgeotiff: \
+	proj \
+	.vagrant/machines/rpmbuild-libgeotiff/docker/id
+
 rpmbuild-proj: \
 	sqlite \
 	.vagrant/machines/rpmbuild-proj/docker/id
@@ -72,6 +79,7 @@ rpmbuild-sqlite: \
 
 ## RPM targets
 
+libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)

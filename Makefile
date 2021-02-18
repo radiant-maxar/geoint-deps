@@ -28,6 +28,7 @@ RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
+LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
@@ -48,8 +49,10 @@ endif
 	distclean \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-libgeotiff \
 	rpmbuild-proj \
 	rpmbuild-sqlite \
+	libgeotiff \
 	osmosis \
 	proj \
 	sbt \
@@ -59,6 +62,7 @@ endif
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
@@ -76,6 +80,9 @@ rpmbuild: .env
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
 
+rpmbuild-libgeotiff: .env proj
+	$(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
+
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 
@@ -86,6 +93,7 @@ rpmbuild-sqlite: .env
 
 ## RPM targets
 
+libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
