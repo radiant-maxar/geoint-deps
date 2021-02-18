@@ -28,7 +28,8 @@ ENV LANG=${rpmbuild_lang} \
     RPMBUILD_USER=${rpmbuild_user}
 
 # Install basic development and RPM authoring tools.
-RUN yum -q -y update && \
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum -q -y update && \
     yum -q -y install \
       autoconf \
       automake \
@@ -57,8 +58,7 @@ RUN yum -q -y update && \
       vim \
       wget \
       which \
-      zip && \
-    yum -q -y clean all
+      zip
 
 # Copy in necessary scripts.
 COPY scripts/nodesource-repo.sh \

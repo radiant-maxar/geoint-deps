@@ -4,8 +4,8 @@ FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG packages
 
 # If any package dependencies are needed, install them.
-RUN if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
-    yum -q -y clean all && \
+RUN --mount=type=cache,target=/var/cache/yum \
+    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
     rm -f /usr/local/bin/rpmbuild-user.sh
 
