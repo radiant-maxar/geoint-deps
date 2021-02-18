@@ -17,8 +17,7 @@ Patch0:         proj-pkgconfig.patch
 
 BuildRequires:  cmake3
 BuildRequires:  curl-devel
-BuildRequires:  devtoolset-9-gcc
-BuildRequires:  devtoolset-9-gcc-c++
+BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  libtiff-devel
 BuildRequires:  sqlite-devel
@@ -93,8 +92,6 @@ popd
 
 
 %build
-# Enable the updated compiler toolchain prior to building.
-. /opt/rh/devtoolset-9/enable
 %cmake3
 %cmake3_build
 
