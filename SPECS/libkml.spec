@@ -96,9 +96,7 @@ developing applications that use %{name}.
 %{__sed} -i -e 's/ZLIB 1\.2\.8/ZLIB 1\.2\.7/' CMakeLists.txt
 
 %{__mkdir} build_py2
-%cmake3 \
-  --build build_py2 \
-  -DWITH_SWIG=ON -DWITH_PYTHON=ON -DWITH_JAVA=ON \
+%cmake3 -DWITH_SWIG=ON -DWITH_PYTHON=ON -DWITH_JAVA=ON \
   -DJNI_INSTALL_DIR=%{_libdir}/%{name} \
   -DCMAKE_INSTALL_DIR=%{_libdir}/cmake/%{name} \
   -DINCLUDE_INSTALL_DIR=%{_includedir}/kml \
@@ -106,13 +104,12 @@ developing applications that use %{name}.
   -DPYTHON_INCLUDE_DIR=%{_includedir}/python%{python2_version}/ \
   -DPYTHON_INSTALL_DIR=%{python2_sitearch} \
   -DBUILD_TESTING=ON \
-  -DBUILD_EXAMPLES=OFF
+  -DBUILD_EXAMPLES=OFF \
+  -B build_py2
 %__cmake3 --build build_py2 %{?_smp_mflags} --verbose
 
 %{__mkdir} build_py3
-%cmake3 \
-  --build build_py3 \
-  -DWITH_SWIG=ON -DWITH_PYTHON=ON -DWITH_JAVA=OFF \
+%cmake3 -DWITH_SWIG=ON -DWITH_PYTHON=ON -DWITH_JAVA=OFF \
   -DJNI_INSTALL_DIR=%{_libdir}/%{name} \
   -DCMAKE_INSTALL_DIR=%{_libdir}/cmake/%{name} \
   -DINCLUDE_INSTALL_DIR=%{_includedir}/kml \
@@ -120,7 +117,8 @@ developing applications that use %{name}.
   -DPYTHON_INCLUDE_DIR=%{_includedir}/python%{python3_version}m/ \
   -DPYTHON_INSTALL_DIR=%{python3_sitearch} \
   -DBUILD_TESTING=ON \
-  -DBUILD_EXAMPLES=ON
+  -DBUILD_EXAMPLES=ON \
+  -B build_py3
 %__cmake3 --build build_py3 %{?_smp_mflags} --verbose
 
 
