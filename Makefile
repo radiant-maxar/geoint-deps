@@ -36,6 +36,7 @@ GPSBABEL_RPM := $(call rpm_file,gpsbabel,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 LIBKML_RPM := $(call rpm_file,libkml,x86_64)
 LIBOSMIUM_RPM := $(call rpm_file2,libosmium-devel,libosmium,noarch)
+OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
@@ -55,6 +56,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
+	rpmbuild-osmium-tool \
 	rpmbuild-proj \
 	rpmbuild-protozero \
 	rpmbuild-sfcgal \
@@ -70,6 +72,7 @@ RPMBUILD_RPMS := \
 	libkml \
 	libosmium \
 	osmosis \
+	osmium-tool \
 	proj \
 	proj6 \
 	protozero \
@@ -109,6 +112,7 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
+	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
@@ -144,6 +148,9 @@ rpmbuild-libkml: .env
 rpmbuild-libosmium: .env protozero
 	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
 
+rpmbuild-osmium-tool: .env libosmium
+	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
+
 rpmbuild-pgdg: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-pgdg
 
@@ -170,6 +177,7 @@ gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
+osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)

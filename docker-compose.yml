@@ -52,6 +52,9 @@ x-rpmbuild:
     osmosis:
       image: &osmosis_image rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
+    osmium-tool:
+      image: &osmium-tool_image rpmbuild-osmium-tool
+      version: &osmium-tool_version '1.13.1-1'
     sbt:
       image: &sbt_image rpmbuild-generic
       version: &sbt_version '1.4.7-1'
@@ -195,6 +198,18 @@ services:
         protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-libosmium
+  rpmbuild-osmium-tool:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-libosmium
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_OSMIUM_TOOL_PACKAGES}"
+        protozero_version: *protozero_version
+        libosmium_version: *libosmium_version
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-osmium-tool
   rpmbuild-pgdg:
     <<: *service_defaults
     depends_on:
