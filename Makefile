@@ -2,7 +2,7 @@
 
 # All versions use a YAML reference so they only have to be defined once,
 # just grep for this reference and print it out.
-config_reference = $(shell cat docker-compose.yml | grep '\&$(1)' | awk '{ print $$3 }' | tr -d "'")
+config_reference = $(shell cat docker-compose.yml | grep '\&$(1)' | awk '{ print $$3 }' | tr -d "'\"")
 config_release = $(call config_reference,$(1)_release)
 config_version = $(call config_reference,$(1)_version)
 
@@ -38,6 +38,7 @@ LIBKML_RPM := $(call rpm_file,libkml,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
+PROTOZERO_RPM := $(call rpm_file2,protozero-devel,protozero,noarch)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL,x86_64)
 SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
@@ -53,6 +54,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-proj \
+	rpmbuild-protozero \
 	rpmbuild-sfcgal \
 	rpmbuild-sqlite
 RPMBUILD_RPMS := \
@@ -67,6 +69,7 @@ RPMBUILD_RPMS := \
 	osmosis \
 	proj \
 	proj6 \
+	protozero \
 	sbt \
 	sqlite
 
@@ -103,6 +106,7 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
+	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
@@ -139,6 +143,9 @@ rpmbuild-pgdg: .env
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 
+rpmbuild-protozero: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-protozero
+
 rpmbuild-sfcgal: .env $(CGAL_RPM)
 	$(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
 
@@ -158,17 +165,26 @@ libkml: rpmbuild-libkml $(LIBKML_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)
+protozero: rpmbuild-protozero $(PROTOZERO_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 ## Build patterns
 
-# Special exception for PROJ 6 version; required by Tasking Manager 4.
+# Special exception for PROJ 6 version; required by Tasking Manager 4;
+# might be able to get rid of this if upgraded TM4 backend to pyproj==3.x.
 RPMS/x86_64/proj-6%.rpm:
 	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,proj6) rpmbuild \
 	--define "rpmbuild_version $(call rpmbuild_version,proj6)" \
 	--define "rpmbuild_release $(call rpmbuild_release,proj6)" \
 	-bb SPECS/proj6.spec
+
+# `protozero-devel` the package name instead of `protozero`.
+RPMS/noarch/protozero-%.rpm:
+	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,protozero) rpmbuild \
+	--define "rpmbuild_version $(call rpmbuild_version,protozero)" \
+	--define "rpmbuild_release $(call rpmbuild_release,protozero)" \
+	-bb SPECS/protozero.spec
 
 # Runs container with docker-compose to build rpm.
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:

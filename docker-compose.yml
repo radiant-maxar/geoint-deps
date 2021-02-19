@@ -58,6 +58,9 @@ x-rpmbuild:
     proj6:
       image: &proj6_image rpmbuild-proj
       version: &proj6_version '6.3.2-1'
+    protozero:
+      image: &protozero_image rpmbuild-protozero
+      version: &protozero_version '1.7.0-1'
     sqlite:
       image: &sqlite_image rpmbuild-sqlite
       version: &sqlite_version '3.34.1-1'
@@ -188,6 +191,15 @@ services:
         postgres_version: *postgres_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-pgdg
+  rpmbuild-protozero:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_PROTOZERO_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:
