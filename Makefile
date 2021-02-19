@@ -28,6 +28,7 @@ RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
+CGAL_RPM := $(call rpm_file,CGAL,x86_64)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI,x86_64)
 GDAL_RPM := $(call rpm_file,gdal,x86_64)
 GEOS_RPM := $(call rpm_file,geos,x86_64)
@@ -43,6 +44,7 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 # Build containers and RPMs.
 RPMBUILD_CONTAINERS := \
 	rpmbuild \
+	rpmbuild-cgal \
 	rpmbuild-generic \
 	rpmbuild-gdal \
 	rpmbuild-geos \
@@ -52,6 +54,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-proj \
 	rpmbuild-sqlite
 RPMBUILD_RPMS := \
+	CGAL \
 	FileGDBAPI \
 	gdal \
 	geos \
@@ -90,6 +93,7 @@ distclean: .env
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/CGAL.spec) >> .env
 	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
@@ -103,6 +107,9 @@ distclean: .env
 # Build containers.
 rpmbuild: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild
+
+rpmbuild-cgal: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-cgal
 
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
@@ -133,6 +140,7 @@ rpmbuild-sqlite: .env
 
 ## RPM targets
 
+CGAL: rpmbuild-cgal $(CGAL_RPM)
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 gdal: rpmbuild-gdal $(GDAL_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)

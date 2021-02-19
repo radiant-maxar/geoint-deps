@@ -22,6 +22,9 @@ x-rpmbuild:
       vendor: *rpmbuild_vendor
   # Configuration for every dependency RPM.
   rpms:
+    CGAL:
+      image: &CGAL_image rpmbuild-cgal
+      version: &CGAL_version '4.14.3-1'
     FileGDBAPI:
       image: &FileGDBAPI_image rpmbuild-generic
       version: &FileGDBAPI_version '1.5.1-1'
@@ -86,8 +89,19 @@ services:
       <<: *build_defaults
       args:
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-cgal:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_CGAL_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-gdal:
     <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
