@@ -62,10 +62,6 @@ make docs -C %{__cmake3_builddir}
 %ctest3
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-
 %files
 %doc AUTHORS NEWS README.md
 %license COPYING
@@ -82,6 +78,10 @@ make docs -C %{__cmake3_builddir}
 %{_libdir}/libgeos.so
 %{_libdir}/cmake/GEOS/
 %{_libdir}/pkgconfig/%{name}.pc
+
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 
 %changelog

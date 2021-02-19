@@ -109,10 +109,6 @@ tar -xf %{SOURCE2} --directory %{buildroot}%{_datadir}/%{name}
 %ctest3
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-
 %files
 %license COPYING
 %doc NEWS AUTHORS README.md
@@ -152,6 +148,10 @@ tar -xf %{SOURCE2} --directory %{buildroot}%{_datadir}/%{name}
 %{_libdir}/cmake/proj/
 %{_libdir}/cmake/proj4/
 %{_libdir}/pkgconfig/%{name}.pc
+
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 
 %changelog

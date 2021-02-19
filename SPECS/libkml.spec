@@ -132,10 +132,6 @@ DESTDIR="%{buildroot}" %__cmake3 --install build_py3
 %__ctest3 --build build_py3 --output-on-failure --force-new-ctest-process %{?_smp_mflags} %{**}
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-
 %files
 %license LICENSE
 %doc AUTHORS README.md
@@ -160,6 +156,10 @@ DESTDIR="%{buildroot}" %__cmake3 --install build_py3
 %{_libdir}/libkml*.so
 %{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/cmake/%{name}/
+
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 
 %changelog

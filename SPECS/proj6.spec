@@ -86,10 +86,6 @@ EOF
 %ctest3
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-
 %files
 %doc NEWS AUTHORS COPYING README ChangeLog
 %{_bindir}/*
@@ -119,6 +115,10 @@ EOF
 
 %files datumgrid -f datumgrid.files
 %dir %{_datadir}/%{name}
+
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 
 %changelog
