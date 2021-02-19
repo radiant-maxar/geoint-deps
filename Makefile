@@ -39,6 +39,7 @@ OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
 SBT_RPM := $(call rpm_file,sbt,noarch)
+SFCGAL_RPM := $(call rpm_file,SFCGAL,x86_64)
 SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 
 # Build containers and RPMs.
@@ -52,10 +53,12 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-proj \
+	rpmbuild-sfcgal \
 	rpmbuild-sqlite
 RPMBUILD_RPMS := \
 	CGAL \
 	FileGDBAPI \
+	SFCGAL \
 	gdal \
 	geos \
 	gpsbabel \
@@ -100,6 +103,7 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
+	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
 ## Container targets
@@ -135,6 +139,9 @@ rpmbuild-pgdg: .env
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 
+rpmbuild-sfcgal: .env $(CGAL_RPM)
+	$(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
+
 rpmbuild-sqlite: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
 
@@ -142,6 +149,7 @@ rpmbuild-sqlite: .env
 
 CGAL: rpmbuild-cgal $(CGAL_RPM)
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
+SFCGAL: rpmbuild-sfcgal $(SFCGAL_RPM)
 gdal: rpmbuild-gdal $(GDAL_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
 gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)

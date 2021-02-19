@@ -28,6 +28,9 @@ x-rpmbuild:
     FileGDBAPI:
       image: &FileGDBAPI_image rpmbuild-generic
       version: &FileGDBAPI_version '1.5.1-1'
+    SFCGAL:
+      image: &SFCGAL_image rpmbuild-sfcgal
+      version: &SFCGAL_version '1.3.9-1'
     gdal:
       image: &gdal_image rpmbuild-gdal
       version: &gdal_version '3.2.1-1'
@@ -183,3 +186,14 @@ services:
         postgres_version: *postgres_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-pgdg
+  rpmbuild-sfcgal:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-cgal
+    build:
+      <<: *build_defaults
+      args:
+        cgal_version: *CGAL_version
+        packages: "${RPMBUILD_SFCGAL_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-sfcgal
