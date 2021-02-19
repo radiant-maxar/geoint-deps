@@ -11,8 +11,13 @@ make geos
 
 ## Requirements
 
-* Linux host with Python 3
+* Linux host and some basics:
+  * Python 3
+  * GNU `make`
+  * GNU Awk (`gawk` package on Ubuntu)
+
 * Docker >= 18.09
- * Recent version required to use BuildKit
+  * Recent version recommended to take advantage of [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/).
+
 * Docker Compose >= 1.27
- * Support compose reference 3.7.
+  * Supports compose format 3.7, for its [`init` option](https://docs.docker.com/compose/compose-file/compose-file-v3/#init).
