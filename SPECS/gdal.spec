@@ -17,6 +17,10 @@
 %global testversion %{rpmbuild_version}
 %global run_tests 1
 
+# Make RPM python packaging happy.
+%global __python %{__python3}
+%global _python_bytecompile_errors_terminate_build 0
+
 Name:           gdal
 Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
