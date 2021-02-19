@@ -549,7 +549,7 @@ rm -f %{buildroot}%{_datadir}/gdal/LICENSE.TXT
 %if %{run_tests}
 pushd gdalautotest-%{testversion}
   # Export test environment variables.
-  export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{python3_sitearch}:%{buildroot}%{python3_sitearch}
+  export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:%{buildroot}%{python3_sitearch}
   export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
   export GDAL_DATA=%{buildroot}%{_datadir}/gdal
   export GDAL_DRIVER_PATH=%{buildroot}%{_libdir}/gdalplugins
