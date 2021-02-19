@@ -707,7 +707,7 @@ popd
 
 
 %files doc
-%doc doc/build/html frmts/iso8211/iso8211_html
+%doc doc/build/html
 
 
 %post libs -p /sbin/ldconfig
