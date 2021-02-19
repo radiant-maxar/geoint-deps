@@ -37,10 +37,10 @@ SFCGAL applications.
 
 %prep
 %setup -q -n %{name}-v%{version}
+%{__mkdir} build
 
 
 %build
-mkdir build
 pushd build
 %cmake3 ..
 %cmake3_build
@@ -48,7 +48,15 @@ popd
 
 
 %install
-DESTDIR="%{buildroot}" %__cmake3 --install build
+pushd build
+%cmake3_install
+popd
+
+
+%check
+pushd build
+%ctest3
+popd
 
 
 %files
