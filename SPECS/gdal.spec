@@ -383,7 +383,7 @@ popd
 # --------- Documentation ----------
 
 # No useful documentation in swig
-%global docdirs apps doc doc/br doc/ru ogr ogr/ogrsf_frmts frmts/gxf frmts/iso8211 frmts/pcidsk frmts/sdts frmts/vrt ogr/ogrsf_frmts/dgn/
+%global docdirs apps doc ogr ogr/ogrsf_frmts frmts/gxf frmts/iso8211 frmts/pcidsk frmts/sdts frmts/vrt ogr/ogrsf_frmts/dgn
 for docdir in %{docdirs}; do
   # CreateHTML and PDF documentation, if specified
   pushd $docdir
@@ -392,16 +392,8 @@ for docdir in %{docdirs}; do
     else
       doxygen -u
     fi
-    sed -i -e 's|^GENERATE_LATEX|GENERATE_LATEX = YES\n#GENERATE_LATEX |' Doxyfile
-    sed -i -e 's|^GENERATE_HTML|GENERATE_HTML = YES\n#GENERATE_HTML |' Doxyfile
-    sed -i -e 's|^USE_PDFLATEX|USE_PDFLATEX = YES\n#USE_PDFLATEX |' Doxyfile
-
-    if [ $docdir == "doc/ru" ]; then
-      sed -i -e 's|^OUTPUT_LANGUAGE|OUTPUT_LANGUAGE = Russian\n#OUTPUT_LANGUAGE |' Doxyfile
-    fi
     rm -rf latex html
     doxygen
-
   popd
 done
 
