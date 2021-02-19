@@ -608,6 +608,7 @@ popd
 %files
 %{_bindir}/gdallocationinfo
 %{_bindir}/gdal_contour
+%{_bindir}/gdal_create
 %{_bindir}/gdal_rasterize
 %{_bindir}/gdal_translate
 %{_bindir}/gdaladdo
