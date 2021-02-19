@@ -50,7 +50,6 @@ BuildRequires: FileGDBAPI
 
 BuildRequires: ant
 BuildRequires: armadillo-devel
-#BuildRequires: autoconf-archive
 BuildRequires: bash-completion
 BuildRequires: cfitsio-devel
 BuildRequires: chrpath
@@ -108,6 +107,7 @@ BuildRequires: unixODBC-devel
 BuildRequires: xerces-c-devel
 BuildRequires: xz-devel
 BuildRequires: zlib-devel
+BuildRequires: libzstd-devel
 
 # Run time dependency for gpsbabel driver
 Requires:	gpsbabel
@@ -330,6 +330,7 @@ export PKG_CONFIG_PATH=%{postgres_instdir}/lib/pkgconfig:%{_libdir}/pkgconfig:%{
         --with-perl                            \
         --with-python                          \
         --with-libkml                          \
+        --with-zstd                            \
         --disable-driver-elastic
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
