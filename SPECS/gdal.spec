@@ -346,7 +346,14 @@ make %{?_smp_mflags} $POPPLER_OPTS
 make -C ogr/ogrsf_frmts/s57 all
 make -C frmts/iso8211 all
 
-export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}
+
+export PYTHON2_LOCALPATH=%{_usr}/local/lib/python%{python2_version}/site-packages:%{_usr}/local/lib64/python%{python2_version}/site-packages:%{python2_sitearch}
+export PYTHON2_ORIGPATH=$(python -c "import sys; print(':'.join(sys.path))")
+export PYTHON3_LOCALPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}
+export PYTHON3_ORIGPATH=$(python3 -c "import sys; print(':'.join(sys.path))")
+
+# Need Python 3 for doc generation.
+export PYTHONPATH=${PYTHON3_LOCALPATH}${PYTHON3_ORIGPATH}
 make man
 make docs
 
@@ -356,7 +363,10 @@ pushd swig/java
   ant maven
 popd
 
+# Need Python 2 to make Maven artifact.
+export PYTHONPATH=${PYTHON2_LOCALPATH}${PYTHON2_ORIGPATH}
 %mvn_artifact swig/java/build/maven/gdal-%version.pom swig/java/build/maven/gdal-%version.jar
+unset PYTHONPATH
 
 # Make Python modules
 pushd swig/python
