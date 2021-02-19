@@ -273,9 +273,10 @@ sed -i \
 # Fix mandir
 sed -i "s|^mandir=.*|mandir='\${prefix}/share/man'|" configure
 
-# Add our custom cflags when trying to find geos
+# Add our custom cflags when trying to find GEOS and SFCGAL
 # https://bugzilla.redhat.com/show_bug.cgi?id=1284714
 sed -i 's|CFLAGS=\"${GEOS_CFLAGS}\"|CFLAGS=\"${CFLAGS} ${GEOS_CFLAGS}\"|g' configure
+sed -i 's|CFLAGS=\"${SFCGAL_CFLAGS}\"|CFLAGS=\"${CFLAGS} ${SFCGAL_CFLAGS}\"|g' configure
 
 
 %build
@@ -330,6 +331,7 @@ export PKG_CONFIG_PATH=%{postgres_instdir}/lib/pkgconfig:%{_libdir}/pkgconfig:%{
         --with-perl                            \
         --with-python                          \
         --with-libkml                          \
+        --with-sfcgal                          \
         --with-zstd                            \
         --disable-driver-elastic
 
@@ -344,6 +346,7 @@ make %{?_smp_mflags} $POPPLER_OPTS
 make -C ogr/ogrsf_frmts/s57 all
 make -C frmts/iso8211 all
 
+export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}
 make man
 make docs
 

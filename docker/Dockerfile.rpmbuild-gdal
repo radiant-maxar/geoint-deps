@@ -5,6 +5,7 @@ FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 # Our GDAL package depends on RPMs we build; the desired package
 # versions, *including* the release iteration (e.g, '1.0.0-1') are
 # required arguments.
+ARG cgal_version
 ARG filegdbapi_version
 ARG geos_version
 ARG gpsbabel_version
@@ -12,13 +13,18 @@ ARG libgeotiff_version
 ARG libkml_version
 ARG packages
 ARG proj_version
+ARG sfcgal_version
 ARG sqlite_version
 
 # Switch to root temporarily for dependency installs.
 USER root
 
 # Copy in dependency RPMs.
-COPY RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -36,7 +42,11 @@ COPY RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
 # so they take precedence over packages from other repositories.
 RUN --mount=type=cache,target=/var/cache/yum \
     yum install -y \
+    /tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \

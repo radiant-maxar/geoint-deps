@@ -6,7 +6,7 @@ x-rpmbuild:
   channel_name: &rpmbuild_channel stable
   email: &rpmbuild_email "foundationgeoint-packaging@maxar.com"
   packager_name: &rpmbuild_name "FoundationGEOINT Packaging"
-  postgres_version: &postgres_version '10'
+  postgres_version: &postgres_version '13'
   vendor: &rpmbuild_vendor "Maxar Technologies"
   base_args: &rpmbuild_base_args
     rpmbuild_dist: *rpmbuild_dist
@@ -104,18 +104,20 @@ services:
   rpmbuild-gdal:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-generic
+      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_GDAL_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+        cgal_version: *CGAL_version
         filegdbapi_version: *FileGDBAPI_version
         gpsbabel_version: *gpsbabel_version
         geos_version: *geos_version
         libgeotiff_version: *libgeotiff_version
         libkml_version: *libkml_version
         proj_version: *proj_version
+        sfcgal_version: *SFCGAL_version
         sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-gdal
   rpmbuild-geos:

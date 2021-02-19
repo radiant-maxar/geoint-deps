@@ -118,7 +118,7 @@ rpmbuild-cgal: .env
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
 
-rpmbuild-gdal: .env FileGDBAPI geos gpsbabel libgeotiff libkml proj sqlite
+rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL geos gpsbabel libgeotiff libkml proj sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
 rpmbuild-geos: .env
