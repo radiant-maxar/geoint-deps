@@ -1,0 +1,24 @@
+FROM centos:7
+
+ARG pip_tools_uid=1000
+ARG pip_tools_user=pip-tools
+ARG pip_tools_gid=${pip_tools_uid}
+ARG pip_tools_group=${pip_tools_user}
+ARG pip_tools_home=/${pip_tools_user}
+ARG pip_tools_shell=/bin/bash
+
+RUN yum -q -y install epel-release && \
+    yum -q -y install python3-pip python3-wheel && \
+    yum -q -y clean all && \
+    groupadd --non-unique -g ${pip_tools_gid} ${pip_tools_group} && \
+    useradd -d ${pip_tools_home} -m -s ${pip_tools_shell} -u ${pip_tools_uid} -g ${pip_tools_gid} ${pip_tools_user}
+
+# Drop down to unprivileged user.
+USER ${pip_tools_user}
+WORKDIR ${pip_tools_home}
+ENV HOME=${pip_tools_home} LC_ALL=en_US.utf8 LANG=en_US.utf8 \
+    PATH=${pip_tools_home}/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Upgrade local versions of pip/setuptools/wheel to desired versions.
+RUN python3 -m venv venv && \
+    ${pip_tools_home}/venv/bin/pip3 install pip-tools

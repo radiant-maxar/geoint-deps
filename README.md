@@ -1,4 +1,4 @@
-# Foundation Geoint Dependencies
+# FoundationGEOINT Dependencies
 
 ## Quickstart
 
