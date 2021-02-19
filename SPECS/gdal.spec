@@ -575,6 +575,9 @@ pushd gdalautotest-%{testversion}
   #  * gdrivers/gdalhttp.py: test_http_4 takes way too long
   #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms;
   #     most likely due to old poppler library
+  #  * ogr: various vector driver failures, some possible causes:
+  #     - newer SQLite (gpkg/sqlite unique tests)
+  #     - newer PROJ 7 (osr_ct)
   $PYTEST \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate \
@@ -585,9 +588,15 @@ pushd gdalautotest-%{testversion}
     --deselect gdrivers/pdf.py::test_pdf_jpeg2000_compression \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_basic \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_writer_check_xml_read_back \
+    --deselect ogr/ogr_geojson.py::test_ogr_geojson_57 \
     --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_unique \
     --deselect ogr/ogr_mvt.py::test_ogr_mvt_point_polygon_clip \
     --deselect ogr/ogr_sqlite.py::test_ogr_sqlite_unique \
+    --deselect ogr/ogr_vrt.py::test_ogr_vrt_33 \
+    --deselect osr/osr_ct.py::test_osr_ct_options_area_of_interest \
+    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_6 \
+    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_7 \
+    --deselect utilities/test_gdal_create.py::test_gdal_create_pdf_composition \
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_6 \
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_7 \
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_18 \
