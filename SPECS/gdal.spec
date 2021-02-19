@@ -614,12 +614,7 @@ popd
 %endif
 
 
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
-
-
 %files
-%{_sysconfdir}/bash_completion.d/gdal
 %{_bindir}/gdallocationinfo
 %{_bindir}/gdal_contour
 %{_bindir}/gdal_rasterize
@@ -633,16 +628,19 @@ popd
 %{_bindir}/gdal_grid
 %{_bindir}/gdalenhance
 %{_bindir}/gdalmanage
-%{_bindir}/gdalserver
 %{_bindir}/gdalsrsinfo
 %{_bindir}/gdaltransform
 %{_bindir}/nearblack
+%{_bindir}/gdal_viewshed
+%{_bindir}/gdalmdiminfo
+%{_bindir}/gdalmdimtranslate
 %{_bindir}/ogr*
 %{_bindir}/8211*
 %{_bindir}/s57*
 %{_bindir}/testepsg
 %{_bindir}/gnmanalyse
 %{_bindir}/gnmmanage
+%{_datadir}/bash-completion/completions/*
 %{_mandir}/man1/gdal*.1*
 %exclude %{_mandir}/man1/gdal-config.1*
 %exclude %{_mandir}/man1/gdal2tiles.1*
@@ -689,9 +687,6 @@ popd
 %doc swig/python/samples
 %{python2_sitearch}/osgeo
 %{python2_sitearch}/GDAL-%{version}-py*.egg-info
-%{python2_sitearch}/osr.py*
-%{python2_sitearch}/ogr.py*
-%{python2_sitearch}/gdal*.py*
 
 
 %files -n python3-gdal
@@ -699,12 +694,6 @@ popd
 %doc swig/python3/samples
 %{python3_sitearch}/osgeo
 %{python3_sitearch}/GDAL-%{version}-py*.egg-info
-%{python3_sitearch}/osr.py
-%{python3_sitearch}/__pycache__/osr.*.py*
-%{python3_sitearch}/ogr.py
-%{python3_sitearch}/__pycache__/ogr.*.py*
-%{python3_sitearch}/gdal*.py
-%{python3_sitearch}/__pycache__/gdal*.*.py*
 
 
 %files python-tools
@@ -719,7 +708,11 @@ popd
 
 
 %files doc
-%doc gdal_frmts ogrsf_frmts refman
+%doc doc/build/html frmts/iso8211/iso8211_html
+
+
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 
 %changelog
