@@ -27,7 +27,7 @@ x-rpmbuild:
       version: &FileGDBAPI_version '1.5.1-1'
     gdal:
       image: &gdal_image rpmbuild-gdal
-      version: &gdal_version '3.0.4-1'
+      version: &gdal_version '3.2.1-1'
     geos:
       image: &geos_image rpmbuild-geos
       version: &geos_version '3.9.1-1'

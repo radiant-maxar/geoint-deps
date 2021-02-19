@@ -1,5 +1,3 @@
-#TODO: g2clib and grib (said to be modified)
-#TODO: Create script to make clean tarball
 #TODO: msg needs to have PublicDecompWT.zip from EUMETSAT, which is not free;
 #      Building without msg therefore
 #TODO: e00compr bundled?
@@ -8,16 +6,6 @@
 #      It uses %%{JAVA_RUN}; make test seems to work in the build directory
 #TODO: e00compr source is the same in the package and bundled in GDAL
 #TODO: Consider doxy patch from Suse, setting EXTRACT_LOCAL_CLASSES  = NO
-
-# Soname should be bumped on API/ABI break
-# http://trac.osgeo.org/gdal/ticket/4543
-
-# Conditionals and structures for EL 5 are there
-# to make life easier for downstream ELGIS.
-# Sadly noarch doesn't work in EL 5, see
-# http://fedoraproject.org/wiki/EPEL/GuidelinesAndPolicies
-
-# He also suggest to use --with-static-proj4 to actually link to proj, instead of dlopen()ing it.
 
 %global geos_min_version 3.9.0
 %global proj_min_version 7.2.0
@@ -28,8 +16,6 @@
 # Tests can be of a different version
 %global testversion %{rpmbuild_version}
 %global run_tests 1
-
-%global build_refman 1
 
 Name:           gdal
 Version:        %{rpmbuild_version}
@@ -42,22 +28,29 @@ Source0:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdal
 Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.zip
 Source2:        gdal.pom
 
-# Fix bash-completion install dir
-Patch1:         gdal-completion.patch
+# Patch for Armadillo and FileGDBAPI detection.
+Patch1:         gdal-configure.patch
 # Fedora uses Alternatives for Java
 Patch2:         gdal-1.9.0-java.patch
+# Ensure rpc/types.h is found by dods driver (indirectly required by libdap/XDRUtils.h)
+Patch3:         gdal-tirpcinc.patch
 # Use libtool to create libiso8211.a, otherwise broken static lib is created since object files are compiled through libtool
 Patch4:         gdal-iso8211.patch
 # Fix makefiles installing libtool wrappers instead of actual executables
-Patch5:         gdal-installapps.patch
-# Patch for FileGDBAPI detection.
-Patch10:        gdal-fgdb-configure.patch
+Patch6:         gdal-installapps.patch
+# Don't refer to PDF manual which is not built
+Patch7:         gdal-nopdf.patch
+# Drop -diag-disable compile flag
+Patch9:         gdal-no-diag-disable.patch
+# Increase some testing tolerances for new Proj.
+Patch10:        gdalautotest-increase-tolerances.patch
 
-# Adding FileGDB API for Hootenanny
+# Adding FileGDB API.
 BuildRequires: FileGDBAPI
 
 BuildRequires: ant
 BuildRequires: armadillo-devel
+#BuildRequires: autoconf-archive
 BuildRequires: bash-completion
 BuildRequires: cfitsio-devel
 BuildRequires: chrpath
@@ -111,16 +104,6 @@ BuildRequires: python3-devel
 BuildRequires: python3-pip
 BuildRequires: sqlite-devel
 BuildRequires: swig
-%if %{build_refman}
-BuildRequires: texlive-latex
-BuildRequires: texlive-collection-fontsrecommended
-BuildRequires: texlive-collection-latex
-BuildRequires: texlive-epstopdf
-BuildRequires: tex-multirow
-BuildRequires: tex-sectsty
-BuildRequires: tex-tocloft
-BuildRequires: tex-xtab
-%endif
 BuildRequires: unixODBC-devel
 BuildRequires: xerces-c-devel
 BuildRequires: xz-devel
@@ -256,32 +239,6 @@ rm -rf frmts/jpeg/libjpeg12
 rm -rf frmts/gtiff/libgeotiff
 rm -rf frmts/gtiff/libtiff
 
-# Sanitize linebreaks and encoding
-#TODO: Don't touch data directory!
-# /frmts/grib/degrib18/degrib/metaname.cpp
-# and geoconcept.c are potentially dangerous to change
-set +x
-for f in `find . -type f` ; do
-  if file $f | grep -q ISO-8859 ; then
-    set -x
-    iconv -f ISO-8859-1 -t UTF-8 $f > ${f}.tmp && \
-      mv -f ${f}.tmp $f
-    set +x
-  fi
-  if file $f | grep -q CRLF ; then
-    set -x
-    sed -i -e 's|\r||g' $f
-    set +x
-  fi
-done
-set -x
-
-for f in apps; do
-pushd $f
-  chmod 0644 *.cpp
-popd
-done
-
 # Replace hard-coded library- and include paths
 sed -i 's|-L\$with_cfitsio -L\$with_cfitsio/lib -lcfitsio|-lcfitsio|g' configure
 sed -i 's|-I\$with_cfitsio -I\$with_cfitsio/include|-I\$with_cfitsio/include/cfitsio|g' configure
@@ -297,15 +254,15 @@ sed -i 's|-L\$with_geotiff\/lib -lgeotiff $LIBS|-lgeotiff $LIBS|g' configure
 # http://trac.osgeo.org/gdal/ticket/3602
 sed -i 's|libproj.so|libproj.so.%{proj_somaj}|g' ogr/ogrct.cpp
 
-# Fix Python samples to depend on correct interpreter
-mkdir -p swig/python3/samples
-pushd swig/python/samples
-for f in `find . -name '*.py'`; do
-  sed 's|^#!.\+python$|#!/usr/bin/python3|' $f > ../../python3/samples/$f
-  chmod --reference=$f ../../python3/samples/$f
-  sed -i 's|^#!.\+python$|#!/usr/bin/python2|' $f
-done
-popd
+# Tests expect to be next to gdal source directory, but we extract them within
+# it. And putting tests next to the source directory wouldn't account for the
+# version in the directory name, anyway, so we need to correct this.
+sed -i \
+    -e 's!../../gdal/swig/python/samples!../../swig/python/samples!' \
+    %{name}autotest-%{testversion}/gcore/{cog,tiff_write}.py \
+    %{name}autotest-%{testversion}/gdrivers/{gpkg,jp2lura,jp2openjpeg,test_validate_jp2}.py \
+    %{name}autotest-%{testversion}/ogr/ogr_gpkg.py
+
 
 # Adjust check for LibDAP version
 # http://trac.osgeo.org/gdal/ticket/4545
@@ -322,57 +279,58 @@ sed -i 's|CFLAGS=\"${GEOS_CFLAGS}\"|CFLAGS=\"${CFLAGS} ${GEOS_CFLAGS}\"|g' confi
 
 
 %build
-export CFLAGS="%{optflags} -fPIC -I%{_includedir}/FileGDBAPI"
-export CXXFLAGS="$CFLAGS -I%{_includedir}/libgeotiff -I%{_includedir}/tirpc"
-export CPPFLAGS="$CPPFLAGS -I%{_includedir}/FileGDBAPI -I%{_includedir}/libgeotiff -I%{_includedir}/tirpc"
+%global optflags %{optflags} -fPIC -I%{_includedir}/FileGDBAPI
+# Ensure PGDG's PostgreSQL pkg-config is in the path.
+export PKG_CONFIG_PATH=%{postgres_instdir}/lib/pkgconfig:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig
 
 %configure \
-        LIBS="-lgrib2c -ltirpc" \
         --with-autoload=%{_libdir}/gdalplugins \
-        --datadir=%{_datadir}/gdal/ \
-        --includedir=%{_includedir}/gdal/ \
-        --prefix=%{_prefix}	\
-        --with-armadillo	\
-        --with-curl		\
-        --with-cfitsio=%{_prefix}	\
-        --with-dods-root=%{_prefix}	\
-        --with-expat		\
-        --with-fgdb		\
-        --with-freexl		\
-        --with-geos		\
-        --with-geotiff=external	\
-        --with-gif		\
-        --with-gta		\
-        --with-hdf4		\
-        --with-hdf5		\
-        --with-jasper		\
-        --with-java		\
-        --with-jpeg		\
-        --with-libjson-c	\
-        --without-jpeg12	\
-        --with-liblzma		\
-        --with-libtiff=external	\
-        --with-libz		\
-        --without-mdb		\
-        --without-mysql		\
-        --with-netcdf		\
-        --with-odbc		\
-        --without-ogdi		\
-        --without-msg		\
-        --with-openjpeg		\
-        --with-pcraster		\
-        --with-pg=%{postgres_instdir}/bin/pg_config		\
-        --with-png		\
-        --with-poppler		\
-        --without-spatialite	\
-        --with-sqlite3		\
-        --with-threads		\
-        --with-webp		\
-        --with-xerces		\
-        --enable-shared		\
-        --with-perl		\
-        --with-python		\
-        --with-libkml
+        --includedir=%{_includedir}/gdal/      \
+        --prefix=%{_prefix}                    \
+        --with-bash-completion                 \
+        --with-armadillo                       \
+        --with-curl                            \
+        --with-cfitsio                         \
+        --with-dods-root=%{_prefix}            \
+        --with-expat                           \
+        --with-fgdb                            \
+        --with-freexl                          \
+        --with-geos                            \
+        --with-geotiff                         \
+        --with-gif                             \
+        --with-gta                             \
+        --with-hdf4                            \
+        --with-hdf5                            \
+        --with-jasper                          \
+        --with-java                            \
+        --with-jpeg                            \
+        --with-libjson-c                       \
+        --without-jpeg12                       \
+        --with-liblzma                         \
+        --with-libtiff                         \
+        --with-libz                            \
+        --without-mdb                          \
+        --without-msg                          \
+        --without-mysql                        \
+        --without-ogdi                         \
+        --with-netcdf                          \
+        --with-odbc                            \
+        --with-openjpeg                        \
+        --with-pcraster                        \
+        --with-pg                              \
+        --with-png                             \
+        --with-poppler                         \
+        --with-proj                            \
+        --without-spatialite                   \
+        --with-sqlite3                         \
+        --with-threads                         \
+        --with-webp                            \
+        --with-xerces                          \
+        --enable-shared                        \
+        --with-perl                            \
+        --with-python                          \
+        --with-libkml                          \
+        --disable-driver-elastic
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -381,12 +339,12 @@ POPPLER_OPTS="POPPLER_0_20_OR_LATER=yes POPPLER_0_23_OR_LATER=yes POPPLER_BASE_S
 
 make %{?_smp_mflags} $POPPLER_OPTS
 
-make man
-make docs
-
 # Build some utilities, as requested in BZ #1271906
 make -C ogr/ogrsf_frmts/s57 all
 make -C frmts/iso8211 all
+
+make man
+make docs
 
 # Make Java module and documentation
 pushd swig/java
@@ -430,14 +388,6 @@ for docdir in %{docdirs}; do
     rm -rf latex html
     doxygen
 
-    %if %{build_refman}
-      pushd latex
-        sed -i -e '/rfoot\[/d' -e '/lfoot\[/d' doxygen.sty
-        sed -i -e '/small/d' -e '/large/d' refman.tex
-        sed -i -e 's|pdflatex|pdflatex -interaction nonstopmode |g' Makefile
-        make refman.pdf || true
-      popd
-    %endif
   popd
 done
 
@@ -494,14 +444,6 @@ for docdir in %{docdirs}; do
     path=%{_builddir}/gdal-%{version}/refman
     mkdir -p $path/html/$docdir
     cp -r html $path/html/$docdir
-
-    # Install all Refmans
-    %if %{build_refman}
-        if [ -f latex/refman.pdf ]; then
-                mkdir -p $path/pdf/$docdir
-                cp latex/refman.pdf $path/pdf/$docdir
-        fi
-    %endif
   popd
 done
 
@@ -580,33 +522,15 @@ EOF
 touch -r NEWS %{buildroot}%{_bindir}/gdal-config
 chmod 755 %{buildroot}%{_bindir}/gdal-config
 
-# Clean up junk
-rm -f %{buildroot}%{_bindir}/*.dox
-
 #jni-libs and libgdal are also built static (*.a)
 #.exists and .packlist stem from Perl
 for junk in {*.a,*.la,*.bs,.exists,.packlist} ; do
-  find %{buildroot} -name "$junk" -exec rm -rf '{}' \;
+  find %{buildroot} -name "$junk" -delete
 done
 
 # Don't duplicate license files
 rm -f %{buildroot}%{_datadir}/gdal/LICENSE.TXT
 
-# Throw away random API man mages plus artefact seemingly caused by Doxygen 1.8.1 or 1.8.1.1
-for f in 'GDAL*' BandProperty ColorAssociation CutlineTransformer DatasetProperty EnhanceCBInfo ListFieldDesc NamedColor OGRSplitListFieldLayer VRTBuilder; do
-  rm -rf %{buildroot}%{_mandir}/man1/$f.1*
-done
-
-# Fix python interpreter
-sed -i '1s|^#!/usr/bin/env python$|#!%{__python3}|' %{buildroot}%{_bindir}/*.py
-
-# Cleanup .pyc for now
-rm -f %{buildroot}%{_bindir}/*.pyc
-
-#TODO: What's that?
-# rm -f %{buildroot}%{_mandir}/man1/*_gdal-%{version}-fedora_apps_*
-rm -f %{buildroot}%{_mandir}/man1/*_gdal-%{version}_apps_*
-rm -f %{buildroot}%{_mandir}/man1/_home_rouault_dist_wrk_gdal_apps_.1*
 
 %check
 %if %{run_tests}
@@ -750,7 +674,6 @@ popd
 %files -n python2-gdal
 %doc swig/python/README.rst
 %doc swig/python/samples
-#TODO: Bug with .py files in EPEL 5 bindir, see http://fedoraproject.org/wiki/EPEL/GuidelinesAndPolicies
 %{python2_sitearch}/osgeo
 %{python2_sitearch}/GDAL-%{version}-py*.egg-info
 %{python2_sitearch}/osr.py*
