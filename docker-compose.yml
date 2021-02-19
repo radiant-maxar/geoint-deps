@@ -46,6 +46,9 @@ x-rpmbuild:
     libkml:
       image: &libkml_image rpmbuild-libkml
       version: &libkml_version '1.3.0-1'
+    libosmium:
+      image: &libosmium_image rpmbuild-libosmium
+      version: &libosmium_version '2.16.0-1'
     osmosis:
       image: &osmosis_image rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
@@ -181,6 +184,17 @@ services:
       args:
         packages: "${RPMBUILD_LIBKML_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-libosmium:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-protozero
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_LIBOSMIUM_PACKAGES}"
+        protozero_version: *protozero_version
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-libosmium
   rpmbuild-pgdg:
     <<: *service_defaults
     depends_on:

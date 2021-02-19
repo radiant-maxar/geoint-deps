@@ -35,6 +35,7 @@ GEOS_RPM := $(call rpm_file,geos,x86_64)
 GPSBABEL_RPM := $(call rpm_file,gpsbabel,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
 LIBKML_RPM := $(call rpm_file,libkml,x86_64)
+LIBOSMIUM_RPM := $(call rpm_file2,libosmium-devel,libosmium,noarch)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
@@ -53,6 +54,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-gpsbabel \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
+	rpmbuild-libosmium \
 	rpmbuild-proj \
 	rpmbuild-protozero \
 	rpmbuild-sfcgal \
@@ -66,6 +68,7 @@ RPMBUILD_RPMS := \
 	gpsbabel \
 	libgeotiff \
 	libkml \
+	libosmium \
 	osmosis \
 	proj \
 	proj6 \
@@ -105,6 +108,7 @@ distclean: .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
+	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
@@ -137,6 +141,9 @@ rpmbuild-libgeotiff: .env proj
 rpmbuild-libkml: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-libkml
 
+rpmbuild-libosmium: .env protozero
+	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
+
 rpmbuild-pgdg: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-pgdg
 
@@ -162,6 +169,7 @@ geos: rpmbuild-geos $(GEOS_RPM)
 gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
+libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)
@@ -178,6 +186,13 @@ RPMS/x86_64/proj-6%.rpm:
 	--define "rpmbuild_version $(call rpmbuild_version,proj6)" \
 	--define "rpmbuild_release $(call rpmbuild_release,proj6)" \
 	-bb SPECS/proj6.spec
+
+# `libosmium-devel` the package name instead of `libosmium`.
+RPMS/noarch/libosmium-%.rpm:
+	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,libosmium) rpmbuild \
+	--define "rpmbuild_version $(call rpmbuild_version,libosmium)" \
+	--define "rpmbuild_release $(call rpmbuild_release,libosmium)" \
+	-bb SPECS/libosmium.spec
 
 # `protozero-devel` the package name instead of `protozero`.
 RPMS/noarch/protozero-%.rpm:
