@@ -565,10 +565,6 @@ pushd gdalautotest-%{testversion}
      ogr/ogr_mysql.py \
      ogr/ogr_mongodbv3.py
 
-  # On Python 3.6 there's merely cyrillic encoding issues; on 3.7 this
-  # test segfaults.
-  rm -f ogr/ogr_gmlas.py
-
   # Run ogr_fgdb test in isolation due to likely conflict with libxml2
   $PYTEST ogr/ogr_fgdb.py
   rm -f ogr/ogr_fgdb.py
@@ -577,39 +573,25 @@ pushd gdalautotest-%{testversion}
   #  * gcore/tiff_read.py: will eventually pass, but consumes all memory
   #      forcing host to swap.
   #  * gdrivers/gdalhttp.py: test_http_4 takes way too long
-  #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms
+  #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms;
+  #     most likely due to old poppler library
   $PYTEST \
-    --deselect ogr/ogr_dxf.py::test_ogr_dxf_9 \
-    --deselect ogr/ogr_dxf.py::test_ogr_dxf_16 \
-    --deselect ogr/ogr_gft.py::test_ogr_gft_read \
-    --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_18 \
-    --deselect ogr/ogr_ili.py::test_ogr_interlis1_7 \
-    --deselect ogr/ogr_ili.py::test_ogr_interlis1_14 \
-    --deselect ogr/ogr_mitab.py::test_ogr_mitab_46 \
-    --deselect ogr/ogr_mitab.py::test_ogr_mitab_local_encoding_label \
-    --deselect ogr/ogr_mvt.py::test_ogr_mvt_point_polygon_clip \
-    --deselect ogr/ogr_pds4.py::test_ogr_pds4_read_table_character \
-    --deselect ogr/ogr_pds4.py::test_ogr_pds4_delete_from_table_character \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate \
     --deselect gcore/tiff_write.py::test_tiff_write_87 \
     --deselect gdrivers/gdalhttp.py::test_http_4 \
-    --deselect gdrivers/ignfheightasciigrid.py::test_ignfheightasciigrid_2 \
-    --deselect gdrivers/ignfheightasciigrid.py::test_ignfheightasciigrid_3 \
-    --deselect gdrivers/ignfheightasciigrid.py::test_ignfheightasciigrid_4 \
     --deselect gdrivers/pdf.py::test_pdf_jp2_auto_compression \
     --deselect gdrivers/pdf.py::test_pdf_jp2openjpeg_compression \
     --deselect gdrivers/pdf.py::test_pdf_jpeg2000_compression \
-    --deselect gdrivers/pds4.py::test_pds4_8 \
-    --deselect gdrivers/pds4.py::test_pds4_9 \
-    --deselect gdrivers/pds4.py::test_pds4_15 \
-    --deselect gdrivers/pds4.py::test_pds4_16 \
-    --deselect gdrivers/pds4.py::test_pds4_17 \
+    --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_basic \
+    --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_writer_check_xml_read_back \
+    --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_unique \
+    --deselect ogr/ogr_mvt.py::test_ogr_mvt_point_polygon_clip \
+    --deselect ogr/ogr_sqlite.py::test_ogr_sqlite_unique \
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_6 \
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_7 \
-    --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_41 \
-    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_6 \
-    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_7
+    --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_18 \
+    --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_41
 popd
 %endif
 
