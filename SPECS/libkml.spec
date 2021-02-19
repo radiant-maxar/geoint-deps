@@ -83,19 +83,17 @@ developing applications that use %{name}.
 
 %prep
 %autosetup -p1
+%{__mkdir} build_py2
+%{__mkdir} build_py3
 
 
 %build
 %global optflags %{optflags} -fPIC
 
-# Undefining this allows us to use cmake3 macro with a custom build
-# directory.
-%global __cmake3_in_source_build %{nil}
-
 # Allow CMake to proceed with zlib 1.2.7.
 %{__sed} -i -e 's/ZLIB 1\.2\.8/ZLIB 1\.2\.7/' CMakeLists.txt
 
-%{__mkdir} build_py2
+pushd build_py2
 %cmake3 -DWITH_SWIG=ON -DWITH_PYTHON=ON -DWITH_JAVA=ON \
   -DJNI_INSTALL_DIR=%{_libdir}/%{name} \
   -DCMAKE_INSTALL_DIR=%{_libdir}/cmake/%{name} \
@@ -105,10 +103,11 @@ developing applications that use %{name}.
   -DPYTHON_INSTALL_DIR=%{python2_sitearch} \
   -DBUILD_TESTING=ON \
   -DBUILD_EXAMPLES=OFF \
-  -B build_py2
-%__cmake3 --build build_py2 %{?_smp_mflags} --verbose
+  ..
+%cmake3_build
+popd
 
-%{__mkdir} build_py3
+pushd build_py3
 %cmake3 -DWITH_SWIG=ON -DWITH_PYTHON=ON -DWITH_JAVA=OFF \
   -DJNI_INSTALL_DIR=%{_libdir}/%{name} \
   -DCMAKE_INSTALL_DIR=%{_libdir}/cmake/%{name} \
@@ -118,18 +117,27 @@ developing applications that use %{name}.
   -DPYTHON_INSTALL_DIR=%{python3_sitearch} \
   -DBUILD_TESTING=ON \
   -DBUILD_EXAMPLES=ON \
-  -B build_py3
-%__cmake3 --build build_py3 %{?_smp_mflags} --verbose
+  ..
+%cmake3_build
+popd
 
 
 %install
-DESTDIR="%{buildroot}" %__cmake3 --install build_py2
-DESTDIR="%{buildroot}" %__cmake3 --install build_py3
+pushd build_py2
+%cmake3_install
+popd
+pushd build_py3
+%cmake3_install
+popd
 
 
 %check
-%__ctest3 --build build_py2 --output-on-failure --force-new-ctest-process %{?_smp_mflags} %{**}
-%__ctest3 --build build_py3 --output-on-failure --force-new-ctest-process %{?_smp_mflags} %{**}
+pushd build_py2
+%ctest3
+popd
+pushd build_py3
+%ctest3
+popd
 
 
 %files
