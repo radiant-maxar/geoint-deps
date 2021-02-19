@@ -361,7 +361,7 @@ export CPPFLAGS="$CPPFLAGS -I%{_includedir}/FileGDBAPI -I%{_includedir}/libgeoti
         --without-msg		\
         --with-openjpeg		\
         --with-pcraster		\
-        --with-pg=%{pg_instdir}/bin/pg_config		\
+        --with-pg=%{postgres_instdir}/bin/pg_config		\
         --with-png		\
         --with-poppler		\
         --without-spatialite	\
