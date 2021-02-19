@@ -58,13 +58,10 @@ CGAL algorithms.
 
 %prep
 %setup -q -n %{name}-%{fullversion}
-
-# Fix some file permissions
-#chmod a-x include/CGAL/export/ImageIO.h
+%{__mkdir} build
 
 
 %build
-mkdir build
 pushd build
 %cmake3 -DCGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE=ON -DCGAL_INSTALL_LIB_DIR=%{_lib} -DCGAL_INSTALL_DOC_DIR= ..
 %cmake3_build
@@ -72,7 +69,9 @@ popd
 
 
 %install
-DESTDIR="%{buildroot}" %__cmake3 --install build
+pushd build
+%cmake3_install
+popd
 
 # Install demos and examples
 mkdir -p %{buildroot}%{_datadir}/CGAL
