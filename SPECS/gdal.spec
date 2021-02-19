@@ -382,6 +382,9 @@ popd
 
 # --------- Documentation ----------
 
+# Don't refernce HTML footer that doesn't exist.
+sed -i -e '/^HTML_FOOTER/d' ogr/Doxyfile
+
 # No useful documentation in swig
 %global docdirs apps doc ogr ogr/ogrsf_frmts frmts/gxf frmts/iso8211 frmts/pcidsk frmts/sdts frmts/vrt ogr/ogrsf_frmts/dgn
 for docdir in %{docdirs}; do
