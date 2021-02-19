@@ -12,7 +12,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  libjpeg-devel
 BuildRequires:  libtiff-devel
 BuildRequires:  make
-BuildRequires:  proj-devel
+BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  zlib-devel
 
 Requires:       proj >= %{proj_min_version}

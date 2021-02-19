@@ -1,4 +1,5 @@
 %global data_version 1.4
+%global sqlite_min_version 3.11.0
 
 Name:           proj
 # Also check whether there is a new proj-data release when upgrading!
@@ -20,7 +21,7 @@ BuildRequires:  curl-devel
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  libtiff-devel
-BuildRequires:  sqlite-devel
+BuildRequires:  sqlite-devel >= %{sqlite_min_version}
 
 Obsoletes:      proj-datumgrid
 

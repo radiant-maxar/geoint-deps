@@ -39,10 +39,10 @@ def main():
 
     for line in args.spec_file:
         if line.startswith("BuildRequires:"):
-            for build_req in line.split("BuildRequires:")[1].split():
-                for define_macro, define_value in build_defines.items():
-                    build_req = build_req.replace("%%{%s}" % define_macro, define_value)
-                build_requirements.append(build_req)
+            build_req = line.split("BuildRequires:")[1].split()[0]
+            for define_macro, define_value in build_defines.items():
+                build_req = build_req.replace("%%{%s}" % define_macro, define_value)
+            build_requirements.append(build_req)
 
     if args.json:
         output = json.dumps(build_requirements)

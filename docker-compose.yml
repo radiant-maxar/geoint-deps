@@ -25,6 +25,9 @@ x-rpmbuild:
     FileGDBAPI:
       image: &FileGDBAPI_image rpmbuild-generic
       version: &FileGDBAPI_version '1.5.1-1'
+    gdal:
+      image: &gdal_image rpmbuild-gdal
+      version: &gdal_version '3.0.4-1'
     geos:
       image: &geos_image rpmbuild-geos
       version: &geos_version '3.9.1-1'
@@ -83,6 +86,21 @@ services:
       <<: *build_defaults
       args:
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-gdal:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_GDAL_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+        filegdbapi_version: *FileGDBAPI_version
+        gpsbabel_version: *gpsbabel_version
+        geos_version: *geos_version
+        libgeotiff_version: *libgeotiff_version
+        libkml_version: *libkml_version
+        proj_version: *proj_version
+        sqlite_version: *sqlite_version
+      dockerfile: docker/Dockerfile.rpmbuild-gdal
   rpmbuild-geos:
     <<: *service_defaults
     depends_on:

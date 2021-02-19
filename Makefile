@@ -29,6 +29,7 @@ RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI,x86_64)
+GDAL_RPM := $(call rpm_file,gdal,x86_64)
 GEOS_RPM := $(call rpm_file,geos,x86_64)
 GPSBABEL_RPM := $(call rpm_file,gpsbabel,x86_64)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
@@ -43,6 +44,7 @@ SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
 RPMBUILD_CONTAINERS := \
 	rpmbuild \
 	rpmbuild-generic \
+	rpmbuild-gdal \
 	rpmbuild-geos \
 	rpmbuild-gpsbabel \
 	rpmbuild-libgeotiff \
@@ -51,6 +53,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-sqlite
 RPMBUILD_RPMS := \
 	FileGDBAPI \
+	gdal \
 	geos \
 	gpsbabel \
 	libgeotiff \
@@ -87,6 +90,7 @@ distclean: .env
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
@@ -102,6 +106,9 @@ rpmbuild: .env
 
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
+
+rpmbuild-gdal: .env FileGDBAPI geos gpsbabel libgeotiff libkml proj sqlite
+	$(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
 rpmbuild-geos: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-geos
@@ -127,6 +134,7 @@ rpmbuild-sqlite: .env
 ## RPM targets
 
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
+gdal: rpmbuild-gdal $(GDAL_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
 gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
