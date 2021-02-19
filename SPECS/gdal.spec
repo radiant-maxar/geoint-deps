@@ -684,14 +684,13 @@ popd
 
 %files -n python2-gdal
 %doc swig/python/README.rst
-%doc swig/python/samples
 %{python2_sitearch}/osgeo
 %{python2_sitearch}/GDAL-%{version}-py*.egg-info
 
 
 %files -n python3-gdal
 %doc swig/python/README.rst
-%doc swig/python3/samples
+%doc swig/python/samples
 %{python3_sitearch}/osgeo
 %{python3_sitearch}/GDAL-%{version}-py*.egg-info
 
