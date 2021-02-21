@@ -58,6 +58,9 @@ x-rpmbuild:
     sbt:
       image: &sbt_image rpmbuild-generic
       version: &sbt_version '1.4.7-1'
+    postgis:
+      image: &postgis_image rpmbuild-postgis
+      version: &postgis_version '3.1.1-1'
     proj:
       image: &proj_image rpmbuild-proj
       version: &proj_version '7.2.1-1'
@@ -237,6 +240,29 @@ services:
         postgres_version: *postgres_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-pgdg
+  rpmbuild-postgis:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-gdal
+      - rpmbuild-protobuf-c
+    build:
+      <<: *build_defaults
+      args:
+        cgal_version: *CGAL_version
+        filegdbapi_version: *FileGDBAPI_version
+        gdal_version: *gdal_version
+        geos_version: *geos_version
+        gpsbabel_version: *gpsbabel_version
+        libgeotiff_version: *libgeotiff_version
+        libkml_version: *libkml_version
+        packages: "${RPMBUILD_POSTGIS_PACKAGES}"
+        proj_version: *proj_version
+        protobuf_version: *protobuf_version
+        protobuf_c_version: *protobuf-c_version
+        rpmbuild_channel: *rpmbuild_channel
+        sfcgal_version: *SFCGAL_version
+        sqlite_version: *sqlite_version
+      dockerfile: docker/Dockerfile.rpmbuild-postgis
   rpmbuild-protozero:
     <<: *service_defaults
     depends_on:

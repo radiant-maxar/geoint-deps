@@ -38,6 +38,7 @@ LIBKML_RPM := $(call rpm_file,libkml,x86_64)
 LIBOSMIUM_RPM := $(call rpm_file2,libosmium-devel,libosmium,noarch)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
+POSTGIS_RPM := $(call rpm_file,postgis,x86_64)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
 PROTOBUF_RPM := $(call rpm_file,protobuf,x86_64)
@@ -59,6 +60,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
 	rpmbuild-osmium-tool \
+	rpmbuild-postgis \
 	rpmbuild-proj \
 	rpmbuild-protobuf \
 	rpmbuild-protobuf-c \
@@ -77,6 +79,7 @@ RPMBUILD_RPMS := \
 	libosmium \
 	osmosis \
 	osmium-tool \
+	postgis \
 	protobuf \
 	protobuf-c \
 	proj \
@@ -120,6 +123,7 @@ distclean: .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
+	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
 	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
@@ -162,6 +166,9 @@ rpmbuild-osmium-tool: .env libosmium
 rpmbuild-pgdg: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-pgdg
 
+rpmbuild-postgis: .env gdal protobuf-c
+	$(DOCKER_COMPOSE) up -d rpmbuild-postgis
+
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 
@@ -193,6 +200,7 @@ libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
+postgis: rpmbuild-postgis $(POSTGIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)
 protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
