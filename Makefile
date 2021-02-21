@@ -40,6 +40,8 @@ OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool,x86_64)
 OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
 PROJ_RPM := $(call rpm_file,proj,x86_64)
 PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
+PROTOBUF_RPM := $(call rpm_file,protobuf,x86_64)
+PROTOBUF_C_RPM := $(call rpm_file,protobuf-c,x86_64)
 PROTOZERO_RPM := $(call rpm_file2,protozero-devel,protozero,noarch)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL,x86_64)
@@ -58,6 +60,8 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libosmium \
 	rpmbuild-osmium-tool \
 	rpmbuild-proj \
+	rpmbuild-protobuf \
+	rpmbuild-protobuf-c \
 	rpmbuild-protozero \
 	rpmbuild-sfcgal \
 	rpmbuild-sqlite
@@ -73,6 +77,8 @@ RPMBUILD_RPMS := \
 	libosmium \
 	osmosis \
 	osmium-tool \
+	protobuf \
+	protobuf-c \
 	proj \
 	proj6 \
 	protozero \
@@ -114,6 +120,8 @@ distclean: .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
+	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
+	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
@@ -157,6 +165,12 @@ rpmbuild-pgdg: .env
 rpmbuild-proj: .env sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-proj
 
+rpmbuild-protobuf: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-protobuf
+
+rpmbuild-protobuf-c: .env protobuf
+	$(DOCKER_COMPOSE) up -d rpmbuild-protobuf-c
+
 rpmbuild-protozero: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-protozero
 
@@ -181,6 +195,8 @@ osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 proj6: rpmbuild-proj $(PROJ6_RPM)
+protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
+protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)

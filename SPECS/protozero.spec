@@ -75,7 +75,7 @@ popd
 %files devel
 %doc CHANGELOG.md CONTRIBUTING.md README.md UPGRADING.md doc/*.md build/doc/html
 %license LICENSE.md LICENSE.from_folly
-%{_includedir}/protozero
+%{_includedir}/%{name}
 
 
 %changelog

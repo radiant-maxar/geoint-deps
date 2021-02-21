@@ -64,6 +64,12 @@ x-rpmbuild:
     proj6:
       image: &proj6_image rpmbuild-proj
       version: &proj6_version '6.3.2-1'
+    protobuf:
+      image: &protobuf_image rpmbuild-protobuf
+      version: &protobuf_version '3.15.1-1'
+    protobuf-c:
+      image: &protobuf-c_image rpmbuild-protobuf-c
+      version: &protobuf-c_version '1.3.3-1'
     protozero:
       image: &protozero_image rpmbuild-protozero
       version: &protozero_version '1.7.0-1'
@@ -121,8 +127,8 @@ services:
         rpmbuild_channel: *rpmbuild_channel
         cgal_version: *CGAL_version
         filegdbapi_version: *FileGDBAPI_version
-        gpsbabel_version: *gpsbabel_version
         geos_version: *geos_version
+        gpsbabel_version: *gpsbabel_version
         libgeotiff_version: *libgeotiff_version
         libkml_version: *libkml_version
         proj_version: *proj_version
@@ -147,15 +153,6 @@ services:
       args:
         packages: "${RPMBUILD_GPSBABEL_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-  rpmbuild-sqlite:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
-    build:
-      <<: *build_defaults
-      args:
-        packages: "${RPMBUILD_SQLITE_PACKAGES}"
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-proj:
     <<: *service_defaults
     depends_on:
@@ -167,6 +164,26 @@ services:
         rpmbuild_channel: *rpmbuild_channel
         sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-proj
+  rpmbuild-protobuf:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_PROTOBUF_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-protobuf-c:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-protobuf
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_PROTOBUF_C_PACKAGES}"
+        protobuf_version: *protobuf_version
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-protobuf-c
   rpmbuild-libgeotiff:
     <<: *service_defaults
     depends_on:
@@ -223,12 +240,14 @@ services:
   rpmbuild-protozero:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-generic
+      - rpmbuild-protobuf
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_PROTOZERO_PACKAGES}"
+        protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-protozero
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:
@@ -240,3 +259,12 @@ services:
         packages: "${RPMBUILD_SFCGAL_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-sfcgal
+  rpmbuild-sqlite:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_SQLITE_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel

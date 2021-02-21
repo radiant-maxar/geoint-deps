@@ -5,6 +5,7 @@ ARG packages
 ARG postgres_version
 
 # If any package dependencies are needed, install them.
+SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/yum \
     /usr/local/bin/pgdg-repo.sh ${postgres_version} && \ 
     /usr/local/bin/postgres-install.sh ${postgres_version} && \ 

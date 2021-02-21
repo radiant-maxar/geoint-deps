@@ -7,6 +7,7 @@ ARG protozero_version
 COPY RPMS/noarch/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
      /tmp/
 
+SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/yum \
     yum install -y \
     /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \

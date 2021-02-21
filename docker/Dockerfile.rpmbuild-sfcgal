@@ -8,6 +8,7 @@ COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      /tmp/
 
+SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/yum \
     yum install -y \
     /tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \

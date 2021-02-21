@@ -2,18 +2,19 @@ ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG packages
-ARG libosmium_version
-ARG protozero_version
+ARG protobuf_version
 
-COPY RPMS/noarch/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
-     RPMS/noarch/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
+COPY RPMS/x86_64/protobuf-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-compiler-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-devel-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
      /tmp/
 
 SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/yum \
     yum install -y \
-    /tmp/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/protobuf-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-compiler-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-devel-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
     && \
     rm -f /tmp/*.rpm
 

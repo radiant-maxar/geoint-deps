@@ -21,9 +21,8 @@ This will consume a lot of CPU and I/O!
 ## Requirements
 
 * Linux host and some basics:
-  * Python 3 for `docker-compose` and the [`buildrequires.py`](./scripts/buildrequires.py) script.
-  * GNU `make`.
-  * GNU Awk (`gawk` package on Ubuntu), used by macro functions in the [`Makefile`](./Makefile).
+  * Python 3 for `docker-compose` and the [`buildrequires.py`](./scripts/buildrequires.py) and [`rpm_package.py`](./scripts/rpm_package.py) scripts.
+  * GNU `make` for the [`Makefile`](./Makefile).
 
 * Docker >= 18.09
   * Recent version recommended to take advantage of [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/).

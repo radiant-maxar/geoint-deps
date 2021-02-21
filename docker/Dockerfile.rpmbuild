@@ -16,6 +16,7 @@ ARG rpmbuild_locale=en_US.utf8
 
 # Ensure proper language/locale environment settings, and place key arguments
 # in environment to allow access in child containers.
+SHELL ["/bin/bash", "-c"]
 ENV LANG=${rpmbuild_lang} \
     LC_ALL=${rpmbuild_locale} \
     RPMBUILD_DIST=${rpmbuild_dist} \
