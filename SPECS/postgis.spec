@@ -21,6 +21,8 @@
 %global geos_min_version 3.9.0
 %global gdal_min_version 3.2.0
 %global proj_min_version 7.2.0
+%global protobuf_c_min_version 1.1.0
+%global protobof_min_version 2.6.0
 
 Summary:	Geographic Information Systems Extensions to PostgreSQL
 Name:           postgis
@@ -36,16 +38,17 @@ Patch1:         postgis-disable-fixedoverlay-test.patch
 
 URL:		http://www.postgis.net/
 
-BuildRequires:	gdal-devel >= %{gdal_min_version}
-BuildRequires:  geos-devel >= %{geos_min_version}
-BuildRequires:  pcre-devel
-BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  flex
+BuildRequires:  gdal-devel >= %{gdal_min_version}
+BuildRequires:  geos-devel >= %{geos_min_version}
 BuildRequires:  json-c-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  pcre-devel
+BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  postgresql%{postgres_dotless}-devel
-BuildRequires:  protobuf-c-devel
-BuildRequires:	SFCGAL-devel
+BuildRequires:  protobuf-devel >= %{protobuf_min_version}
+BuildRequires:  protobuf-c-devel >= %{protobuf_c_min_version}
+BuildRequires:  SFCGAL-devel
 
 Provides:       %{name}%{postgiscurrmajorversion}_%{postgres_dotless}
 
@@ -53,8 +56,7 @@ Requires:       postgresql%{postgres_dotless}
 Requires:       postgresql%{postgres_dotless}-contrib
 Requires(post):	%{_sbindir}/update-alternatives
 
-Provides:	%{name}%{postgres_dotless} = %{version}-%{release}
-Provides:	%{name}%{postgisprev_dotless}_%{postgres_dotless} = %{version}-%{release}
+Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless} = %{version}-%{release}
 
 %description
 PostGIS adds support for geographic objects to the PostgreSQL object-relational
@@ -65,10 +67,9 @@ follows the OpenGIS "Simple Features Specification for SQL" and has been
 certified as compliant with the "Types and Functions" profile.
 
 %package devel
-Summary:	Development headers and libraries for PostGIS
+Summary:        Development headers and libraries for PostGIS
 Requires:       %{name}%{?_isa} = %{version}-%{release}
-Provides:	%{name}%{postgres_dotless}-devel = %{version}-%{release}
-Provides:	%{name}%{postgisprev_dotless}_%{postgres_dotless}-devel = %{version}-%{release}
+Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless}-devel = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains the header files and libraries
@@ -77,8 +78,7 @@ with PostGIS.
 
 %package docs
 Summary:	Extra documentation for PostGIS
-Provides:	%{name}%{postgres_dotless}-docs = %{version}-%{release}
-Provides:	%{name}%{postgisprev_dotless}_%{postgres_dotless}-docs = %{version}-%{release}
+Provides:	%{name}%{postgis_prev_dotless}_%{postgres_dotless}-docs = %{version}-%{release}
 
 %description docs
 The %{name}-docs package includes PDF documentation of PostGIS.
@@ -87,8 +87,7 @@ The %{name}-docs package includes PDF documentation of PostGIS.
 Summary:	The utils for PostGIS
 Requires:	%{name} = %{version}-%{release}
 Requires:	perl-DBD-Pg
-Provides:	%{name}%{postgres_dotless}-utils = %{version}-%{release}
-Provides:	%{name}%{postgisprev_dotless}_%{postgres_dotless}-utils = %{version}-%{release}
+Provides:	%{name}%{postgis_prev_dotless}_%{postgres_dotless}-utils = %{version}-%{release}
 
 %description utils
 The %{name}-utils package provides the utilities for PostGIS.
@@ -104,19 +103,20 @@ The %{name}-utils package provides the utilities for PostGIS.
 
 %build
 export LDFLAGS="$LDFLAGS -L%{postgres_instdir}/lib"
-%configure --with-pgconfig=%{postgres_instdir}/bin/pg_config \
-        --with-sfcgal=%{_bindir}/sfcgal-config \
-        --enable-rpath \
-        --libdir=%{postgres_instdir}/lib
+%configure \
+    --enable-rpath --libdir=%{postgres_instdir}/lib \
+    --with-pgconfig=%{postgres_instdir}/bin/pg_config \
+    --with-protobuf \
+    --with-sfcgal=%{_bindir}/sfcgal-config
 
-%{__make} LPATH=`%{postgres_instdir}/bin/pg_config --pkglibdir` shlib="%{name}.so"
-%{__make} -C extensions
-%{__make} -C utils
+%make_build LPATH=`%{postgres_instdir}/bin/pg_config --pkglibdir` shlib="%{name}.so"
 
 
 %install
-%{__rm} -rf %{buildroot}
-%{__make} install DESTDIR=%{buildroot}
+%make_install
+%make_install -C utils
+%make_install -C extensions
+
 %{__install} -d %{buildroot}%{_datadir}/%{name}
 %{__install} -m 0644 utils/*.pl %{buildroot}%{_datadir}/%{name}
 
@@ -174,11 +174,7 @@ fi
 %files
 %defattr(-,root,root)
 %doc COPYING CREDITS NEWS TODO README.postgis doc/html loader/README.* doc/postgis.xml doc/ZMSgeoms.txt
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%doc LICENSE.TXT
-%else
 %license LICENSE.TXT
-%endif
 %{postgres_instdir}/doc/extension/README.address_standardizer
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis.sql
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis_comments.sql
