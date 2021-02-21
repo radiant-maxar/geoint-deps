@@ -49,15 +49,19 @@ x-rpmbuild:
     libosmium:
       image: &libosmium_image rpmbuild-libosmium
       version: &libosmium_version '2.16.0-1'
+      arch: noarch
+      name: libosmium-devel
     osmosis:
       image: &osmosis_image rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
+      arch: noarch
     osmium-tool:
       image: &osmium-tool_image rpmbuild-osmium-tool
       version: &osmium-tool_version '1.13.1-1'
     sbt:
       image: &sbt_image rpmbuild-generic
       version: &sbt_version '1.4.7-1'
+      arch: noarch
     postgis:
       image: &postgis_image rpmbuild-postgis
       version: &postgis_version '3.1.1-1'
@@ -67,6 +71,7 @@ x-rpmbuild:
     proj6:
       image: &proj6_image rpmbuild-proj
       version: &proj6_version '6.3.2-1'
+      name: proj
     protobuf:
       image: &protobuf_image rpmbuild-protobuf
       version: &protobuf_version '3.15.1-1'
@@ -76,6 +81,8 @@ x-rpmbuild:
     protozero:
       image: &protozero_image rpmbuild-protozero
       version: &protozero_version '1.7.0-1'
+      arch: noarch
+      name: protozero-devel
     sqlite:
       image: &sqlite_image rpmbuild-sqlite
       version: &sqlite_version '3.34.1-1'

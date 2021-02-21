@@ -2,51 +2,50 @@
 
 # All versions use a YAML reference so they only have to be defined once,
 # just grep for this reference and print it out.
-config_reference = $(shell cat docker-compose.yml | grep '\&$(1)' | awk '{ print $$3 }' | tr -d "'\"")
-config_release = $(call config_reference,$(1)_release)
-config_version = $(call config_reference,$(1)_version)
+rpmbuild_util = $(shell ./scripts/rpmbuild_util.py docker-compose.yml $(1) $(2))
+config_release = $(call rpmbuild_util,$(1),--release)
+config_version = $(call rpmbuild_util,$(1),--version)
 
 # Variants for getting RPM file names.
-RPMBUILD_DIST := $(call config_reference,rpmbuild_dist)
-rpm_file = RPMS/$(2)/$(1)-$(call config_version,$(1))$(RPMBUILD_DIST).$(2).rpm
-rpm_file2 = RPMS/$(3)/$(1)-$(call config_version,$(2))$(RPMBUILD_DIST).$(3).rpm
+RPMBUILD_DIST := $(call rpmbuild_util,dist,--variable)
+rpm_file = $(call rpmbuild_util,$(1),--filename)
 
 # Gets the RPM package name from the filename.
 rpm_package = $(shell ./scripts/rpm_package.py $(1))
-rpmbuild_image = $(call config_reference,$(call rpm_package,$(1))_image)
-rpmbuild_version = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$1 }')
-rpmbuild_release = $(shell echo $(call config_version,$(call rpm_package,$(1))) | awk -F- '{ print $$2 }')
+rpmbuild_image = $(call rpmbuild_util,$(call rpm_package,$(1)),--image)
+rpmbuild_release = $(call config_release,$(call rpm_package,$(1)))
+rpmbuild_version = $(call config_version,$(call rpm_package,$(1)))
 
 ## Variables
 DOCKER ?= docker
 DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
 DOCKER_COMPOSE ?= docker-compose
 DOCKER_COMPOSE_VERSION := $(shell $(DOCKER_COMPOSE) --version 2>/dev/null)
-POSTGRES_DOTLESS := $(shell echo $(call config_version,postgres) | tr -d '.')
-RPMBUILD_CHANNEL := $(call config_reference,rpmbuild_channel)
+POSTGRES_DOTLESS := $(shell echo $(call rpmbuild_util,postgres_version,--variable) | tr -d '.')
+RPMBUILD_CHANNEL := $(call rpmbuild_util,channel_name,--variable)
 RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
-CGAL_RPM := $(call rpm_file,CGAL,x86_64)
-FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI,x86_64)
-GDAL_RPM := $(call rpm_file,gdal,x86_64)
-GEOS_RPM := $(call rpm_file,geos,x86_64)
-GPSBABEL_RPM := $(call rpm_file,gpsbabel,x86_64)
-LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff,x86_64)
-LIBKML_RPM := $(call rpm_file,libkml,x86_64)
-LIBOSMIUM_RPM := $(call rpm_file2,libosmium-devel,libosmium,noarch)
-OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool,x86_64)
-OSMOSIS_RPM := $(call rpm_file,osmosis,noarch)
-POSTGIS_RPM := $(call rpm_file,postgis,x86_64)
-PROJ_RPM := $(call rpm_file,proj,x86_64)
-PROJ6_RPM := $(call rpm_file2,proj,proj6,x86_64)
-PROTOBUF_RPM := $(call rpm_file,protobuf,x86_64)
-PROTOBUF_C_RPM := $(call rpm_file,protobuf-c,x86_64)
-PROTOZERO_RPM := $(call rpm_file2,protozero-devel,protozero,noarch)
+CGAL_RPM := $(call rpm_file,CGAL)
+FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
+GDAL_RPM := $(call rpm_file,gdal)
+GEOS_RPM := $(call rpm_file,geos)
+GPSBABEL_RPM := $(call rpm_file,gpsbabel)
+LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
+LIBKML_RPM := $(call rpm_file,libkml)
+LIBOSMIUM_RPM := $(call rpm_file,libosmium)
+OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
+OSMOSIS_RPM := $(call rpm_file,osmosis)
+POSTGIS_RPM := $(call rpm_file,postgis)
+PROJ_RPM := $(call rpm_file,proj)
+PROJ6_RPM := $(call rpm_file,proj6)
+PROTOBUF_RPM := $(call rpm_file,protobuf)
+PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
+PROTOZERO_RPM := $(call rpm_file,protozero)
 SBT_RPM := $(call rpm_file,sbt,noarch)
-SFCGAL_RPM := $(call rpm_file,SFCGAL,x86_64)
-SQLITE_RPM := $(call rpm_file,sqlite,x86_64)
+SFCGAL_RPM := $(call rpm_file,SFCGAL)
+SQLITE_RPM := $(call rpm_file,sqlite)
 
 # Build containers and RPMs.
 RPMBUILD_CONTAINERS := \
@@ -211,31 +210,7 @@ sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 ## Build patterns
 
-# Special exception for PROJ 6 version; required by Tasking Manager 4;
-# might be able to get rid of this if upgraded TM4 backend to pyproj==3.x.
-RPMS/x86_64/proj-6%.rpm:
-	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,proj6) rpmbuild \
-	--define "rpmbuild_version $(call rpmbuild_version,proj6)" \
-	--define "rpmbuild_release $(call rpmbuild_release,proj6)" \
-	-bb SPECS/proj6.spec
-
-# `libosmium-devel` the package name instead of `libosmium`.
-RPMS/noarch/libosmium-%.rpm:
-	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,libosmium) rpmbuild \
-	--define "rpmbuild_version $(call rpmbuild_version,libosmium)" \
-	--define "rpmbuild_release $(call rpmbuild_release,libosmium)" \
-	-bb SPECS/libosmium.spec
-
-# `protozero-devel` the package name instead of `protozero`.
-RPMS/noarch/protozero-%.rpm:
-	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,protozero) rpmbuild \
-	--define "rpmbuild_version $(call rpmbuild_version,protozero)" \
-	--define "rpmbuild_release $(call rpmbuild_release,protozero)" \
-	-bb SPECS/protozero.spec
-
 # Runs container with docker-compose to build rpm.
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
-	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) rpmbuild \
-	--define "rpmbuild_version $(call rpmbuild_version,$*)" \
-	--define "rpmbuild_release $(call rpmbuild_release,$*)" \
-	-bb SPECS/$(call rpm_package,$*).spec
+	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) \
+	$(shell ./scripts/rpmbuild_util.py docker-compose.yml $(call rpm_package,$*))
