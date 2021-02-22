@@ -63,10 +63,14 @@ x-rpmbuild:
       version: &rack_version '2.2.3-1'
       arch: noarch
       name: rubygem-rack
+      spec_file: 'SPECS/rubygem-rack.spec'
     sbt:
       image: rpmbuild-generic
       version: &sbt_version '1.4.7-1'
       arch: noarch
+    passenger:
+      image: rpmbuild-passenger
+      version: &passenger_version '6.0.7-1'
     postgis:
       image: rpmbuild-postgis
       version: &postgis_version '3.1.1-1'
@@ -269,6 +273,19 @@ services:
         libosmium_version: *libosmium_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-osmium-tool
+  rpmbuild-passenger:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-rack
+    build:
+      <<: *build_defaults
+      args:
+        <<: *ruby_bundled_versions
+        packages: "${RPMBUILD_PASSENGER_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+        rack_version: *rack_version
+        ruby_version: *ruby_version
+      dockerfile: docker/Dockerfile.rpmbuild-passenger
   rpmbuild-pgdg:
     <<: *service_defaults
     depends_on:

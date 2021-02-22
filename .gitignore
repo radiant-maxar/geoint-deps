@@ -3,6 +3,7 @@
 RPMS/noarch
 RPMS/x86_64
 SOURCES/*.asc
+SOURCES/*.gem
 SOURCES/*.pdf
 SOURCES/*.sha256
 SOURCES/*.tgz

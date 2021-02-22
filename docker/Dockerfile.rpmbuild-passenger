@@ -1,0 +1,88 @@
+ARG rpmbuild_channel
+ARG rpmbuild_image=rpmbuild-generic
+FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+
+ARG bigdecimal_version
+ARG bundler_version
+ARG gem_packages
+ARG io_console_version
+ARG irb_version
+ARG json_version
+ARG minitest_version
+ARG net_telnet_version
+ARG openssl_version
+ARG packages
+ARG power_assert_version
+ARG psych_version
+ARG rack_version
+ARG rake_version
+ARG rdoc_version
+ARG ruby_release=1
+ARG ruby_version
+ARG rubygems_version
+ARG test_unit_version
+ARG xmlrpc_version
+
+# Switch to root temporarily for dependency installs.
+USER root
+
+# Copy in all the Ruby RPMs.
+COPY RPMS/x86_64/ruby-${ruby_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/ruby-default-gems-${ruby_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/ruby-devel-${ruby_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/ruby-doc-${ruby_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/ruby-libs-${ruby_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/rubygem-bigdecimal-${bigdecimal_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/rubygem-bundler-${bundler_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/rubygem-io-console-${io_console_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/rubygem-irb-${irb_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/rubygem-json-${json_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/rubygem-minitest-${minitest_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygem-net-telnet-${net_telnet_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/rubygem-openssl-${openssl_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/rubygem-power_assert-${power_assert_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/rubygem-psych-${psych_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/rubygem-rack-${rack_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygem-rake-${rake_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygem-rdoc-${rdoc_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygem-test-unit-${test_unit_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygem-xmlrpc-${xmlrpc_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygems-${rubygems_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/rubygems-devel-${rubygems_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+     /tmp/
+
+# Install all the Ruby RPMs
+SHELL ["/bin/bash", "-c"]
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum install -y \
+    /tmp/ruby-${ruby_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/ruby-default-gems-${ruby_version}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/ruby-devel-${ruby_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/ruby-doc-${ruby_version}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/ruby-libs-${ruby_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/rubygem-bigdecimal-${bigdecimal_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/rubygem-bundler-${bundler_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-io-console-${io_console_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/rubygem-irb-${irb_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-json-${json_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/rubygem-minitest-${minitest_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-net-telnet-${net_telnet_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-openssl-${openssl_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/rubygem-power_assert-${power_assert_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-psych-${psych_version}-${ruby_release}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/rubygem-rack-${rack_version}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-rake-${rake_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-rdoc-${rdoc_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-test-unit-${test_unit_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygem-xmlrpc-${xmlrpc_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygems-${rubygems_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/rubygems-devel-${rubygems_version}-${ruby_release}${RPMBUILD_DIST}.noarch.rpm \
+    && \
+    rm -f /tmp/*.rpm && \
+    if [ -n "${packages}" ] ; then yum -y install ${packages}; fi
+
+# Install any gem packages.
+RUN if [ -n "${gem_packages}" ] ; then gem install ${gem_packages}; fi
+
+# Switch back to RPM build user.
+USER ${RPMBUILD_USER}
