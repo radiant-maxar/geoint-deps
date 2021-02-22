@@ -83,6 +83,33 @@ x-rpmbuild:
       version: &protozero_version '1.7.0-1'
       arch: noarch
       name: protozero-devel
+    ruby:
+      image: &ruby_image rpmbuild-ruby
+      version: &ruby_version '2.7.2-1'
+      defines:
+        bundler_version: '2.1.4'
+        bundler_connection_pool_version: '2.2.2'
+        bundler_fileutils_version: '1.3.0'
+        bundler_molinillo_version: '0.6.6'
+        bundler_net_http_persistent_version: '3.1.0'
+        bundler_thor_version: '1.0.0'
+        bigdecimal_version: '2.0.0'
+        did_you_mean_version: '1.4.0'
+        io_console_version: '0.5.6'
+        irb_version: '1.2.6'
+        json_version: '2.3.0'
+        minitest_version: '5.13.0'
+        net_telnet_version: '0.2.0'
+        openssl_version: '2.1.2'
+        power_assert_version: '1.1.7'
+        psych_version: '3.1.0'
+        racc_version: '1.4.16'
+        rake_version: '13.0.1'
+        rdoc_version: '6.2.1'
+        rubygems_version: '3.1.4'
+        rubygems_molinillo_version: '0.5.7'
+        test_unit_version: '3.3.4'
+        xmlrpc_version: '0.3.0'
     sqlite:
       image: &sqlite_image rpmbuild-sqlite
       version: &sqlite_version '3.34.1-1'
@@ -281,6 +308,15 @@ services:
         protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-protozero
+  rpmbuild-ruby:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_RUBY_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:

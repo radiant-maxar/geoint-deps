@@ -1,0 +1,29 @@
+From 301e30bf97dd603ca81d52b90186908575c4ddf8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Tue, 25 Feb 2020 15:01:44 +0100
+Subject: [PATCH] Revert "Exclude empty suffix from `-I` require loop"
+
+This reverts commit 4fc0ab21c0f7713829abb522ce3b6d8e24c126b3.
+
+Technically, extensionless ruby files are valid ruby files that can be
+required. For example, `bin/bundle` is sometimes required from other
+binstubs even if it's also runnable directly.
+
+So, we should technically consider this kind of files too.
+---
+ lib/rubygems/core_ext/kernel_require.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index 9712fb6ac0..a8d170f13a 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -43,7 +43,7 @@ def require(path)
+     # https://github.com/rubygems/rubygems/pull/1868
+     resolved_path = begin
+       rp = nil
+-      Gem.suffixes[1..-1].each do |s|
++      Gem.suffixes.each do |s|
+         load_path_insert_index = Gem.load_path_insert_index
+         break unless load_path_insert_index
+ 

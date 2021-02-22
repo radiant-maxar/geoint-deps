@@ -1,0 +1,167 @@
+From 912d141a351053d0f6d915b5e7807f6a8f4c0631 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Tue, 4 Feb 2020 17:25:56 +0100
+Subject: [PATCH 1/2] Make non "test_" method private
+
+---
+ test/rubygems/test_require.rb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/test/rubygems/test_require.rb b/test/rubygems/test_require.rb
+index aa2675af5d..d618a93473 100644
+--- a/test/rubygems/test_require.rb
++++ b/test/rubygems/test_require.rb
+@@ -532,6 +532,8 @@ def test_require_bundler_with_bundler_version
+     end
+   end
+ 
++  private
++
+   def silence_warnings
+     old_verbose, $VERBOSE = $VERBOSE, false
+     yield
+
+From b3944384f44b869985051863d8b05b545d09a585 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Tue, 4 Feb 2020 17:26:28 +0100
+Subject: [PATCH 2/2] Fix require issue with file extension priority
+
+If `require "a"` is run when two folders have been specified in the -I
+option including a "a.rb" file and a "a.so" file respectively, the ruby
+spec says that the ".rb" file should always be preferred. However, the
+logic we added in https://github.com/rubygems/rubygems/commit/6b81076d9
+to make the -I option always beat default gems does not respect this
+spec, creating a difference from the original ruby-core's require.
+
+[the ruby spec says]: https://github.com/ruby/spec/blob/d80a6e2b221d4f17a8cadcac75ef950c59cba901/core/kernel/shared/require.rb#L234-L246
+---
+ lib/rubygems/core_ext/kernel_require.rb | 28 +++++------
+ test/rubygems/test_require.rb           | 62 +++++++++++++++++++++++++
+ 2 files changed, 74 insertions(+), 16 deletions(-)
+
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index 60f4d18712..369f2c743e 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -43,18 +43,18 @@ def require(path)
+     # https://github.com/rubygems/rubygems/pull/1868
+     resolved_path = begin
+       rp = nil
+-      $LOAD_PATH[0...Gem.load_path_insert_index || -1].each do |lp|
+-        safe_lp = lp.dup.tap(&Gem::UNTAINT)
+-        begin
+-          if File.symlink? safe_lp # for backward compatibility
+-            next
++      Gem.suffixes.each do |s|
++        $LOAD_PATH[0...Gem.load_path_insert_index || -1].each do |lp|
++          safe_lp = lp.dup.tap(&Gem::UNTAINT)
++          begin
++            if File.symlink? safe_lp # for backward compatibility
++              next
++            end
++          rescue SecurityError
++            RUBYGEMS_ACTIVATION_MONITOR.exit
++            raise
+           end
+-        rescue SecurityError
+-          RUBYGEMS_ACTIVATION_MONITOR.exit
+-          raise
+-        end
+ 
+-        Gem.suffixes.each do |s|
+           full_path = File.expand_path(File.join(safe_lp, "#{path}#{s}"))
+           if File.file?(full_path)
+             rp = full_path
+@@ -67,12 +67,8 @@ def require(path)
+     end
+ 
+     if resolved_path
+-      begin
+-        RUBYGEMS_ACTIVATION_MONITOR.exit
+-        return gem_original_require(resolved_path)
+-      rescue LoadError
+-        RUBYGEMS_ACTIVATION_MONITOR.enter
+-      end
++      RUBYGEMS_ACTIVATION_MONITOR.exit
++      return gem_original_require(resolved_path)
+     end
+ 
+     if spec = Gem.find_unresolved_default_spec(path)
+diff --git a/test/rubygems/test_require.rb b/test/rubygems/test_require.rb
+index d618a93473..7cffbfa7fe 100644
+--- a/test/rubygems/test_require.rb
++++ b/test/rubygems/test_require.rb
+@@ -120,6 +120,24 @@ def test_dash_i_beats_default_gems
+     Object.send :remove_const, :HELLO if Object.const_defined? :HELLO
+   end
+ 
++  def test_dash_i_respects_default_library_extension_priority
++    skip "extensions don't quite work on jruby" if Gem.java_platform?
++
++    dash_i_ext_arg = util_install_extension_file('a')
++    dash_i_lib_arg = util_install_ruby_file('a')
++
++    lp = $LOAD_PATH.dup
++
++    begin
++      $LOAD_PATH.unshift dash_i_lib_arg
++      $LOAD_PATH.unshift dash_i_ext_arg
++      assert_require 'a'
++      assert_match(/a\.rb$/, $LOADED_FEATURES.last)
++    ensure
++      $LOAD_PATH.replace lp
++    end
++  end
++
+   def test_concurrent_require
+     Object.const_set :FILE_ENTERED_LATCH, Latch.new(2)
+     Object.const_set :FILE_EXIT_LATCH, Latch.new(1)
+@@ -541,4 +559,48 @@ def silence_warnings
+     $VERBOSE = old_verbose
+   end
+ 
++  def util_install_extension_file(name)
++    spec = quick_gem name
++    util_build_gem spec
++
++    spec.extensions << "extconf.rb"
++    write_file File.join(@tempdir, "extconf.rb") do |io|
++      io.write <<-RUBY
++        require "mkmf"
++        create_makefile("#{name}")
++      RUBY
++    end
++
++    write_file File.join(@tempdir, "#{name}.c") do |io|
++      io.write <<-C
++        #include <ruby.h>
++        void Init_#{name}() { }
++      C
++    end
++
++    spec.files += ["extconf.rb", "#{name}.c"]
++
++    so = File.join(spec.gem_dir, "#{name}.#{RbConfig::CONFIG["DLEXT"]}")
++    refute_path_exists so
++
++    path = Gem::Package.build spec
++    installer = Gem::Installer.at path
++    installer.install
++    assert_path_exists so
++
++    spec.gem_dir
++  end
++
++  def util_install_ruby_file(name)
++    dir_lib = Dir.mktmpdir("test_require_lib", @tempdir)
++    dash_i_lib_arg = File.join dir_lib
++
++    a_rb = File.join dash_i_lib_arg, "#{name}.rb"
++
++    FileUtils.mkdir_p File.dirname a_rb
++    File.open(a_rb, 'w') { |f| f.write "# #{name}.rb" }
++
++    dash_i_lib_arg
++  end
++
+ end

@@ -1,0 +1,34 @@
+From 9b42fce32bff25e0569581f76f532b9d57865aef Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Mon, 27 Jul 2020 14:56:05 +0200
+Subject: [PATCH] Timeout the test_bug_reporter_add witout raising error.
+
+While timeouting the threads might be still good idea, it does not seems
+the timeout impacts the TestBugReporter#test_bug_reporter_add result,
+because the output of the child process has been already collected
+earlier.
+
+It seems that when the system is under heavy load, the thread might not
+be sheduled to finish its processing. Even finishing the child process
+might take tens of seconds and therefore the test case finish might take
+a while.
+---
+ test/-ext-/bug_reporter/test_bug_reporter.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/-ext-/bug_reporter/test_bug_reporter.rb b/test/-ext-/bug_reporter/test_bug_reporter.rb
+index 628fcd0340..2c677cc8a7 100644
+--- a/test/-ext-/bug_reporter/test_bug_reporter.rb
++++ b/test/-ext-/bug_reporter/test_bug_reporter.rb
+@@ -19,7 +19,7 @@ def test_bug_reporter_add
+     args = ["--disable-gems", "-r-test-/bug_reporter",
+             "-C", tmpdir]
+     stdin = "register_sample_bug_reporter(12345); Process.kill :SEGV, $$"
+-    assert_in_out_err(args, stdin, [], expected_stderr, encoding: "ASCII-8BIT")
++    assert_in_out_err(args, stdin, [], expected_stderr, encoding: "ASCII-8BIT", timeout_error: nil)
+   ensure
+     FileUtils.rm_rf(tmpdir) if tmpdir
+   end
+-- 
+2.27.0
+

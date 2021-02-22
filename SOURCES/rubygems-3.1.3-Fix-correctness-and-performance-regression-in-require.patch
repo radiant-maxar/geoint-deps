@@ -1,0 +1,324 @@
+From 00d98eb8a3245fb93a475ecbbbc4c7ec7e6704cd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Tue, 19 May 2020 14:00:00 +0200
+Subject: [PATCH 1/5] Fix performance regression in `require`
+
+Our check for `-I` paths should not go through all activated gems.
+---
+ lib/rubygems.rb                         | 10 ++++++++++
+ lib/rubygems/core_ext/kernel_require.rb |  2 +-
+ lib/rubygems/test_case.rb               |  1 +
+ test/rubygems/test_require.rb           | 11 +++++++++++
+ 4 files changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/lib/rubygems.rb b/lib/rubygems.rb
+index 843cb49e4a..d1a9a1c7e1 100644
+--- a/lib/rubygems.rb
++++ b/lib/rubygems.rb
+@@ -662,10 +662,20 @@ def self.load_path_insert_index
+     index
+   end
+ 
++  ##
++  # The number of paths in the `$LOAD_PATH` from activated gems. Used to
++  # prioritize `-I` and `ENV['RUBYLIB`]` entries during `require`.
++
++  def self.activated_gem_paths
++    @activated_gem_paths ||= 0
++  end
++
+   ##
+   # Add a list of paths to the $LOAD_PATH at the proper place.
+ 
+   def self.add_to_load_path(*paths)
++    @activated_gem_paths = activated_gem_paths + paths.size
++
+     insert_index = load_path_insert_index
+ 
+     if insert_index
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index ed24111bd5..7625ce1bee 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -47,7 +47,7 @@ def require(path)
+         load_path_insert_index = Gem.load_path_insert_index
+         break unless load_path_insert_index
+ 
+-        $LOAD_PATH[0...load_path_insert_index].each do |lp|
++        $LOAD_PATH[0...load_path_insert_index - Gem.activated_gem_paths].each do |lp|
+           safe_lp = lp.dup.tap(&Gem::UNTAINT)
+           begin
+             if File.symlink? safe_lp # for backward compatibility
+diff --git a/lib/rubygems/test_case.rb b/lib/rubygems/test_case.rb
+index a05a2898d1..53dd495aef 100644
+--- a/lib/rubygems/test_case.rb
++++ b/lib/rubygems/test_case.rb
+@@ -385,6 +385,7 @@ def setup
+     Gem::Security.reset
+ 
+     Gem.loaded_specs.clear
++    Gem.instance_variable_set(:@activated_gem_paths, 0)
+     Gem.clear_default_specs
+     Bundler.reset!
+ 
+diff --git a/test/rubygems/test_require.rb b/test/rubygems/test_require.rb
+index f36892f8cc..9f2fe3439a 100644
+--- a/test/rubygems/test_require.rb
++++ b/test/rubygems/test_require.rb
+@@ -382,6 +382,17 @@ def test_default_gem_require_activates_just_once
+     assert_equal 0, times_called
+   end
+ 
++  def test_second_gem_require_does_not_resolve_path_manually_before_going_through_standard_require
++    a1 = util_spec "a", "1", nil, "lib/test_gem_require_a.rb"
++    install_gem a1
++
++    assert_require "test_gem_require_a"
++
++    stub(:gem_original_require, ->(path) { assert_equal "test_gem_require_a", path }) do
++      require "test_gem_require_a"
++    end
++  end
++
+   def test_realworld_default_gem
+     testing_ruby_repo = !ENV["GEM_COMMAND"].nil?
+     skip "this test can't work under ruby-core setup" if testing_ruby_repo || java_platform?
+
+From ae95885dff6189c5ac59bbdf685cb4ec4751fdef Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Tue, 19 May 2020 14:08:19 +0200
+Subject: [PATCH 2/5] Refactor `Gem.load_path_insert_index`
+
+---
+ lib/rubygems.rb                         | 13 +++----------
+ lib/rubygems/core_ext/kernel_require.rb |  5 +----
+ 2 files changed, 4 insertions(+), 14 deletions(-)
+
+diff --git a/lib/rubygems.rb b/lib/rubygems.rb
+index d1a9a1c7e1..ca80326459 100644
+--- a/lib/rubygems.rb
++++ b/lib/rubygems.rb
+@@ -659,7 +659,7 @@ def self.load_path_insert_index
+ 
+     index = $LOAD_PATH.index RbConfig::CONFIG['sitelibdir']
+ 
+-    index
++    index || 0
+   end
+ 
+   ##
+@@ -676,15 +676,8 @@ def self.activated_gem_paths
+   def self.add_to_load_path(*paths)
+     @activated_gem_paths = activated_gem_paths + paths.size
+ 
+-    insert_index = load_path_insert_index
+-
+-    if insert_index
+-      # gem directories must come after -I and ENV['RUBYLIB']
+-      $LOAD_PATH.insert(insert_index, *paths)
+-    else
+-      # we are probably testing in core, -I and RUBYLIB don't apply
+-      $LOAD_PATH.unshift(*paths)
+-    end
++    # gem directories must come after -I and ENV['RUBYLIB']
++    $LOAD_PATH.insert(Gem.load_path_insert_index, *paths)
+   end
+ 
+   @yaml_loaded = false
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index 7625ce1bee..decf4829f1 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -44,10 +44,7 @@ def require(path)
+     resolved_path = begin
+       rp = nil
+       Gem.suffixes.each do |s|
+-        load_path_insert_index = Gem.load_path_insert_index
+-        break unless load_path_insert_index
+-
+-        $LOAD_PATH[0...load_path_insert_index - Gem.activated_gem_paths].each do |lp|
++        $LOAD_PATH[0...Gem.load_path_insert_index - Gem.activated_gem_paths].each do |lp|
+           safe_lp = lp.dup.tap(&Gem::UNTAINT)
+           begin
+             if File.symlink? safe_lp # for backward compatibility
+
+From da1492e9d7b28d068fbfbb0ba1cafcc516681567 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Tue, 19 May 2020 14:32:12 +0200
+Subject: [PATCH 3/5] Extract a local outside the loop
+
+---
+ lib/rubygems/core_ext/kernel_require.rb | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index decf4829f1..6a7faaf2d1 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -43,8 +43,9 @@ def require(path)
+     # https://github.com/rubygems/rubygems/pull/1868
+     resolved_path = begin
+       rp = nil
++      load_path_check_index = Gem.load_path_insert_index - Gem.activated_gem_paths
+       Gem.suffixes.each do |s|
+-        $LOAD_PATH[0...Gem.load_path_insert_index - Gem.activated_gem_paths].each do |lp|
++        $LOAD_PATH[0...load_path_check_index].each do |lp|
+           safe_lp = lp.dup.tap(&Gem::UNTAINT)
+           begin
+             if File.symlink? safe_lp # for backward compatibility
+
+From 22ad5717c38feda2375b53628d15ae3db2195684 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Thu, 21 May 2020 15:20:57 +0200
+Subject: [PATCH 4/5] Fix `$LOADED_FEATURES` cache sometimes not respected
+
+In the cases where the initial manually `-I` path resolution succeeded,
+we were passing a full path to the original require effectively skipping
+the `$LOADED_FEATURES` cache. With this change, we _only_ do the
+resolution when a matching requirable path is found in a default gem. In
+that case, we skip activation of the default gem if we detect that the
+required file will be picked up for a `-I` path.
+---
+ lib/rubygems/core_ext/kernel_require.rb | 53 +++++++++++--------------
+ test/rubygems/test_require.rb           | 29 ++++++++++++++
+ 2 files changed, 53 insertions(+), 29 deletions(-)
+
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index 6a7faaf2d1..81e37b98bf 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -39,46 +39,41 @@ def require(path)
+ 
+     path = path.to_path if path.respond_to? :to_path
+ 
+-    # Ensure -I beats a default gem
+-    # https://github.com/rubygems/rubygems/pull/1868
+-    resolved_path = begin
+-      rp = nil
+-      load_path_check_index = Gem.load_path_insert_index - Gem.activated_gem_paths
+-      Gem.suffixes.each do |s|
+-        $LOAD_PATH[0...load_path_check_index].each do |lp|
+-          safe_lp = lp.dup.tap(&Gem::UNTAINT)
+-          begin
+-            if File.symlink? safe_lp # for backward compatibility
+-              next
++    if spec = Gem.find_unresolved_default_spec(path)
++      # Ensure -I beats a default gem
++      # https://github.com/rubygems/rubygems/pull/1868
++      resolved_path = begin
++        rp = nil
++        load_path_check_index = Gem.load_path_insert_index - Gem.activated_gem_paths
++        Gem.suffixes.each do |s|
++          $LOAD_PATH[0...load_path_check_index].each do |lp|
++            safe_lp = lp.dup.tap(&Gem::UNTAINT)
++            begin
++              if File.symlink? safe_lp # for backward compatibility
++                next
++              end
++            rescue SecurityError
++              RUBYGEMS_ACTIVATION_MONITOR.exit
++              raise
+             end
+-          rescue SecurityError
+-            RUBYGEMS_ACTIVATION_MONITOR.exit
+-            raise
+-          end
+ 
+-          full_path = File.expand_path(File.join(safe_lp, "#{path}#{s}"))
+-          if File.file?(full_path)
+-            rp = full_path
+-            break
++            full_path = File.expand_path(File.join(safe_lp, "#{path}#{s}"))
++            if File.file?(full_path)
++              rp = full_path
++              break
++            end
+           end
++          break if rp
+         end
+-        break if rp
++        rp
+       end
+-      rp
+-    end
+ 
+-    if resolved_path
+-      RUBYGEMS_ACTIVATION_MONITOR.exit
+-      return gem_original_require(resolved_path)
+-    end
+-
+-    if spec = Gem.find_unresolved_default_spec(path)
+       begin
+         Kernel.send(:gem, spec.name, Gem::Requirement.default_prerelease)
+       rescue Exception
+         RUBYGEMS_ACTIVATION_MONITOR.exit
+         raise
+-      end
++      end unless resolved_path
+     end
+ 
+     # If there are no unresolved deps, then we can use just try
+diff --git a/test/rubygems/test_require.rb b/test/rubygems/test_require.rb
+index 9f2fe3439a..2b11e26dfe 100644
+--- a/test/rubygems/test_require.rb
++++ b/test/rubygems/test_require.rb
+@@ -45,6 +45,35 @@ def refute_require(path)
+     refute require(path), "'#{path}' was not yet required"
+   end
+ 
++  def test_respect_loaded_features_caching_like_standard_require
++    dir = Dir.mktmpdir("test_require", @tempdir)
++
++    lp1 = File.join dir, 'foo1'
++    foo1 = File.join lp1, 'foo.rb'
++
++    FileUtils.mkdir_p lp1
++    File.open(foo1, 'w') { |f| f.write "class Object; HELLO = 'foo1' end" }
++
++    lp = $LOAD_PATH.dup
++
++    $LOAD_PATH.unshift lp1
++    assert_require 'foo'
++    assert_equal "foo1", ::Object::HELLO
++
++    lp2 = File.join dir, 'foo2'
++    foo2 = File.join lp2, 'foo.rb'
++
++    FileUtils.mkdir_p lp2
++    File.open(foo2, 'w') { |f| f.write "class Object; HELLO = 'foo2' end" }
++
++    $LOAD_PATH.unshift lp2
++    refute_require 'foo'
++    assert_equal "foo1", ::Object::HELLO
++  ensure
++    $LOAD_PATH.replace lp
++    Object.send :remove_const, :HELLO if Object.const_defined? :HELLO
++  end
++
+   # Providing -I on the commandline should always beat gems
+   def test_dash_i_beats_gems
+     a1 = util_spec "a", "1", {"b" => "= 1"}, "lib/test_gem_require_a.rb"
+
+From db872c7a18d616f4447bdcca3130be6db9e5cb03 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?David=20Rodr=C3=ADguez?= <deivid.rodriguez@riseup.net>
+Date: Sat, 23 May 2020 20:18:41 +0200
+Subject: [PATCH 5/5] Remove direct reference to PR
+
+The code is quite different now, so I think the link might be even
+confusing. If you want to know more, use git history.
+---
+ lib/rubygems/core_ext/kernel_require.rb | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/lib/rubygems/core_ext/kernel_require.rb b/lib/rubygems/core_ext/kernel_require.rb
+index 81e37b98bf..115ae0cb50 100644
+--- a/lib/rubygems/core_ext/kernel_require.rb
++++ b/lib/rubygems/core_ext/kernel_require.rb
+@@ -41,7 +41,6 @@ def require(path)
+ 
+     if spec = Gem.find_unresolved_default_spec(path)
+       # Ensure -I beats a default gem
+-      # https://github.com/rubygems/rubygems/pull/1868
+       resolved_path = begin
+         rp = nil
+         load_path_check_index = Gem.load_path_insert_index - Gem.activated_gem_paths

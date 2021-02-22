@@ -43,6 +43,7 @@ PROJ6_RPM := $(call rpm_file,proj6)
 PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
 PROTOZERO_RPM := $(call rpm_file,protozero)
+RUBY_RPM := $(call rpm_file,ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_RPM := $(call rpm_file,sqlite)
@@ -64,6 +65,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-protobuf \
 	rpmbuild-protobuf-c \
 	rpmbuild-protozero \
+	rpmbuild-ruby \
 	rpmbuild-sfcgal \
 	rpmbuild-sqlite
 RPMBUILD_RPMS := \
@@ -84,6 +86,7 @@ RPMBUILD_RPMS := \
 	proj \
 	proj6 \
 	protozero \
+	ruby \
 	sbt \
 	sqlite
 
@@ -126,6 +129,7 @@ distclean: .env
 	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
 	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
+	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 
@@ -180,6 +184,9 @@ rpmbuild-protobuf-c: .env protobuf
 rpmbuild-protozero: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-protozero
 
+rpmbuild-ruby: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-ruby
+
 rpmbuild-sfcgal: .env $(CGAL_RPM)
 	$(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
 
@@ -205,6 +212,7 @@ proj6: rpmbuild-proj $(PROJ6_RPM)
 protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
 protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
+ruby: rpmbuild-ruby $(RUBY_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 

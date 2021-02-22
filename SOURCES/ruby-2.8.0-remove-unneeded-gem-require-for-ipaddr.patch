@@ -1,0 +1,22 @@
+From 0689147586c6cb56b91bf0f368890f19d630ece1 Mon Sep 17 00:00:00 2001
+From: nobletrout <nobletrout@gmail.com>
+Date: Tue, 5 Feb 2019 08:14:02 -0500
+Subject: [PATCH] remove unneeded gem require for ipaddr
+
+ipaddr is a builtin class for ruby, that is occasionally merged. If the version isn't specified by the runtime dependency, then it will default to needing the latest gem rather than the version that ships with that version of ruby. That will lead to all kinds of potential dependency fails that are most likely unneeded since this gem already requires ruby > 2.3.0
+---
+ ext/openssl/openssl.gemspec | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/ext/openssl/openssl.gemspec b/ext/openssl/openssl.gemspec
+index 7c17cd54..f721f247 100644
+--- a/ext/openssl/openssl.gemspec
++++ b/ext/openssl/openssl.gemspec
+@@ -21,7 +21,6 @@ Gem::Specification.new do |spec|
+   s.rubygems_version = "3.0.0.beta1"
+   s.summary = "OpenSSL provides SSL, TLS and general purpose cryptography."
+ 
+-  s.add_runtime_dependency("ipaddr", [">= 0"])
+   s.add_development_dependency("rake", [">= 0"])
+   s.add_development_dependency("rake-compiler", [">= 0"])
+   s.add_development_dependency("test-unit", ["~> 3.0"])
