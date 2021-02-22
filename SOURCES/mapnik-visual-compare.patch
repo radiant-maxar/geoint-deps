@@ -1,0 +1,32 @@
+commit ad9632560ca69bf8293460aa3481afe9cfa3ed00
+Author: Tom Hughes <tom@compton.nu>
+Date:   Sun Nov 22 14:00:57 2015 +0000
+
+    Allow some minor differences in images
+
+diff --git a/test/unit/datasource/ogr.cpp b/test/unit/datasource/ogr.cpp
+index 5b785f9..ff4c3b8 100644
+--- a/test/unit/datasource/ogr.cpp
++++ b/test/unit/datasource/ogr.cpp
+@@ -52,7 +52,7 @@ TEST_CASE("ogr") {
+             std::unique_ptr<mapnik::image_reader> reader(mapnik::get_image_reader(filename,"png"));
+             mapnik::image_any data = reader->read(0, 0, reader->width(), reader->height());
+             mapnik::image_rgba8 expected = mapnik::util::get<mapnik::image_rgba8>(data);
+-            REQUIRE(mapnik::compare(expected, im) == 0);
++            REQUIRE(mapnik::compare(expected, im, 5) == 0);
+         }
+ 
+     }
+diff --git a/test/visual/renderer.hpp b/test/visual/renderer.hpp
+index 7ea9198..6a8bec1 100644
+--- a/test/visual/renderer.hpp
++++ b/test/visual/renderer.hpp
+@@ -82,7 +82,7 @@ struct raster_renderer_base
+         mapnik::image_any ref_image_any = reader->read(0, 0, reader->width(), reader->height());
+         ImageType const & reference_image = mapnik::util::get<ImageType>(ref_image_any);
+ 
+-        return mapnik::compare(actual, reference_image, 0, true);
++        return mapnik::compare(actual, reference_image, 500, true);
+     }
+ 
+     void save(image_type const & image, boost::filesystem::path const& path) const

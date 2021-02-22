@@ -51,6 +51,11 @@ x-rpmbuild:
       version: &libosmium_version '2.16.0-1'
       arch: noarch
       name: libosmium-devel
+    mapnik:
+      image: rpmbuild-mapnik
+      version: &mapnik_version '3.0.23-1'
+      name: python-mapnik
+      spec_file: 'SPECS/mapnik.spec'
     osmosis:
       image: rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
@@ -261,6 +266,30 @@ services:
         protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-libosmium
+  rpmbuild-mapnik:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-gdal
+      - rpmbuild-postgis
+    build:
+      <<: *build_defaults
+      args:
+        cgal_version: *CGAL_version
+        filegdbapi_version: *FileGDBAPI_version
+        gdal_version: *gdal_version
+        geos_version: *geos_version
+        gpsbabel_version: *gpsbabel_version
+        libgeotiff_version: *libgeotiff_version
+        libkml_version: *libkml_version
+        packages: "${RPMBUILD_MAPNIK_PACKAGES}"
+        postgis_version: *postgis_version
+        proj_version: *proj_version
+        protobuf_version: *protobuf_version
+        protobuf_c_version: *protobuf-c_version
+        rpmbuild_channel: *rpmbuild_channel
+        sfcgal_version: *SFCGAL_version
+        sqlite_version: *sqlite_version
+      dockerfile: docker/Dockerfile.rpmbuild-postgis-generic
   rpmbuild-osmium-tool:
     <<: *service_defaults
     depends_on:

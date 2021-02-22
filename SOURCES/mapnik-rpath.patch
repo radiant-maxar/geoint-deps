@@ -1,0 +1,21 @@
+commit fbbe37d3c9c956a39f3733744a805a37b5b19c3d
+Author: Tom Hughes <tom@compton.nu>
+Date:   Tue Jan 26 09:43:05 2016 +0000
+
+    Don't set rpath
+
+diff --git a/src/build.py b/src/build.py
+index bdc3438..cc93386 100644
+--- a/src/build.py
++++ b/src/build.py
+@@ -141,10 +141,6 @@ else: # unix, non-macos
+         mapnik_lib_link_flag += ' -Wl,-rpath-link,.'
+         if env['ENABLE_SONAME']:
+             mapnik_lib_link_flag += ' -Wl,-soname,%s' % mapnik_libname
+-        if env['FULL_LIB_PATH']:
+-            mapnik_lib_link_flag += ' -Wl,-rpath=%s' % env['MAPNIK_LIB_BASE']
+-        else:
+-            mapnik_lib_link_flag += ' -Wl,-z,origin -Wl,-rpath=\$$ORIGIN'
+ 
+ source = Split(
+     """

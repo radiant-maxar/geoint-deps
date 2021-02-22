@@ -35,6 +35,7 @@ GPSBABEL_RPM := $(call rpm_file,gpsbabel)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
+MAPNIK_RPM := $(call rpm_file,mapnik)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
 PASSENGER_RPM := $(call rpm_file,passenger)
@@ -129,6 +130,7 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
+	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
@@ -170,6 +172,9 @@ rpmbuild-libkml: .env
 
 rpmbuild-libosmium: .env protozero
 	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
+
+rpmbuild-mapnik: .env gdal postgis
+	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
 
 rpmbuild-osmium-tool: .env libosmium
 	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
@@ -218,6 +223,7 @@ gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
+mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
 osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 passenger: rpmbuild-passenger $(PASSENGER_RPM)
