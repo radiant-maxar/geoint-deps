@@ -36,9 +36,10 @@ LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
-OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
+OSMCTOOLS_RPM := $(call rpm_file,osmctools)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
+OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 PASSENGER_RPM := $(call rpm_file,passenger)
 POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
@@ -63,8 +64,9 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
-	rpmbuild-osm2pgsql \
+	rpmbuild-osmctools \
 	rpmbuild-osmium-tool \
+	rpmbuild-osm2pgsql \
 	rpmbuild-passenger \
 	rpmbuild-postgis \
 	rpmbuild-proj \
@@ -85,9 +87,10 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	libkml \
 	libosmium \
-	osm2pgsql \
+	osmctools \
 	osmosis \
 	osmium-tool \
+	osm2pgsql \
 	passenger \
 	postgis \
 	protobuf \
@@ -134,6 +137,7 @@ distclean: .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
+	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
 	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
@@ -180,11 +184,14 @@ rpmbuild-libosmium: .env protozero
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
 
-rpmbuild-osm2pgsql: .env libosmium postgis
-	$(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
+rpmbuild-osmctools: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-osmctools
 
 rpmbuild-osmium-tool: .env libosmium
 	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
+
+rpmbuild-osm2pgsql: .env libosmium postgis
+	$(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
 
 rpmbuild-passenger: .env rack
 	$(DOCKER_COMPOSE) up -d rpmbuild-passenger
@@ -231,6 +238,7 @@ libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
+osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
 osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 osm2pgsql: rpmbuild-osm2pgsql $(OSM2PGSQL_RPM)

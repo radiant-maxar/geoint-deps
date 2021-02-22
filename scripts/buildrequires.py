@@ -48,7 +48,7 @@ def main():
         output = json.dumps(build_requirements)
     else:
         output = " ".join(build_requirements)
-    sys.stdout.write(output)
+    sys.stdout.write(output + "\n")
 
 
 if __name__ == "__main__":
