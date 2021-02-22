@@ -54,8 +54,6 @@ x-rpmbuild:
     mapnik:
       image: rpmbuild-mapnik
       version: &mapnik_version '3.0.23-1'
-      name: python-mapnik
-      spec_file: 'SPECS/mapnik.spec'
     osmosis:
       image: rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
@@ -63,6 +61,9 @@ x-rpmbuild:
     osmium-tool:
       image: rpmbuild-osmium-tool
       version: &osmium-tool_version '1.13.1-1'
+    osm2pgsql:
+      image: rpmbuild-osm2pgsql
+      version: &osm2pgsql_version '1.4.1-1'
     rack:
       image: rpmbuild-rack
       version: &rack_version '2.2.3-1'
@@ -269,7 +270,6 @@ services:
   rpmbuild-mapnik:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-gdal
       - rpmbuild-postgis
     build:
       <<: *build_defaults
@@ -290,6 +290,33 @@ services:
         sfcgal_version: *SFCGAL_version
         sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-postgis-generic
+  rpmbuild-osm2pgsql:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-libosmium
+      - rpmbuild-postgis
+    build:
+      <<: *build_defaults
+      args:
+        cgal_version: *CGAL_version
+        filegdbapi_version: *FileGDBAPI_version
+        gdal_version: *gdal_version
+        geos_version: *geos_version
+        gpsbabel_version: *gpsbabel_version
+        libgeotiff_version: *libgeotiff_version
+        libkml_version: *libkml_version
+        libosmium_version: *libosmium_version
+        packages: "${RPMBUILD_OSM2PGSQL_PACKAGES}"
+        postgis_version: *postgis_version
+        proj_version: *proj_version
+        protobuf_version: *protobuf_version
+        protobuf_c_version: *protobuf-c_version
+        protozero_version: *protozero_version
+        rpmbuild_channel: *rpmbuild_channel
+        sfcgal_version: *SFCGAL_version
+        sqlite_version: *sqlite_version
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-osm2pgsql
   rpmbuild-osmium-tool:
     <<: *service_defaults
     depends_on:

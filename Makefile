@@ -36,6 +36,7 @@ LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
+OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
 PASSENGER_RPM := $(call rpm_file,passenger)
@@ -62,6 +63,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
+	rpmbuild-osm2pgsql \
 	rpmbuild-osmium-tool \
 	rpmbuild-passenger \
 	rpmbuild-postgis \
@@ -83,6 +85,7 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	libkml \
 	libosmium \
+	osm2pgsql \
 	osmosis \
 	osmium-tool \
 	passenger \
@@ -132,6 +135,7 @@ distclean: .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
+	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
@@ -175,6 +179,9 @@ rpmbuild-libosmium: .env protozero
 
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
+
+rpmbuild-osm2pgsql: .env libosmium postgis
+	$(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
 
 rpmbuild-osmium-tool: .env libosmium
 	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
@@ -226,6 +233,7 @@ libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
 osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
+osm2pgsql: rpmbuild-osm2pgsql $(OSM2PGSQL_RPM)
 passenger: rpmbuild-passenger $(PASSENGER_RPM)
 postgis: rpmbuild-postgis $(POSTGIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)

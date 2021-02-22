@@ -1,3 +1,7 @@
+%global libosmium_min_version 2.16.0
+%global protozero_min_version 1.7.0
+
+
 Name:           osmium-tool
 Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
@@ -10,9 +14,9 @@ Source0:        https://github.com/osmcode/%{name}/archive/v%{version}/%{name}-%
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
 BuildRequires:  man-db
-BuildRequires:  libosmium-devel
+BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  pandoc
-BuildRequires:  protozero-devel
+BuildRequires:  protozero-devel >= %{protozero_min_version}
 
 # Allows us to use Boost 1.53 instead of 1.55.
 Patch1: osmium-tool-boost-version.patch
@@ -38,8 +42,8 @@ popd
 pushd build
 %cmake3_install
 popd
-mkdir -p %{buildroot}%{_datadir}/zsh/site-functions
-install -p -m644 zsh_completion/* %{buildroot}%{_datadir}/zsh/site-functions
+%{__mkdir_p} %{buildroot}%{_datadir}/zsh/site-functions
+%{__install} -p -m644 zsh_completion/* %{buildroot}%{_datadir}/zsh/site-functions
 
 
 %check

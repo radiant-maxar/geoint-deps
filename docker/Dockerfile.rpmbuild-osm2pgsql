@@ -1,0 +1,95 @@
+ARG rpmbuild_channel
+ARG rpmbuild_image=rpmbuild-pgdg
+FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+
+ARG cgal_version
+ARG filegdbapi_version
+ARG gdal_version
+ARG geos_version
+ARG gpsbabel_version
+ARG libgeotiff_version
+ARG libkml_version
+ARG libosmium_version
+ARG packages
+ARG postgis_version
+ARG proj_version
+ARG protobuf_version
+ARG protobuf_c_version
+ARG protozero_version
+ARG sfcgal_version
+ARG sqlite_version
+
+# Temporarily switch to root for package installation.
+USER root
+
+COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/gdal-${gdal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/gdal-devel-${gdal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/gdal-libs-${gdal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/postgis-${postgis_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/postgis-devel-${postgis_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/postgis-utils-${postgis_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-compiler-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-devel-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-c-${protobuf_c_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-c-compiler-${protobuf_c_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/protobuf-c-devel-${protobuf_c_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/x86_64/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
+     /tmp/
+
+SHELL ["/bin/bash", "-c"]
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum install -y \
+    /tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/gdal-${gdal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/gdal-devel-${gdal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/gdal-libs-${gdal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/postgis-${postgis_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/postgis-devel-${postgis_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/postgis-utils-${postgis_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-compiler-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-devel-${protobuf_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-c-${protobuf_c_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-c-compiler-${protobuf_c_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protobuf-c-devel-${protobuf_c_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
+    /tmp/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
+    && \
+    rm -f /tmp/*.rpm && \
+    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi
+
+# Switch back to build user.
+USER ${RPMBUILD_USER}
