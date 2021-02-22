@@ -23,70 +23,75 @@ x-rpmbuild:
   # Configuration for every dependency RPM.
   rpms:
     CGAL:
-      image: &CGAL_image rpmbuild-cgal
+      image: rpmbuild-cgal
       version: &CGAL_version '4.14.3-1'
     FileGDBAPI:
-      image: &FileGDBAPI_image rpmbuild-generic
+      image: rpmbuild-generic
       version: &FileGDBAPI_version '1.5.1-1'
     SFCGAL:
-      image: &SFCGAL_image rpmbuild-sfcgal
+      image: rpmbuild-sfcgal
       version: &SFCGAL_version '1.3.9-1'
     gdal:
-      image: &gdal_image rpmbuild-gdal
+      image: rpmbuild-gdal
       version: &gdal_version '3.2.1-1'
     geos:
-      image: &geos_image rpmbuild-geos
+      image: rpmbuild-geos
       version: &geos_version '3.9.1-1'
     gpsbabel:
-      image: &gpsbabel_image rpmbuild-gpsbabel
+      image: rpmbuild-gpsbabel
       version: &gpsbabel_version '1.7.0-1'
     libgeotiff:
       image: &libgeotiff_image rpmbuild-libgeotiff
       version: &libgeotiff_version '1.6.0-1'
     libkml:
-      image: &libkml_image rpmbuild-libkml
+      image: rpmbuild-libkml
       version: &libkml_version '1.3.0-1'
     libosmium:
-      image: &libosmium_image rpmbuild-libosmium
+      image: rpmbuild-libosmium
       version: &libosmium_version '2.16.0-1'
       arch: noarch
       name: libosmium-devel
     osmosis:
-      image: &osmosis_image rpmbuild-generic
+      image: rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
       arch: noarch
     osmium-tool:
-      image: &osmium-tool_image rpmbuild-osmium-tool
+      image: rpmbuild-osmium-tool
       version: &osmium-tool_version '1.13.1-1'
+    rack:
+      image: rpmbuild-rack
+      version: &rack_version '2.2.3-1'
+      arch: noarch
+      name: rubygem-rack
     sbt:
-      image: &sbt_image rpmbuild-generic
+      image: rpmbuild-generic
       version: &sbt_version '1.4.7-1'
       arch: noarch
     postgis:
-      image: &postgis_image rpmbuild-postgis
+      image: rpmbuild-postgis
       version: &postgis_version '3.1.1-1'
     proj:
-      image: &proj_image rpmbuild-proj
+      image: rpmbuild-proj
       version: &proj_version '7.2.1-1'
     proj6:
-      image: &proj6_image rpmbuild-proj
+      image: rpmbuild-proj
       version: &proj6_version '6.3.2-1'
       name: proj
     protobuf:
-      image: &protobuf_image rpmbuild-protobuf
+      image: rpmbuild-protobuf
       version: &protobuf_version '3.15.1-1'
     protobuf-c:
-      image: &protobuf-c_image rpmbuild-protobuf-c
+      image: rpmbuild-protobuf-c
       version: &protobuf-c_version '1.3.3-1'
     protozero:
-      image: &protozero_image rpmbuild-protozero
+      image: rpmbuild-protozero
       version: &protozero_version '1.7.0-1'
       arch: noarch
       name: protozero-devel
     ruby:
       image: &ruby_image rpmbuild-ruby
       version: &ruby_version '2.7.2-1'
-      defines:
+      defines: &ruby_bundled_versions
         bundler_version: '2.1.4'
         bundler_connection_pool_version: '2.2.2'
         bundler_fileutils_version: '1.3.0'
@@ -308,6 +313,19 @@ services:
         protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-protozero
+  rpmbuild-rack:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-ruby
+    build:
+      <<: *build_defaults
+      args:
+        <<: *ruby_bundled_versions
+        gem_packages: 'fcgi minitest minitest-sprint minitest-global_expectations thin'
+        packages: "${RPMBUILD_RACK_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+        ruby_version: *ruby_version
+      dockerfile: docker/Dockerfile.rpmbuild-rubygems
   rpmbuild-ruby:
     <<: *service_defaults
     depends_on:
