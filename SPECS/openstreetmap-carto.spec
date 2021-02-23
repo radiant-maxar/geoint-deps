@@ -154,7 +154,9 @@ Requires:       google-noto-serif-georgian-fonts
 Requires:       google-noto-serif-khmer-fonts
 Requires:       google-noto-serif-lao-fonts
 Requires:       google-noto-serif-thai-fonts
-
+Requires:       python3-psycopg2
+Requires:       python36-PyYAML
+Requires:       python36-requests
 
 %description
 These are the CartoCSS map stylesheets for the Standard map layer on
