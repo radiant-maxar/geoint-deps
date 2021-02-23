@@ -1,6 +1,6 @@
-%global libosmium_min_version 2.16.0
-%global protozero_min_version 1.7.0
-
+# The following macros are also required:
+# * libosmium_min_version
+# * protozero_min_version
 
 Name:           osmium-tool
 Version:        %{rpmbuild_version}

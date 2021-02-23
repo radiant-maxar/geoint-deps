@@ -1,7 +1,7 @@
 ## Macro functions.
 
-# All versions use a YAML reference so they only have to be defined once,
-# just grep for this reference and print it out.
+# The `rpmbuild_util.py` utility script is used to pull out configured versions,
+# Docker build images, and other build variables.
 rpmbuild_util = $(shell ./scripts/rpmbuild_util.py docker-compose.yml $(1) $(2))
 config_release = $(call rpmbuild_util,$(1),--release)
 config_version = $(call rpmbuild_util,$(1),--version)
@@ -47,6 +47,7 @@ PROJ6_RPM := $(call rpm_file,proj6)
 PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
 PROTOZERO_RPM := $(call rpm_file,protozero)
+PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
 RACK_RPM := $(call rpm_file,rubygem-rack)
 RUBY_RPM := $(call rpm_file,ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
@@ -73,6 +74,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-protobuf \
 	rpmbuild-protobuf-c \
 	rpmbuild-protozero \
+	rpmbuild-pyosmium \
 	rpmbuild-rack \
 	rpmbuild-ruby \
 	rpmbuild-sfcgal \
@@ -98,6 +100,7 @@ RPMBUILD_RPMS := \
 	proj \
 	proj6 \
 	protozero \
+	pyosmium \
 	rack \
 	ruby \
 	sbt \
@@ -146,6 +149,7 @@ distclean: .env
 	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
 	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
+	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
 	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
@@ -214,6 +218,9 @@ rpmbuild-protobuf-c: .env protobuf
 rpmbuild-protozero: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-protozero
 
+rpmbuild-pyosmium: .env libosmium
+	$(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
+
 rpmbuild-rack: .env ruby
 	$(DOCKER_COMPOSE) up -d rpmbuild-rack
 
@@ -249,6 +256,7 @@ proj6: rpmbuild-proj $(PROJ6_RPM)
 protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
 protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
+pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
 rack: rpmbuild-rack $(RACK_RPM)
 ruby: rpmbuild-ruby $(RUBY_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
@@ -256,7 +264,7 @@ sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 ## Build patterns
 
-# Runs container with docker-compose to build rpm.
+# Determine the build container and use `docker-compose exec` to build the rpm.
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
 	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) \
 	$(shell ./scripts/rpmbuild_util.py docker-compose.yml $(call rpm_package,$*))
