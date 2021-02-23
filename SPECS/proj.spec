@@ -1,5 +1,6 @@
 # The following macros are also required:
 # * data_version
+# * googletest_version
 # * sqlite_min_version
 
 Name:           proj
@@ -13,6 +14,7 @@ URL:            https://proj.org
 Source0:        https://github.com/OSGeo/PROJ/releases/download/%{version}/proj-%{version}.tar.gz
 Source1:        https://github.com/OSGeo/PROJ/releases/download/%{version}/proj-%{version}.tar.gz.md5
 Source2:        https://github.com/OSGeo/PROJ-data/releases/download/%{data_version}.0/proj-data-%{data_version}.tar.gz
+Source3:        https://github.com/google/googletest/archive/release-%{googletest_version}.zip
 
 # Ship a pkgconfig file
 Patch0:         proj-pkgconfig.patch
@@ -92,16 +94,25 @@ License:      CC-BY and MIT and BSD and Public Domain \
 pushd %{_sourcedir}
 %{_bindir}/md5sum -c %{SOURCE1}
 popd
+
 %autosetup -p1
+
+# We download the googletest release, not CMake.
+%{__mkdir_p} build/googletest-download/googletest-prefix/src
+%{__cp} %{SOURCE3} build/googletest-download/googletest-prefix/src/release-%{googletest_version}.zip
 
 
 %build
-%cmake3
+pushd build
+%cmake3 ..
 %cmake3_build
+popd
 
 
 %install
+pushd build
 %cmake3_install
+popd
 
 # Install data
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -109,7 +120,9 @@ tar -xf %{SOURCE2} --directory %{buildroot}%{_datadir}/%{name}
 
 
 %check
+pushd build
 %ctest3
+popd
 
 
 %files

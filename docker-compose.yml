@@ -142,6 +142,7 @@ x-rpmbuild:
       version: &proj_version '7.2.1-1'
       defines:
         data_version: '1.4'
+        googletest_version: '1.8.1'
         sqlite_min_version: *sqlite_min_version
     proj6:
       image: rpmbuild-proj
