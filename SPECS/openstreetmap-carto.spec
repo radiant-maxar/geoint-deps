@@ -28,7 +28,6 @@ Source6:        https://osmdata.openstreetmap.de/download/water-polygons-split-%
 BuildArch:      noarch
 
 BuildRequires:  python3
-BuildRequires:  mapnik-utils
 BuildRequires:  lua
 
 Requires:       dejavu-fonts-common

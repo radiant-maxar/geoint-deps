@@ -200,7 +200,7 @@ rpmbuild-libosmium: .env protozero
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
 
-rpmbuild-openstreetmap-carto: .env mapnik
+rpmbuild-openstreetmap-carto: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-openstreetmap-carto
 
 rpmbuild-osmctools: .env
