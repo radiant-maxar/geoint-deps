@@ -1,0 +1,10 @@
+*.yml
+*.md
+.env
+.git
+.gitignore
+Makefile
+docs
+docker
+el7
+SOURCES
