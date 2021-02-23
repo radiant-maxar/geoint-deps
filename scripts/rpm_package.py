@@ -8,15 +8,13 @@ import sys
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "rpm_file",
-        help="RPM file name to derive the package name from.",
-        type=str
+        "rpm_file", help="RPM file name to derive the package name from.", type=str
     )
     args = parser.parse_args()
 
-    version_match = re.compile('^\d+\.').match
+    version_match = re.compile("^[\d\.]+").match
     package_bits = []
-    for package_bit in os.path.basename(args.rpm_file).split('-'):
+    for package_bit in os.path.basename(args.rpm_file).split("-"):
         if version_match(package_bit):
             break
         else:

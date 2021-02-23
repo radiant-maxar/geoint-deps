@@ -6,9 +6,7 @@ import yaml
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="rpmbuild utility"
-    )
+    parser = argparse.ArgumentParser(description="rpmbuild utility")
     parser.add_argument(
         "config_file",
         help="YAML file with rpmbuild configuration.",
@@ -61,9 +59,9 @@ def main():
     )
     args = parser.parse_args()
 
-    config_data = yaml.load(
-        args.config_file, Loader=yaml.SafeLoader
-    ).get(args.config_key, {"rpms": {}})
+    config_data = yaml.load(args.config_file, Loader=yaml.SafeLoader).get(
+        args.config_key, {"rpms": {}}
+    )
     if args.variable:
         output = config_data[args.rpm]
         sys.stdout.write(output + "\n")
@@ -93,7 +91,7 @@ def main():
             dist=rpm_dist,
             name=rpm_name,
             release=rpm_release,
-            version=rpm_version
+            version=rpm_version,
         )
     elif args.image:
         output = rpm_image
@@ -103,10 +101,12 @@ def main():
         output = rpm_release
     else:
         defines = rpm_data.get("defines", {})
-        defines.update({
-            "rpmbuild_version": rpm_version,
-            "rpmbuild_release": rpm_release,
-        })
+        defines.update(
+            {
+                "rpmbuild_version": rpm_version,
+                "rpmbuild_release": rpm_release,
+            }
+        )
         undefines = rpm_data.get("undefines", [])
         with_ = rpm_data.get("with", [])
         without = rpm_data.get("without", [])
@@ -129,9 +129,7 @@ def main():
             rpmbuild_cmd.append("--nocheck")
 
         rpmbuild_cmd.append(rpm_data.get("build_type", "-bb"))
-        rpmbuild_cmd.append(rpm_data.get(
-            "spec_file", "SPECS/{}.spec".format(args.rpm)
-        ))
+        rpmbuild_cmd.append(rpm_data.get("spec_file", "SPECS/{}.spec".format(args.rpm)))
         output = " ".join(rpmbuild_cmd)
 
     if output:
