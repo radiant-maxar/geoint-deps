@@ -1,3 +1,9 @@
+# The following macros are also required:
+# * geos_min_version
+# * postgres_dotless
+# * postgres_instdir
+# * proj_min_version
+
 #TODO: msg needs to have PublicDecompWT.zip from EUMETSAT, which is not free;
 #      Building without msg therefore
 #TODO: e00compr bundled?
@@ -6,9 +12,6 @@
 #      It uses %%{JAVA_RUN}; make test seems to work in the build directory
 #TODO: e00compr source is the same in the package and bundled in GDAL
 #TODO: Consider doxy patch from Suse, setting EXTRACT_LOCAL_CLASSES  = NO
-
-%global geos_min_version 3.9.0
-%global proj_min_version 7.2.0
 
 # Major digit of the proj so version
 %global proj_somaj 18

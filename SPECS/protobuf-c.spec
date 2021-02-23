@@ -1,4 +1,5 @@
-%global protobuf_min_version 2.6.0
+# The following macros are also required:
+# * protobuf_min_version
 
 Name:           protobuf-c
 Version:        %{rpmbuild_version}

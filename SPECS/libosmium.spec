@@ -1,4 +1,5 @@
-%global protozero_min_version 1.7.0
+# The following macros are also required:
+# * protozero_min_version
 
 Name:           libosmium
 Version:        %{rpmbuild_version}

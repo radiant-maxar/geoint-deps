@@ -1,3 +1,6 @@
+# The following macros are also required:
+# * protobuf_min_version
+
 Name:           protozero
 Version:	%{rpmbuild_version}
 Release:	%{rpmbuild_release}%{?dist}
@@ -11,9 +14,9 @@ BuildRequires:  cmake3
 BuildRequires:  doxygen
 BuildRequires:  gcc-c++
 BuildRequires:  graphviz
-BuildRequires:  protobuf-devel
-BuildRequires:  protobuf-lite-devel
-BuildRequires:  protobuf-compiler
+BuildRequires:  protobuf-devel >= %{protobuf_min_version}
+BuildRequires:  protobuf-lite-devel >= %{protobuf_min_version}
+BuildRequires:  protobuf-compiler >= %{protobuf_min_version}
 
 %description
 Minimalistic protocol buffer decoder and encoder in C++.

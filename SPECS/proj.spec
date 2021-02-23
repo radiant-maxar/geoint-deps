@@ -1,5 +1,6 @@
-%global data_version 1.4
-%global sqlite_min_version 3.11.0
+# The following macros are also required:
+# * data_version
+# * sqlite_min_version
 
 Name:           proj
 # Also check whether there is a new proj-data release when upgrading!
@@ -21,6 +22,8 @@ BuildRequires:  curl-devel
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  libtiff-devel
+# Upgraded SQLite necessary for PROJ performance:
+#   https://github.com/OSGeo/PROJ/issues/1718
 BuildRequires:  sqlite-devel >= %{sqlite_min_version}
 
 Obsoletes:      proj-datumgrid

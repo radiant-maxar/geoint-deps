@@ -1,9 +1,11 @@
-%bcond_without db_tests
+# The following macros are also required:
+# * libosmium_min_version
+# * postgis_min_version
+# * postgres_dotless
+# * proj_min_version
+# * protobuf_c_min_version
 
-%global libosmium_min_version 2.16.0
-%global protobuf_c_min_version 1.3.0
-%global postgis_min_version 3.0.0
-%global proj_min_version 7.2.0
+%bcond_without db_tests
 
 Name:           osm2pgsql
 Version:        %{rpmbuild_version}

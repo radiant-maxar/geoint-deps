@@ -1,4 +1,5 @@
-%global proj_min_version 6.0.0
+# The following macros are also required:
+# * proj_min_version
 
 Name:           libgeotiff
 Version:        %{rpmbuild_version}

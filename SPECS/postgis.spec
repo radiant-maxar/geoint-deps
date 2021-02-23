@@ -1,3 +1,12 @@
+# The following macros are also required:
+# * gdal_min_version
+# * geos_min_version
+# * postgres_dotless
+# * postgres_instdir
+# * proj_min_version
+# * protobuf_c_min_version
+# * protobuf_min_version
+
 %global postgis_major %(echo %{rpmbuild_version} | awk -F. '{ print $1 }')
 %global postgis_minor %(echo %{rpmbuild_version} | awk -F. '{ print $2 }')
 %global postgis_micro %(echo %{rpmbuild_version} | awk -F. '{ print $3 }')
@@ -17,12 +26,6 @@
 %else
 %global postgisliblabel %{postgis_majorversion}
 %endif
-
-%global geos_min_version 3.9.0
-%global gdal_min_version 3.2.0
-%global proj_min_version 7.2.0
-%global protobuf_c_min_version 1.1.0
-%global protobof_min_version 2.6.0
 
 Summary:	Geographic Information Systems Extensions to PostgreSQL
 Name:           postgis

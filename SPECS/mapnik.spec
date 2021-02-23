@@ -1,6 +1,7 @@
-%global gdal_min_version 3.2.0
-%global postgis_min_version 3.0.0
-%global proj_min_version 7.2.0
+# The following macros are also required:
+# * gdal_min_version
+# * postgis_min_version
+# * proj_min_version
 
 Name:      mapnik
 Version:   %{rpmbuild_version}
