@@ -31,7 +31,9 @@ CGAL_RPM := $(call rpm_file,CGAL)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
 GDAL_RPM := $(call rpm_file,gdal)
 GEOS_RPM := $(call rpm_file,geos)
+GOOGLE_NOTO_RPM := $(call rpm_file,google-noto-fonts-extra)
 GPSBABEL_RPM := $(call rpm_file,gpsbabel)
+HANAZONO_RPM := $(call rpm_file,hanazono-fonts)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
@@ -58,6 +60,7 @@ SQLITE_RPM := $(call rpm_file,sqlite)
 RPMBUILD_CONTAINERS := \
 	rpmbuild \
 	rpmbuild-cgal \
+	rpmbuild-fonts \
 	rpmbuild-generic \
 	rpmbuild-gdal \
 	rpmbuild-geos \
@@ -85,7 +88,9 @@ RPMBUILD_RPMS := \
 	SFCGAL \
 	gdal \
 	geos \
+	google-noto-fonts-extra \
 	gpsbabel \
+	hanazono-fonts \
 	libgeotiff \
 	libkml \
 	libosmium \
@@ -167,6 +172,9 @@ rpmbuild-cgal: .env
 rpmbuild-generic: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-generic
 
+rpmbuild-fonts: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-fonts
+
 rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL geos gpsbabel libgeotiff libkml proj sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
@@ -240,7 +248,9 @@ FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 SFCGAL: rpmbuild-sfcgal $(SFCGAL_RPM)
 gdal: rpmbuild-gdal $(GDAL_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
+google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
 gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
+hanazono-fonts: rpmbuild-fonts $(HANAZONO_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
