@@ -1,9 +1,11 @@
 ARG rpmbuild_channel
-ARG rpmbuild_image=rpmbuild
+ARG rpmbuild_image=rpmbuild-generic
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG packages
 ARG libosmium_version
 ARG protozero_version
+
+USER root
 
 COPY RPMS/noarch/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
@@ -15,13 +17,8 @@ RUN --mount=type=cache,target=/var/cache/yum \
     /tmp/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
     /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
     && \
-    rm -f /tmp/*.rpm
-
-# If any package dependencies are needed, install them.
-RUN --mount=type=cache,target=/var/cache/yum \
-    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
-    /usr/local/bin/rpmbuild-user.sh && \
-    rm -f /usr/local/bin/rpmbuild-user.sh
+    rm -f /tmp/*.rpm && \
+    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi
 
 # Use unprivileged RPM build user and work directory by default.
 USER ${RPMBUILD_USER}

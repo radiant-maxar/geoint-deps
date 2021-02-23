@@ -97,6 +97,12 @@ x-rpmbuild:
     osmctools:
       image: rpmbuild-osmctools
       version: &osmctools_version '0.9-1'
+    osmdbt:
+      image: rpmbuild-osmdbt
+      version: &osmdbt_version '0.2.1-1'
+      defines:
+        commit: 'c286a79b96666b7ec15931ce196b5bc93ea818b1'
+        libosmium_min_version: *libosmium_min_version
     osmosis:
       image: rpmbuild-generic
       version: &osmosis_version '0.48.3-1'
@@ -389,6 +395,20 @@ services:
       args:
         packages: "${RPMBUILD_OSMCTOOLS_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-osmdbt:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-libosmium
+      - rpmbuild-pgdg
+    build:
+      <<: *build_defaults
+      args:
+        libosmium_version: *libosmium_version
+        packages: "${RPMBUILD_OSMDBT_PACKAGES}"
+        protozero_version: *protozero_version
+        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
+      dockerfile: docker/Dockerfile.rpmbuild-libosmium-generic
   rpmbuild-osmium-tool:
     <<: *service_defaults
     depends_on:

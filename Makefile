@@ -40,6 +40,7 @@ LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
+OSMDBT_RPM := $(call rpm_file,osmdbt)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
 OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
@@ -71,6 +72,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libosmium \
 	rpmbuild-openstreetmap-carto \
 	rpmbuild-osmctools \
+	rpmbuild-osmdbt \
 	rpmbuild-osmium-tool \
 	rpmbuild-osm2pgsql \
 	rpmbuild-passenger \
@@ -98,6 +100,7 @@ RPMBUILD_RPMS := \
 	libosmium \
 	openstreetmap-carto \
 	osmctools \
+	osmdbt \
 	osmosis \
 	osmium-tool \
 	osm2pgsql \
@@ -150,6 +153,7 @@ distclean: .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
+	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
 	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
@@ -205,6 +209,9 @@ rpmbuild-openstreetmap-carto: .env
 
 rpmbuild-osmctools: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-osmctools
+
+rpmbuild-osmdbt: .env libosmium
+	$(DOCKER_COMPOSE) up -d rpmbuild-osmdbt
 
 rpmbuild-osmium-tool: .env libosmium
 	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
@@ -264,6 +271,7 @@ libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
 openstreetmap-carto: rpmbuild-openstreetmap-carto $(OPENSTREETMAP_CARTO_RPM)
 osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
+osmdbt: rpmbuild-osmdbt $(OSMDBT_RPM)
 osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
 osmosis: rpmbuild-generic $(OSMOSIS_RPM)
 osm2pgsql: rpmbuild-osm2pgsql $(OSM2PGSQL_RPM)
