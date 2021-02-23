@@ -291,6 +291,10 @@ sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 ## Build patterns
 
 # Determine the build container and use `docker-compose exec` to build the rpm.
+RPMS/x86_64/proj-6%.rpm:
+	$(DOCKER_COMPOSE) exec -T rpmbuild-proj \
+	$(shell ./scripts/rpmbuild_util.py docker-compose.yml proj6)
+
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
 	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) \
 	$(shell ./scripts/rpmbuild_util.py docker-compose.yml $(call rpm_package,$*))

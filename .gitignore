@@ -1,5 +1,6 @@
 .env
 .vagrant
+el7
 RPMS/noarch
 RPMS/x86_64
 SOURCES/*.asc

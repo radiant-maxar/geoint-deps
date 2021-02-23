@@ -154,6 +154,10 @@ x-rpmbuild:
       image: rpmbuild-proj
       version: &proj6_version '6.3.2-1'
       name: proj
+      defines:
+        datumgrid_version: '1.8'
+        sqlite_min_version: *sqlite_min_version
+      spec_file: 'SPECS/proj6.spec'
     protobuf:
       image: rpmbuild-protobuf
       version: &protobuf_version '3.15.1-1'

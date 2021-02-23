@@ -1,4 +1,6 @@
-%global datumgrid_version 1.8
+# The following macros are also required:
+# * datumgrid_version
+# * sqlite_min_version
 
 Name:           proj
 Version:        %{rpmbuild_version}
@@ -13,7 +15,7 @@ BuildRequires:  cmake3
 BuildRequires:  gcc-c++
 BuildRequires:  libtool
 BuildRequires:  make
-BuildRequires:  sqlite-devel
+BuildRequires:  sqlite-devel >= %{sqlite_min_version}
 
 Provides:       proj-epsg = %{version}-%{release}
 Requires:       proj-datumgrid = %{datumgrid_version}-%{release}
