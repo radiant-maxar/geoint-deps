@@ -44,7 +44,7 @@ Vendor: Phusion
 # passenger do currently not build on the armv7hl architecture
 ExcludeArch: armv7hl
 
-Source: http://s3.amazonaws.com/phusion-passenger/releases/%{name}-%{version}.tar.gz
+Source: https://phusion-passenger.s3.amazonaws.com/releases/%{name}-%{version}.tar.gz
 Source10: passenger.logrotate
 Source100: apache-passenger.conf.in
 Source101: apache-passenger-module.conf

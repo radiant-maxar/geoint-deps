@@ -25,9 +25,9 @@ Release: %{rpmbuild_release}%{?dist}
 License: Public Domain
 URL: http://www.sqlite.org/
 
-Source0: http://www.sqlite.org/%{year}/sqlite-src-%{realver}.zip
-Source1: http://www.sqlite.org/%{year}/sqlite-doc-%{docver}.zip
-Source2: http://www.sqlite.org/%{year}/sqlite-autoconf-%{realver}.tar.gz
+Source0: https://www.sqlite.org/%{year}/sqlite-src-%{realver}.zip
+Source1: https://www.sqlite.org/%{year}/sqlite-doc-%{docver}.zip
+Source2: https://www.sqlite.org/%{year}/sqlite-autoconf-%{realver}.tar.gz
 
 # Support a system-wide lemon template
 Patch1: sqlite-3.6.23-lemon-system-template.patch
