@@ -67,6 +67,9 @@
 # https://bugs.ruby-lang.org/issues/17052
 %define _lto_cflags %{nil}
 
+# Allow a way to disable problematic tests on hosts using ZFS on Linux.
+%bcond_with zfs_host
+
 Summary: An interpreter of object-oriented scripting language
 Name: ruby
 Version: %{ruby_version}
@@ -863,6 +866,15 @@ MSPECOPTS=""
 # Avoid dependency on IPv6 to run the tests.
 sed -i -e 's/localhost/127.0.0.1/g' test/net/http/test_http.rb
 rm -f test/net/smtp/test_smtp.rb
+%if %{with zfs_host}
+# Remove tests that make assumptions of underlying filesystem and crash
+# with ZFS on Linux.
+rm -f \
+   test/ruby/test_dir_m17n.rb \
+   test/ruby/test_io.rb \
+   test/ruby/test_io_m17n.rb \
+   test/ruby/test_require.rb
+%endif
 
 # Disable "File.utime allows Time instances in the far future to set
 # mtime and atime".

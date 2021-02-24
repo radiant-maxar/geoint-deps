@@ -207,6 +207,10 @@ x-rpmbuild:
         rubygems_molinillo_version: '0.5.7'
         test_unit_version: '3.3.4'
         xmlrpc_version: '0.3.0'
+    # Use the following to run the Ruby tests on a host with
+    # ZFS on Linux:
+    #  with:
+    #    - zfs_host
     sqlite:
       image: rpmbuild-sqlite
       version: &sqlite_version '3.34.1-1'
@@ -450,7 +454,6 @@ services:
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
         sqlite_version: *sqlite_version
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-osm2pgsql
   rpmbuild-passenger:
     <<: *service_defaults
@@ -530,7 +533,12 @@ services:
       <<: *build_defaults
       args:
         <<: *ruby_bundled_versions
-        gem_packages: 'fcgi minitest minitest-sprint minitest-global_expectations thin'
+        gem_packages: >-
+          fcgi
+          minitest
+          minitest-sprint
+          minitest-global_expectations
+          thin
         packages: "${RPMBUILD_RACK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
         ruby_version: *ruby_version
