@@ -51,6 +51,7 @@ PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
 PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
+PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
 RACK_RPM := $(call rpm_file,rubygem-rack)
 RUBY_RPM := $(call rpm_file,ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
@@ -161,6 +162,7 @@ distclean: .env
 	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
+	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
 	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
@@ -241,6 +243,9 @@ rpmbuild-protozero: .env
 rpmbuild-pyosmium: .env libosmium
 	$(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
 
+rpmbuild-python-mapnik: .env mapnik
+	$(DOCKER_COMPOSE) up -d rpmbuild-python-mapnik
+
 rpmbuild-rack: .env ruby
 	$(DOCKER_COMPOSE) up -d rpmbuild-rack
 
@@ -280,6 +285,7 @@ protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
 protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
 pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
+python-mapnik: rpmbuild-python-mapnik $(PYTHON_MAPNIK_RPM)
 rack: rpmbuild-rack $(RACK_RPM)
 ruby: rpmbuild-ruby $(RUBY_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
