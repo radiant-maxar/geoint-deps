@@ -28,7 +28,7 @@ BuildRequires:  make
 BuildRequires:  readline-devel
 BuildREquires:  ncurses-devel
 
-Requires:       lua-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 Lua is a powerful light-weight programming language designed for
