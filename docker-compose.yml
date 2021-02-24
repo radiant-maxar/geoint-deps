@@ -80,6 +80,11 @@ x-rpmbuild:
       name: libosmium-devel
       defines:
         protozero_min_version: *protozero_min_version
+    lua:
+      image: rpmbuild-lua
+      version: &lua_version '5.4.2-1'
+      name: lua54
+      spec_file: 'SPECS/lua.spec'
     mapnik:
       image: rpmbuild-mapnik
       version: &mapnik_version '3.0.23-1'
@@ -360,6 +365,15 @@ services:
         protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-libosmium
+  rpmbuild-lua:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_LUA_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-mapnik:
     <<: *service_defaults
     depends_on:
