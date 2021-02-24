@@ -47,7 +47,6 @@ OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 PASSENGER_RPM := $(call rpm_file,passenger)
 POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
-PROJ6_RPM := $(call rpm_file,proj6)
 PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
 PROTOZERO_RPM := $(call rpm_file,protozero)
@@ -109,7 +108,6 @@ RPMBUILD_RPMS := \
 	protobuf \
 	protobuf-c \
 	proj \
-	proj6 \
 	protozero \
 	pyosmium \
 	rack \
@@ -278,7 +276,6 @@ osm2pgsql: rpmbuild-osm2pgsql $(OSM2PGSQL_RPM)
 passenger: rpmbuild-passenger $(PASSENGER_RPM)
 postgis: rpmbuild-postgis $(POSTGIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
-proj6: rpmbuild-proj $(PROJ6_RPM)
 protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
 protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
@@ -289,12 +286,6 @@ sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 
 ## Build patterns
-
-# Determine the build container and use `docker-compose exec` to build the rpm.
-RPMS/x86_64/proj-6%.rpm:
-	$(DOCKER_COMPOSE) exec -T rpmbuild-proj \
-	$(shell ./scripts/rpmbuild_util.py docker-compose.yml proj6)
-
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
 	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) \
 	$(shell ./scripts/rpmbuild_util.py docker-compose.yml $(call rpm_package,$*))
