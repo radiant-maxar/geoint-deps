@@ -249,7 +249,8 @@ lua scripts/lua/test.lua
 %{__ln_s} %{openstreetmap_carto_data}/data %{buildroot}%{openstreetmap_carto_home}
 
 %{__install} -d %{buildroot}%{openstreetmap_carto_sysconf}
-%{__cp} --preserve project.mml %{buildroot}%{openstreetmap_carto_sysconf}
+%{__cp} --preserve project.mml external-data.yml %{buildroot}%{openstreetmap_carto_sysconf}
+%{__ln_s} %{openstreetmap_carto_sysconf}/external-data.yml %{buildroot}%{openstreetmap_carto_home}
 %{__ln_s} %{openstreetmap_carto_home}/data %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_home}/style %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_home}/symbols %{buildroot}%{openstreetmap_carto_sysconf}
@@ -264,6 +265,7 @@ lua scripts/lua/test.lua
 %{openstreetmap_carto_sysconf}/style
 %{openstreetmap_carto_sysconf}/symbols
 %config(noreplace) %{openstreetmap_carto_sysconf}/project.mml
+%config(noreplace) %{openstreetmap_carto_sysconf}/external-data.yml
 
 
 %files data-natural-earth
