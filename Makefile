@@ -58,6 +58,7 @@ RUBY_RPM := $(call rpm_file,ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_RPM := $(call rpm_file,sqlite)
+TBB_RPM := $(call rpm_file,tbb)
 
 # Build containers and RPMs.
 RPMBUILD_CONTAINERS := \
@@ -87,7 +88,8 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-rack \
 	rpmbuild-ruby \
 	rpmbuild-sfcgal \
-	rpmbuild-sqlite
+	rpmbuild-sqlite \
+	rpmbuild-tbb
 RPMBUILD_RPMS := \
 	CGAL \
 	FileGDBAPI \
@@ -117,7 +119,8 @@ RPMBUILD_RPMS := \
 	rack \
 	ruby \
 	sbt \
-	sqlite
+	sqlite \
+	tbb
 
 ## General targets
 
@@ -171,6 +174,7 @@ distclean: .env
 	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
+	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/tbb.spec) >> .env
 
 ## Container targets
 
@@ -265,6 +269,9 @@ rpmbuild-sfcgal: .env $(CGAL_RPM)
 rpmbuild-sqlite: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
 
+rpmbuild-tbb: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-tbb
+
 ## RPM targets
 
 CGAL: rpmbuild-cgal $(CGAL_RPM)
@@ -298,6 +305,7 @@ rack: rpmbuild-rack $(RACK_RPM)
 ruby: rpmbuild-ruby $(RUBY_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
+tbb: rpmbuild-tbb $(TBB_RPM)
 
 ## Build patterns
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:

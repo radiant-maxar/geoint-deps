@@ -217,6 +217,9 @@ x-rpmbuild:
     sqlite:
       image: rpmbuild-sqlite
       version: &sqlite_version '3.34.1-1'
+    tbb:
+      image: rpmbuild-tbb
+      version: &tbb_version '2020.3-1'
   service_volumes: &service_volumes
     - "./RPMS:/rpmbuild/RPMS:rw"
     - "./SOURCES:/rpmbuild/SOURCES:rw"
@@ -607,4 +610,13 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_SQLITE_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-tbb:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_TBB_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
