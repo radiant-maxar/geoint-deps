@@ -153,3 +153,12 @@ cp -p src/rml/include/*.h %{buildroot}%{_includedir}/rml
 %{_libdir}/*.so
 %{_libdir}/cmake/TBB/
 %{_libdir}/pkgconfig/*.pc
+
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+
+%changelog
+* %(%{_bindir}/date "+%%a %%b %%d %%Y") %{rpmbuild_name} <%{rpmbuild_email}> - %{version}-%{rpmbuild_release}
+- %{version}-%{rpmbuild_release}
