@@ -5,13 +5,16 @@
 %global passenger_datadir %{_datadir}/passenger
 %global passenger_libdir %{_libdir}/passenger
 
-
 %{!?_httpd_mmn: %{expand: %%global _httpd_mmn %%(cat %{_includedir}/httpd/.mmn 2>/dev/null || echo 0-0)}}
 %{!?_httpd_confdir:     %{expand: %%global _httpd_confdir     %%{_sysconfdir}/httpd/conf.d}}
 # /etc/httpd/conf.d with httpd < 2.4 and defined as /etc/httpd/conf.modules.d with httpd >= 2.4
 %{!?_httpd_modconfdir:  %{expand: %%global _httpd_modconfdir  %%{_sysconfdir}/httpd/conf.d}}
 %{!?_httpd_moddir:      %{expand: %%global _httpd_moddir      %%{_libdir}/httpd/modules}}
 
+%{!?ruby_vendorlibdir: %global ruby_vendorlibdir %(ruby -rrbconfig -e 'puts RbConfig::CONFIG["vendorlibdir"]')}
+%{!?ruby_vendorarchdir: %global ruby_vendorarchdir %(ruby -rrbconfig -e 'puts RbConfig::CONFIG["vendorarchdir"]')}
+%global passenger_ruby_libdir %{ruby_vendorlibdir}
+%global locations_ini %{passenger_ruby_libdir}/phusion_passenger/locations.ini
 
 # We leave out the 'mls', 'minimum', 'strict' and 'sandbox' variants on purpose.
 #
@@ -139,9 +142,10 @@ rake fakeroot \
     FS_BINDIR=%{_bindir} \
     FS_SBINDIR=%{_sbindir} \
     FS_DATADIR=%{_datadir} \
+    FS_DOCDIR=%{_docdir} \
     FS_LIBDIR=%{_libdir} \
     RUBYLIBDIR=%{ruby_vendorlibdir} \
-    RUBYARCHDIR=%{passenger_libdir} \
+    RUBYARCHDIR=%{ruby_vendorarchdir} \
     APACHE2_MODULE_PATH=%{_httpd_moddir}/mod_passenger.so
 
 
@@ -156,7 +160,7 @@ export LC_ALL=en_US.UTF-8
 
 # Install Apache config.
 %{__mkdir_p} %{buildroot}%{_httpd_confdir} %{buildroot}%{_httpd_modconfdir}
-%{__sed} -e 's|@PASSENGERROOT@|%{passenger_datadir}/phusion_passenger/locations.ini|g' %{SOURCE100} > passenger.conf
+%{__sed} -e 's|@PASSENGERROOT@|%{passenger_ruby_libdir}/phusion_passenger/locations.ini|g' %{SOURCE100} > passenger.conf
 
 touch -r %{SOURCE100} passenger.conf
 %{__install} -pm 0644 passenger.conf %{buildroot}%{_httpd_confdir}/passenger.conf
@@ -165,6 +169,7 @@ touch -r %{SOURCE101} %{buildroot}%{_httpd_modconfdir}/10-passenger.conf
 
 # Make our ghost log and tmpfile configuration directories...
 %{__mkdir_p} %{buildroot}%{_localstatedir}/log/passenger-analytics
+%{__mkdir_p} %{buildroot}%{_localstatedir}/run/passenger-instreg
 %{__mkdir_p} %{buildroot}%{_usr}/lib/tmpfiles.d
 %{__install} -m 644 -p %{SOURCE102} \
         %{buildroot}%{_usr}/lib/tmpfiles.d/passenger.conf
@@ -212,13 +217,13 @@ sed -i 's|^#!/usr/bin/env python$|#!/usr/bin/python3|' %{buildroot}%{_datadir}/p
 %{passenger_datadir}/*.pem
 %{passenger_datadir}/*.p12
 %dir %{_localstatedir}/log/passenger-analytics
+%dir %attr(0755, root, root) %{_localstatedir}/run/passenger-instreg
 %config(noreplace) %{_sysconfdir}/logrotate.d/passenger
 %{_mandir}/*/*
 %{passenger_libdir}/support-binaries
-%{passenger_libdir}/passenger_native_support.so
-#
 %{ruby_vendorlibdir}/phusion_passenger.rb
 %{ruby_vendorlibdir}/phusion_passenger/
+%{ruby_vendorarchdir}/passenger_native_support.so
 %exclude %{_docdir}
 
 %files devel
