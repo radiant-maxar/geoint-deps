@@ -17,13 +17,14 @@ Summary:        A general-purpose OpenStreetMap mapnik style, in CartoCSS
 License:        CC0 1.0
 URL:            https://github.com/gravitystorm/openstreetmap-carto
 Source0:        https://github.com/gravitystorm/openstreetmap-carto/archive/v%{version}.tar.gz
-
 Source1:        https://github.com/nvkelso/natural-earth-vector/blob/v%{data_natural_earth_version}/LICENSE.md
 Source2:        https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_boundary_lines_land.zip
 Source3:        https://osmdata.openstreetmap.de/download/antarctica-icesheet-outlines-%{data_fossgis_version}.zip
 Source4:        https://osmdata.openstreetmap.de/download/antarctica-icesheet-polygons-%{data_fossgis_version}.zip
 Source5:        https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-%{data_fossgis_version}.zip
 Source6:        https://osmdata.openstreetmap.de/download/water-polygons-split-%{data_fossgis_version}.zip
+
+Patch0:         openstreetmap-carto-external-data-cache.patch
 
 BuildArch:      noarch
 
@@ -194,7 +195,7 @@ URL:       https://osmdata.openstreetmap.de
 
 
 %prep
-%autosetup -p 1 -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %{__mkdir} data
 
@@ -251,7 +252,6 @@ lua scripts/lua/test.lua
 %{__install} -d %{buildroot}%{openstreetmap_carto_sysconf}
 %{__cp} --preserve project.mml external-data.yml %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_sysconf}/external-data.yml %{buildroot}%{openstreetmap_carto_home}
-%{__ln_s} %{openstreetmap_carto_home}/data %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_home}/style %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_home}/symbols %{buildroot}%{openstreetmap_carto_sysconf}
 
@@ -261,7 +261,6 @@ lua scripts/lua/test.lua
 %license LICENSE.txt
 %{openstreetmap_carto_home}/*
 %dir %{openstreetmap_carto_sysconf}
-%{openstreetmap_carto_sysconf}/data
 %{openstreetmap_carto_sysconf}/style
 %{openstreetmap_carto_sysconf}/symbols
 %config(noreplace) %{openstreetmap_carto_sysconf}/project.mml
