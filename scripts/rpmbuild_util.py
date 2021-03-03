@@ -8,14 +8,15 @@ import yaml
 def main():
     parser = argparse.ArgumentParser(description="rpmbuild utility")
     parser.add_argument(
-        "config_file",
-        help="YAML file with rpmbuild configuration.",
-        type=argparse.FileType("r"),
-    )
-    parser.add_argument(
         "rpm",
         help="RPM name or variable to query.",
         type=str,
+    )
+    parser.add_argument(
+        "--config-file",
+        help="YAML file with rpmbuild configuration.",
+        default="docker-compose.yml",
+        type=argparse.FileType("r"),
     )
     parser.add_argument(
         "--config-key",

@@ -1,8 +1,13 @@
+## Conditional variables.
+DOCKER ?= docker
+DOCKER_COMPOSE ?= docker-compose
+COMPOSE_FILE ?= docker-compose.yml
+
 ## Macro functions.
 
 # The `rpmbuild_util.py` utility script is used to pull out configured versions,
 # Docker build images, and other build variables.
-rpmbuild_util = $(shell ./scripts/rpmbuild_util.py docker-compose.yml $(1) $(2))
+rpmbuild_util = $(shell ./scripts/rpmbuild_util.py $(1) --config-file $(COMPOSE_FILE) $(2))
 config_release = $(call rpmbuild_util,$(1),--release)
 config_version = $(call rpmbuild_util,$(1),--version)
 
@@ -17,9 +22,7 @@ rpmbuild_release = $(call config_release,$(call rpm_package,$(1)))
 rpmbuild_version = $(call config_version,$(call rpm_package,$(1)))
 
 ## Variables
-DOCKER ?= docker
 DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
-DOCKER_COMPOSE ?= docker-compose
 DOCKER_COMPOSE_VERSION := $(shell $(DOCKER_COMPOSE) --version 2>/dev/null)
 POSTGRES_DOTLESS := $(shell echo $(call rpmbuild_util,postgres_version,--variable) | tr -d '.')
 RPMBUILD_CHANNEL := $(call rpmbuild_util,channel_name,--variable)
@@ -310,4 +313,4 @@ tbb: rpmbuild-tbb $(TBB_RPM)
 ## Build patterns
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
 	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) \
-	$(shell ./scripts/rpmbuild_util.py docker-compose.yml $(call rpm_package,$*))
+	$(shell ./scripts/rpmbuild_util.py $(call rpm_package,$*) --config-file $(COMPOSE_FILE))
