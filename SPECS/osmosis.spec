@@ -3,7 +3,7 @@ Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
 Summary:        Command line Java application for processing OpenStreetMap (OSM) data
 
-License:        Public Domain
+License:        LGPLv3 and Public Domain
 URL:            https://github.com/openstreetmap/osmosis
 
 BuildArch:      noarch
