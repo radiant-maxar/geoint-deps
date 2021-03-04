@@ -68,6 +68,26 @@ sane defaults:
 * High-quality algorithm order embedded in GnuPG key preferences (e.g., only use SHA-2 digest algorithms).
 * Key usage limited to signing only.
 
+The Debian/Ubuntu package `hopenpgp-tools` can "lint" this signing key:
+```
+hkt export-pubkeys --keyring $HOME/.gnupg-geoint/pubring.gpg | hokey lint
+```
+
+Would produce output like:
+```
+Key has potential validity: good
+Key has fingerprint: C18F F27A F995 0292 8732  2BC1 C083 6B8C E219 5F23
+Checking to see if key is OpenPGPv4: V4
+Checking to see if key is RSA or DSA (>= 2048-bit): RSA 4096
+Checking user-ID- and user-attribute-related items:
+  FoundationGEOINT Packaging <foundationgeoint-packaging@maxar.com>:
+    Self-sig hash algorithms: [SHA-512]
+    Preferred hash algorithms: [SHA-512, SHA-384, SHA-256]
+    Key expiration times: []
+    Key usage flags: [[sign-data, certify-keys]]
+Checking subkeys:
+  one of the subkeys is encryption-capable: False
+```
 
 ### References
 
