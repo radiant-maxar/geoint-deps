@@ -104,9 +104,9 @@ x-rpmbuild:
       version: &osmctools_version '0.9-1'
     osmdbt:
       image: rpmbuild-osmdbt
-      version: &osmdbt_version '0.2.1-1'
+      version: &osmdbt_version '0.3-1'
       defines:
-        commit: 'c286a79b96666b7ec15931ce196b5bc93ea818b1'
+        commit: 'e0158c0751207b0e77ab67e40a837016759e203d'
         libosmium_min_version: *libosmium_min_version
     osmosis:
       image: rpmbuild-generic

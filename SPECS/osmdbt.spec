@@ -38,6 +38,8 @@ BuildRequires:  postgresql%{postgres_dotless}-contrib
 BuildRequires:  postgresql%{postgres_dotless}-server
 %endif
 
+# Ensure depends on PGDG libraries it was built with.
+Requires:       postgresql%{postgres_dotless}-libs
 
 %description
 Tools for creating replication feeds from the main OSM database.
@@ -47,6 +49,8 @@ Tools for creating replication feeds from the main OSM database.
 License:        ASL 2.0
 Summary:        PostgreSQL plugin for OpenStreetMap replication
 
+# Ensure depends on PGDG server version it was built with.
+Requires:       postgresql%{postgres_dotless}-server
 
 %description -n postgresql%{postgres_dotless}-osm-logical
 PostgreSQL plugin to support logical replication of OpenStreetMap API databases.
@@ -55,6 +59,7 @@ PostgreSQL plugin to support logical replication of OpenStreetMap API databases.
 %prep
 %autosetup -p1 -n %{name}-%{commit}
 %{__mkdir_p} build
+
 
 %build
 # Enable the updated compiler toolchain prior to building.
@@ -92,7 +97,6 @@ popd
 %config(noreplace) %{_sysconfdir}/osmdbt-config.yaml
 %{_bindir}/%{name}-*
 %{_mandir}/man1/*
-
 
 %files -n postgresql%{postgres_dotless}-osm-logical
 %doc postgresql-plugin/README.md

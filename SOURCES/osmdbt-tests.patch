@@ -1,5 +1,5 @@
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 38342e5..ffb0807 100644
+index 504b3ac..99d2692 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
 @@ -34,7 +34,7 @@ add_test(NAME unit-tests COMMAND unit-tests WORKING_DIRECTORY "${PROJECT_SOURCE_
@@ -57,18 +57,17 @@ index 0000000..acba509
 +echo
 +"$@"
 diff --git a/test/t/test-state.cpp b/test/t/test-state.cpp
-index 5cf945d..b4ff3cc 100644
+index b60f0a1..2826682 100644
 --- a/test/t/test-state.cpp
 +++ b/test/t/test-state.cpp
-@@ -51,6 +51,7 @@ TEST_CASE("Write specified state and read it again")
-     REQUIRE(state.sequence_number() == 1234);
-     REQUIRE(state.timestamp() == osmium::Timestamp{"2020-02-02T02:02:02Z"});
+@@ -69,12 +69,14 @@ TEST_CASE("Write specified state and read it again")
+     osmium::Timestamp comment_timestamp{"2021-01-01T01:23:45Z"};
+     state.write(TEST_DIR "/some-state.txt", comment_timestamp.seconds_since_epoch());
  
 +    /*
-     state.write(TEST_DIR "/some-state.txt");
- 
      State const state2{TEST_DIR "/some-state.txt"};
-@@ -59,6 +60,7 @@ TEST_CASE("Write specified state and read it again")
+     REQUIRE(state2.sequence_number() == 1234);
+     REQUIRE(state2.timestamp() == osmium::Timestamp{"2020-02-02T02:02:02Z"});
  
      // can not write a second time, because file now exists
      REQUIRE_THROWS(state.write(TEST_DIR "/some-state.txt"));
