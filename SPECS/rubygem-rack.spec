@@ -21,7 +21,7 @@ Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 #   git checkout $VERSION
 #   tar --owner 1000 --group 1000 --numeric-owner -czf rack-$VERSION-test.tar.gz test/
 #
-Source1: https://rome-repo.s3.amazonaws.com/support-files/%{gem_name}-%{version}-test.tar.gz
+Source1: https://geoint-deps.s3.amazonaws.com/support-files/%{gem_name}-%{version}-test.tar.gz
 %endif
 
 BuildRequires: ruby

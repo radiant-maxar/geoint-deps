@@ -9,11 +9,11 @@ export DOCKER_BUILDKIT=1
 make FileGDBAPI
 ```
 
-Or go big and create RPMs for GDAL and friends with:
+Or go big and create RPMs for PostGIS and friends with:
 
 ```
 export DOCKER_BUILDKIT=1
-make gdal
+make postgis
 ```
 
 This will consume a lot of CPU and I/O!
@@ -21,7 +21,7 @@ This will consume a lot of CPU and I/O!
 ## Requirements
 
 * Linux host and some basics:
-  * Python 3 for `docker-compose` and the [`buildrequires.py`](./scripts/buildrequires.py) and [`rpm_package.py`](./scripts/rpm_package.py) scripts.
+  * Python 3 for `docker-compose` and some of the [scripts](./scripts/).
   * GNU `make` for the [`Makefile`](./Makefile).
 
 * Docker >= 18.09

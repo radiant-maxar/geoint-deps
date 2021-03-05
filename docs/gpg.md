@@ -60,13 +60,12 @@ tar -C $HOME -cJvf SOURCES/gnupg-geoint.tar.xz geoint.gpg .gnupg-geoint
 
 ### Additional Information
 
-RPM signing is finicky -- subkeys can't be used, v4 signatures aren't accepted
-on legacy platforms, and GnuPG is user-hostile.  This script aims to have some
-sane defaults:
+RPM signing is finicky -- subkeys can't be used and GnuPG is user-hostile.
+This script aims to have some sane defaults:
 
 * 4096-bit RSA keys are the default.
 * High-quality algorithm order embedded in GnuPG key preferences (e.g., only use SHA-2 digest algorithms).
-* Key usage limited to signing only.
+* Key usage limited for signing only.
 
 The Debian/Ubuntu package `hopenpgp-tools` can "lint" this signing key:
 ```
