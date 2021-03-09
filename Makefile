@@ -31,6 +31,7 @@ RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
 CGAL_RPM := $(call rpm_file,CGAL)
+DUMB_INIT_RPM := $(call rpm_file,dumb-init)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
 GDAL_RPM := $(call rpm_file,gdal)
 GEOS_RPM := $(call rpm_file,geos)
@@ -97,6 +98,7 @@ RPMBUILD_RPMS := \
 	CGAL \
 	FileGDBAPI \
 	SFCGAL \
+	dumb-init \
 	gdal \
 	geos \
 	google-noto-fonts-extra \
@@ -280,6 +282,7 @@ rpmbuild-tbb: .env
 CGAL: rpmbuild-cgal $(CGAL_RPM)
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 SFCGAL: rpmbuild-sfcgal $(SFCGAL_RPM)
+dumb-init: rpmbuild-generic $(DUMB_INIT_RPM)
 gdal: rpmbuild-gdal $(GDAL_RPM)
 geos: rpmbuild-geos $(GEOS_RPM)
 google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
