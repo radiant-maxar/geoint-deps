@@ -1,13 +1,13 @@
 ---
-version: '3.8'
+version: '3.7'
 
 x-rpmbuild:
   dist: &rpmbuild_dist '.el7'
   channel_name: &rpmbuild_channel stable
-  email: &rpmbuild_email "foundationgeoint-packaging@maxar.com"
-  packager_name: &rpmbuild_name "FoundationGEOINT Packaging"
+  email: &rpmbuild_email 'foundationgeoint-packaging@maxar.com'
+  packager_name: &rpmbuild_name 'FoundationGEOINT Packaging'
   postgres_version: &postgres_version '13'
-  vendor: &rpmbuild_vendor "Maxar Technologies"
+  vendor: &rpmbuild_vendor 'Maxar Technologies'
   base_args: &rpmbuild_base_args
     rpmbuild_dist: *rpmbuild_dist
     rpmbuild_email: *rpmbuild_email
@@ -48,7 +48,7 @@ x-rpmbuild:
       version: '1.2.5-1'
     gdal:
       image: rpmbuild-gdal
-      version: &gdal_version '3.2.1-1'
+      version: &gdal_version '3.2.2-1'
       defines:
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version

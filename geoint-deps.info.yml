@@ -1,6 +1,6 @@
 ---
 name: geoint-deps
-description: Build system for FoundationGEOINT
+description: Build system for FoundationGEOINT Dependency RPMs
 source: https://gitub.com/DigitalGlobe/geoint-deps
 team: FoundationGEOINT Team
 data_classification:

@@ -339,15 +339,14 @@ export PKG_CONFIG_PATH=%{postgres_instdir}/lib/pkgconfig:%{_libdir}/pkgconfig:%{
         --with-python                          \
         --with-libkml                          \
         --with-sfcgal                          \
-        --with-zstd                            \
-        --disable-driver-elastic
+        --with-zstd
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 POPPLER_OPTS="POPPLER_0_20_OR_LATER=yes POPPLER_0_23_OR_LATER=yes POPPLER_BASE_STREAM_HAS_TWO_ARGS=yes"
 
-make %{?_smp_mflags} $POPPLER_OPTS
+%make_build $POPPLER_OPTS
 
 # Build some utilities, as requested in BZ #1271906
 make -C ogr/ogrsf_frmts/s57 all
