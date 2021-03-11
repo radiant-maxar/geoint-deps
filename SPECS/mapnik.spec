@@ -229,9 +229,9 @@ rm -fr ${PGDATA}
 initdb --encoding UTF-8 --locale en_US.UTF-8
 
 # Tune the database.
-echo "fsync = off" >> "$HOME/pgdata/postgresql.conf"
-echo "shared_buffers = 1GB" >> "$HOME/pgdata/postgresql.conf"
-echo "listen_addresses = '127.0.0.1'" >> "$HOME/pgdata/postgresql.conf"
+echo "fsync = off" >> "${PGDATA}/postgresql.conf"
+echo "shared_buffers = 1GB" >> "${PGDATA}/postgresql.conf"
+echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start PostgreSQL
 pg_ctl -s start
