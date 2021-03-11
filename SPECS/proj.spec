@@ -28,6 +28,7 @@ BuildRequires:  libtiff-devel
 #   https://github.com/OSGeo/PROJ/issues/1718
 BuildRequires:  sqlite-devel >= %{sqlite_min_version}
 
+Requires:       sqlite >= %{sqlite_min_version}
 Obsoletes:      proj-datumgrid
 
 %description
