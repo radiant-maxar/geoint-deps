@@ -14,7 +14,7 @@
 #TODO: Consider doxy patch from Suse, setting EXTRACT_LOCAL_CLASSES  = NO
 
 # Major digit of the proj so version
-%global proj_somaj 18
+%global proj_somaj 19
 
 # Tests can be of a different version
 %global testversion %{rpmbuild_version}
@@ -549,6 +549,22 @@ rm -f %{buildroot}%{_datadir}/gdal/LICENSE.TXT
 
 %check
 %if %{run_tests}
+export PGDATA="${HOME}/pgdata"
+pg_ctl -s stop || true
+%{__rm} -fr ${PGDATA}
+# Create PostgreSQL database.
+initdb --encoding UTF-8 --locale en_US.UTF-8
+
+# Tune the database.
+echo "fsync = off" >> "${PGDATA}/postgresql.conf"
+echo "shared_buffers = 1GB" >> "${PGDATA}/postgresql.conf"
+echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
+
+# Start and setup to use PostgreSQL *without* PostGIS.
+export PG_USE_POSTGIS=NO
+pg_ctl -s start
+createdb autotest
+
 pushd gdalautotest-%{testversion}
   # Export test environment variables.
   export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:%{buildroot}%{python3_sitearch}
@@ -563,25 +579,27 @@ pushd gdalautotest-%{testversion}
 
   # Remove test cases that require database access.
   rm -f \
-     ogr/ogr_pg.py \
      ogr/ogr_mysql.py \
      ogr/ogr_mongodbv3.py
 
   # Run ogr_fgdb test in isolation due to likely conflict with libxml2;
-  # unfortunately, this test suite may also fail randomly due to this
+  # unfortunately, this test suite may also fail randomly due to this.
   # Thanks, ESRI!
   $PYTEST ogr/ogr_fgdb.py || true
   rm -f ogr/ogr_fgdb.py
 
-  # Run tests with problematic cases deselected.  Some explanations:
+  # Run tests with problematic cases deselected.  Some possible explanations:
   #  * gcore/tiff_read.py: will eventually pass, but consumes all memory
   #      forcing host to swap.
   #  * gdrivers/gdalhttp.py: test_http_4 takes way too long
   #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms;
-  #     most likely due to old poppler library
-  #  * ogr: various vector driver failures, some possible causes:
-  #     - newer SQLite (gpkg/sqlite unique tests)
-  #     - newer PROJ 7 (osr_ct)
+  #      most likely due to old poppler library
+  #  * ogr/ogr_gmlas: FGDB expat conflict with libxml
+  #  * ogr/ogr_gpkg: newer SQLite
+  #  * ogr/ogr_mvt: newer protobuf library
+  #  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
+  #  * ogr/ogr_sqlite: newer SQLite
+  #  * osr/osr_ct: newer PROJ 7
   $PYTEST \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate \
@@ -590,11 +608,12 @@ pushd gdalautotest-%{testversion}
     --deselect gdrivers/pdf.py::test_pdf_jp2_auto_compression \
     --deselect gdrivers/pdf.py::test_pdf_jp2openjpeg_compression \
     --deselect gdrivers/pdf.py::test_pdf_jpeg2000_compression \
+    --deselect ogr/ogr_geojson.py::test_ogr_geojson_57 \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_basic \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_writer_check_xml_read_back \
-    --deselect ogr/ogr_geojson.py::test_ogr_geojson_57 \
     --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_unique \
     --deselect ogr/ogr_mvt.py::test_ogr_mvt_point_polygon_clip \
+    --deselect ogr/ogr_pg.py::test_ogr_pg_70 \
     --deselect ogr/ogr_sqlite.py::test_ogr_sqlite_unique \
     --deselect ogr/ogr_vrt.py::test_ogr_vrt_33 \
     --deselect osr/osr_ct.py::test_osr_ct_options_area_of_interest \
@@ -606,6 +625,9 @@ pushd gdalautotest-%{testversion}
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_18 \
     --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_41
 popd
+
+# Stop PostgreSQL
+pg_ctl -s stop
 %endif
 
 
