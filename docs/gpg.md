@@ -27,35 +27,36 @@ Ubuntu:
 Choose or generate a passphrase, ensure it's in a location you won't forget:
 
 ```
-touch /dev/shm/rpmbuild-passphrase.txt
-chmod 0600 /dev/shm/rpmbuild-passphrase.txt
-dd if=/dev/urandom of=/dev/stdout bs=128 count=1 | base64 -w 0 > /dev/shm/rpmbuild-passphrase.txt
+touch /dev/shm/geoint-passphrase.txt
+chmod 0600 /dev/shm/geoint-passphrase.txt
+dd if=/dev/urandom of=/dev/stdout bs=128 count=1 | base64 -w 0 > /dev/shm/geoint-passphrase.txt
 ```
 
 The example below creates a GnuPG keyring in `$HOME/.gnupg-geoint` with the identity
 `FoundationGEOINT Packaging <foundationgeoint-packaging@maxar.com>`:
 
 ```
+export GNUPGHOME=${HOME}/.gnupg-geoint
 time ./scripts/rpm_gpg_keygen.py \
-  --key-dest $HOME/.gnupg-geoint \
+  --key-dest "${GNUPGHOME}" \
   --key-name "FoundationGEOINT Packaging" \
   --key-email foundationgeoint-packaging@maxar.com \
-  --passphrase-file /dev/shm/rpmbuild-passphrase.txt
+  --passphrase-file /dev/shm/geoint-passphrase.txt
 ```
 
 Key details can be verified with the following:
 ```
-gpg --homedir $HOME/.gnupg-geoint --list-keys --with-colons
+gpg --list-keys --with-colons
 ```
 
 Export an ASCII "armored" version of the key, this is how Yum/RPM consumes public keys:
 ```
-gpg --homedir $HOME/.gnupg-geoint --export --armor > $HOME/geoint.gpg
+gpg --export --armor > geoint.gpg
 ```
 
-Create a tarball for distribution, keep passphrase out of it:
+Export an ASCII "armored" version of the public and secret key for distribution:
 ```
-tar -C $HOME -cJvf SOURCES/gnupg-geoint.tar.xz geoint.gpg .gnupg-geoint
+gpg --export-secret-keys --armor > geoint-secret.gpg
 ```
 
 ### Additional Information
@@ -69,7 +70,8 @@ This script aims to have some sane defaults:
 
 The Debian/Ubuntu package `hopenpgp-tools` can "lint" this signing key:
 ```
-hkt export-pubkeys --keyring $HOME/.gnupg-geoint/pubring.gpg | hokey lint
+export GNUPGHOME=${HOME}/.gnupg-geoint
+gpg --export | hokey lint
 ```
 
 Would produce output like:
