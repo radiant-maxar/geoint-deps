@@ -48,9 +48,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
       gdb \
       git \
       git-core \
-      groff \
       less \
-      lcov \
       libtool \
       make \
       m4 \
@@ -62,7 +60,6 @@ RUN --mount=type=cache,target=/var/cache/yum \
       rpmlint \
       unzip \
       vim \
-      wget \
       which \
       zip
 
