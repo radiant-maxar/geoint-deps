@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-NODESOURCE_VERSION="${1:-10}"
+NODESOURCE_VERSION="${1:-14}"
 NODESOURCE_BASE_URL="${NODESOURCE_BASE_URL:-https://rpm.nodesource.com/pub_${NODESOURCE_VERSION}.x/el}"
 NODESOURCE_KEY="${NODESOURCE_KEY:-/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL}"
 NODESOURCE_REPO="${NODESOURCE_REPO:-/etc/yum.repos.d/nodesource-el.repo}"
