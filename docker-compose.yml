@@ -188,7 +188,7 @@ x-rpmbuild:
         pybind11_version: '2.6.2'
     ruby:
       image: rpmbuild-ruby
-      version: &ruby_version '2.7.2-1'
+      version: &ruby_version '2.7.3-1'
       defines: &ruby_bundled_versions
         bundler_version: '2.1.4'
         bundler_connection_pool_version: '2.2.2'
@@ -209,7 +209,7 @@ x-rpmbuild:
         racc_version: '1.4.16'
         rake_version: '13.0.1'
         rdoc_version: '6.2.1'
-        rubygems_version: '3.1.4'
+        rubygems_version: '3.1.6'
         rubygems_molinillo_version: '0.5.7'
         test_unit_version: '3.3.4'
         xmlrpc_version: '0.3.0'

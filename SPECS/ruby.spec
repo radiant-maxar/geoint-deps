@@ -166,25 +166,9 @@ Patch10: ruby-2.7.0-Remove-RubyGems-dependency.patch
 # Prevent issues with openssl loading when RubyGems are disabled.
 # https://github.com/ruby/openssl/pull/242
 Patch13: ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch
-# Fix `require` behavior allowing to load libraries multiple times.
-# https://github.com/rubygems/rubygems/issues/3647
-# Because there were multiple fixes in `Kernel.require` in recent months,
-# pickup all the changes one by one instead of squashing them.
-# https://github.com/rubygems/rubygems/pull/3124
-Patch15: rubygems-3.1.3-Fix-I-require-priority.patch
-# https://github.com/rubygems/rubygems/pull/3133
-Patch16: rubygems-3.1.3-Improve-require.patch
-# https://github.com/rubygems/rubygems/pull/3153
-Patch17: rubygems-3.1.3-Revert-Exclude-empty-suffix-from-I-require-loop.patch
-# https://github.com/rubygems/rubygems/pull/3639
-Patch18: rubygems-3.1.3-Fix-correctness-and-performance-regression-in-require.patch
 # Avoid possible timeout errors in TestBugReporter#test_bug_reporter_add.
 # https://bugs.ruby-lang.org/issues/16492
 Patch19: ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch
-# Enable arm64 optimizations.
-# https://bugzilla.redhat.com/show_bug.cgi?id=1884728
-# https://github.com/ruby/ruby/pull/3393
-Patch20: ruby-3.0.0-preview1-Enable-arm64-optimizations-that-exist-for-power-x86.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -591,12 +575,7 @@ rm -rf ext/fiddle/libffi*
 %patch9 -p1
 %patch10 -p1
 %patch13 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
 %patch19 -p1
-%patch20 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -788,6 +767,10 @@ sed -i 's/^/%lang(ja) /' .ruby-doc.ja
 # https://github.com/ruby/rake/pull/333
 rm -rf %{buildroot}%{gem_dir}/gems/rake-%{rake_version}/.github
 
+# Remove accidentaly added files
+# https://bugs.ruby-lang.org/issues/17784
+rm -rf %{buildroot}%{ruby_libdir}/exe/
+
 
 %check
 # Check Ruby hardening.
@@ -880,10 +863,6 @@ rm -f \
 # mtime and atime".
 # https://bugs.ruby-lang.org/issues/16410
 MSPECOPTS="$MSPECOPTS -P 'File.utime allows Time instances in the far future to set mtime and atime'"
-
-# Disable File.lchmod specs, which fails when building against glibc 2.31.9000.
-# https://bugs.ruby-lang.org/issues/16749
-MSPECOPTS="$MSPECOPTS -P 'File.lchmod changes the file mode of the link and not of the file'"
 
 # Give an option to increase the timeout in tests.
 # https://bugs.ruby-lang.org/issues/16921
@@ -1173,7 +1152,7 @@ MSPECOPTS="$MSPECOPTS -P 'File.lchmod changes the file mode of the link and not 
 %{gem_dir}/specifications/default/readline-0.0.2.gemspec
 %{gem_dir}/specifications/default/readline-ext-0.1.0.gemspec
 %{gem_dir}/specifications/default/reline-0.1.5.gemspec
-%{gem_dir}/specifications/default/rexml-3.2.3.gemspec
+%{gem_dir}/specifications/default/rexml-3.2.3.1.gemspec
 %{gem_dir}/specifications/default/rss-0.2.8.gemspec
 %{gem_dir}/specifications/default/sdbm-1.0.0.gemspec
 %{gem_dir}/specifications/default/singleton-0.1.0.gemspec
@@ -1182,7 +1161,7 @@ MSPECOPTS="$MSPECOPTS -P 'File.lchmod changes the file mode of the link and not 
 %{gem_dir}/specifications/default/timeout-0.1.0.gemspec
 %{gem_dir}/specifications/default/tracer-0.1.0.gemspec
 %{gem_dir}/specifications/default/uri-0.10.0.gemspec
-%{gem_dir}/specifications/default/webrick-1.6.0.gemspec
+%{gem_dir}/specifications/default/webrick-1.6.1.gemspec
 %{gem_dir}/specifications/default/yaml-0.1.0.gemspec
 %{gem_dir}/specifications/default/zlib-1.1.0.gemspec
 

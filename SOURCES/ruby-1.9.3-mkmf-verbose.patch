@@ -11,7 +11,7 @@ diff --git a/lib/mkmf.rb b/lib/mkmf.rb
 index 682eb46..e6b1445 100644
 --- a/lib/mkmf.rb
 +++ b/lib/mkmf.rb
-@@ -1900,7 +1900,7 @@ def configuration(srcdir)
+@@ -1930,7 +1930,7 @@ def configuration(srcdir)
  SHELL = /bin/sh
  
  # V=0 quiet, V=1 verbose.  other values don't work.
