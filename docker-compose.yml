@@ -141,7 +141,7 @@ x-rpmbuild:
       arch: noarch
     passenger:
       image: rpmbuild-passenger
-      version: &passenger_version '6.0.7-1'
+      version: &passenger_version '6.0.8-1'
     postgis:
       image: rpmbuild-postgis
       version: &postgis_version '3.1.1-1'
