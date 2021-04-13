@@ -219,7 +219,7 @@ x-rpmbuild:
     #    - zfs_host
     sqlite:
       image: rpmbuild-sqlite
-      version: &sqlite_version '3.35.0-1'
+      version: &sqlite_version '3.35.4-1'
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version '2020.3-1'
