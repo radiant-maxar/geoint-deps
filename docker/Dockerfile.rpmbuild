@@ -30,16 +30,19 @@ ENV LANG=${rpmbuild_lang} \
 
 # Install basic development and RPM authoring tools.
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum-config-manager --quiet --save --setopt=base.repo_gpgcheck=1 && \
-    yum-config-manager --quiet --save --setopt=updates.repo_gpgcheck=1 && \
+    yum-config-manager --save \
+        --setopt=base.repo_gpgcheck=1 \
+        --setopt=extras.repo_gpgcheck=1 \
+        --setopt=updates.repo_gpgcheck=1 &> /dev/null && \
+    yum -q -y install \
+        centos-release-scl \
+        epel-release && \
     yum -q -y update && \
     yum -q -y install \
       autoconf \
       automake \
       bzip2 \
-      centos-release-scl \
       createrepo \
-      epel-release \
       gcc \
       gcc-c++ \
       gdb \
