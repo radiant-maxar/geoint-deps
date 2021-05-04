@@ -1,5 +1,13 @@
 # FoundationGEOINT Dependencies
 
+This repository provides a Docker-based build system for creating
+RPMs of the latest geospatial libraries on CentOS/RHEL 7 until the
+platform fades into obsolesence.  Priorities:
+
+* Support common geospatial libraries and applications, e.g., those from OSGeo and OSM.
+* Build RPMs in isolated environments, using only what's required, as a non-privileged user.
+* Embrace the RPM toolchain to support compilation hardening flags.
+
 ## Quickstart
 
 Just type `make $RPM_NAME`, for example start small:

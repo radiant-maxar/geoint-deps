@@ -1,7 +1,7 @@
 ---
 name: geoint-deps
 description: Build system for FoundationGEOINT Dependency RPMs
-source: https://gitub.com/DigitalGlobe/geoint-deps
+source: https://gitub.com/radiant-maxar/geoint-deps
 team: FoundationGEOINT Team
 data_classification:
   - public
@@ -14,5 +14,3 @@ poc:
     email: justin.bronn@maxar.com
   - name: David Hummel
     email: david.hummel@maxar.com
-  - name: Seth Putnam
-    email: seth.putnam@maxar.com
