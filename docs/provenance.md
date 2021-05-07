@@ -131,19 +131,73 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 
 ## libosmium
 
+The [libosmium](http://osmcode.org/libosmium/) library source archives are
+obtained directly from [GitHub](https://github.com/osmcode/libosmium)
+and is [Boost licensed](https://github.com/osmcode/libosmium/blob/master/LICENSE).
+
+The [`libosmium.spec`](../SPECS/libosmium.spec) originates from
+[Fedora's `libosmium` RPM](https://src.fedoraproject.org/rpms/libosmium)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Mapnik
+
+The [Mapnik](http://mapnik.org/) source and test data archives are obtained directly from
+[GitHub](https://github.com/mapnik/mapnik/releases) and are
+[LGPLv2 licensed](https://github.com/mapnik/mapnik/blob/master/COPYING).
+
+The following packaging files originate from
+[Fedora's `mapnik` RPM](https://src.fedoraproject.org/rpms/mapnik)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`mapnik.spec`](../SPECS/mapnik.spec)
+* [`mapnik-viewer.desktop`](../SOURCES/mapnik-viewer.desktop)
+* [`mapnik-build-viewer.patch`](../SOURCES/mapnik-build-viewer.patch)
+* [`mapnik-system-sparsehash.patch`](../SOURCES/mapnik-system-sparsehash.patch)
+* [`mapnik-visual-compare.patch`](../SOURCES/mapnik-visual-compare.patch)
+* [`mapnik-rpath.patch`](../SOURCES/mapnik-rpath.patch)
+* [`mapnik-proj.patch`](../SOURCES/mapnik-proj.patch)
+* [`mapnik-build-json-fix.patch`](../SOURCES/mapnik-build-json-fix.patch)
 
 ## openstreetmap-carto
 
+The [openstreetmap-carto](https://github.com/gravitystorm/openstreetmap-carto)
+provides cartographic styles for Mapnik tiles.  Source archives are
+obtained directly from GitHub and are
+[CC0 1.0 licensed](https://github.com/gravitystorm/openstreetmap-carto/blob/master/LICENSE.txt).
+Its data package contains archives that are public domain and
+[ODbL](https://opendatacommons.org/licenses/odbl/) licensed.
+
 ## osm2pgsql
+
+The [osm2pgsql](https://github.com/openstreetmap/osm2pgsql) source archives are
+obtained directly from GitHub and is
+[GPLv2 licensed](https://github.com/openstreetmap/osm2pgsql/blob/master/COPYING).
+
+The [`osm2pgsql.spec`](../SPECS/osm2pgsql.spec) originates from
+[Fedora's `osm2pgsql` RPM](https://src.fedoraproject.org/rpms/osm2pgsql)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## osmctools
 
+The [osmctools](https://gitlab.com/osm-c-tools/osmctools) source archives
+obtained directly from its GitLab] and are
+released under the [AGPLv3 license](https://gitlab.com/osm-c-tools/osmctools/-/blob/master/COPYING).
+
 ## osmdbt
 
-The `osmdbt` package provides [OpenStreetMap Database Replication Tools](https://github.com/openstreetmap/).
+The `osmdbt` package provides [OpenStreetMap Database Replication Tools](https://github.com/openstreetmap/);
+source archives are obtained directly from GitHub and are released under the
+[GPLv3 license](https://github.com/openstreetmap/osmdbt/blob/master/LICENSE.txt).
 
 ## osmium-tool
+
+The [osmium-tool](http://osmcode.org/osmium-tool/) source archives are
+obtained directly from [GitHub](https://github.com/osmcode/osmium-tool)
+and is [GPLv3 licensed](https://github.com/osmcode/osmium-tool/blob/master/LICENSE.txt).
+
+The [`osmium-tool.spec`](../SPECS/osmium-tool.spec) originates from
+[Fedora's `osmium-tool` RPM](https://src.fedoraproject.org/rpms/osmium-tool)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## Osmosis
 
@@ -157,6 +211,20 @@ comes from [Debian's GIS Project](https://salsa.debian.org/debian-gis-team/osmos
 and is licensed under the GPLv3.
 
 ## Passenger
+
+The [Phusion Passenger](https://www.phusionpassenger.com) source archives are obtained
+directly from their release S3 bucket and released mostly under Boost/BSD
+licenses.
+
+The following packaging files originate from
+[Fedora's `passenger` RPM](https://src.fedoraproject.org/rpms/passenger)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`passenger.spec`](../SPECS/passenger.spec)
+* [`apache-passenger.conf.in`](../SOURCES/apache-passenger.conf.in)
+* [`apache-passenger-module.conf`](../SOURCES/apache-passenger-module.conf)
+* [`passenger.logrotate`](../SOURCES/passenger.logrotate)
+* [`passenger.tmpfiles`](../SOURCES/passenger.tmpfiles)
 
 ## PROJ
 
@@ -200,7 +268,7 @@ under the [GPLv2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
 The following packaging files originate from
 PGDG's PostGIS [2.5.5](https://download.postgresql.org/pub/repos/yum/srpms/9.5/redhat/rhel-7-x86_64/)
-anad [3.1.1](https://download.postgresql.org/pub/repos/yum/srpms/13/redhat/rhel-7-x86_64/)
+and [3.1.1](https://download.postgresql.org/pub/repos/yum/srpms/13/redhat/rhel-7-x86_64/)
 source RPMs released under the [PostgreSQL license](./licenses/PostgreSQL-LICENSE).
 
 * [`postgis.spec`](../SPECS/postgis.spec)
@@ -210,18 +278,93 @@ source RPMs released under the [PostgreSQL license](./licenses/PostgreSQL-LICENS
 Any portions of [Fedora's `postgis` RPM](https://src.fedoraproject.org/rpms/postgis/tree/master)
 that may appear in these files are [MIT licensed](./licenses/Fedora-LICENSE).
 
-## PyOsmium
+## PyOsmium (`python3-osmium`)
+
+The [PyOsmium](http://osmcode.org/pyosmium/) library source archives are
+obtained directly from [GitHub](https://github.com/osmcode/pyosmium)
+and is [BSD licensed](https://github.com/osmcode/pyosmium/blob/master/LICENSE.TXT).
+
+The following packaging files originate from
+[Fedora's `pyosmium` RPM](https://src.fedoraproject.org/rpms/pyosmium)
+repository and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`python3-osmium.spec`](../SPECS/python3-osmium.spec)
+* [`python3-osmium-no-strip.patch`](../SOURCES/python3-osmium-no-strip.patch)
+* [`python3-osmium-no-extras.patch`](../SOURCES/python3-osmium-no-extras.patch)
 
 ## Rack
 
+[Rack](https://rack.github.io/) source archives are obtained
+directly from RubyGems  and are MIT/BSD licensed.
+
+The [`rubygem-rack.spec`](../SPECS/rubygem-rack.spec) originates from
+[Fedora's `rubygem-rack` RPM](https://src.fedoraproject.org/rpms/rubygem-rack)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Ruby
+
+[Ruby](https://www.ruby-lang.org) source archives are obtained
+directly from Ruby's website and Ruby/BSD licensed.
+
+The following packaging files originate from
+[Fedora's `ruby` RPM](https://src.fedoraproject.org/rpms/ruby)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`ruby.spec`](../SPECS/ruby.spec)
+* [`ruby-2.3.0-ruby_version.patch`](../SOURCES/ruby-2.3.0-ruby_version.patch)
+* [`ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch`](../SOURCES/ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch)
+* [`ruby-2.1.0-Enable-configuration-of-archlibdir.patch`](../SOURCES/ruby-2.1.0-Enable-configuration-of-archlibdir.patch)
+* [`ruby-2.1.0-always-use-i386.patch`](../SOURCES/ruby-2.1.0-always-use-i386.patch)
+* [`ruby-2.1.0-custom-rubygems-location.patch`](../SOURCES/ruby-2.1.0-custom-rubygems-location.patch)
+* [`ruby-1.9.3-mkmf-verbose.patch`](../SOURCES/ruby-1.9.3-mkmf-verbose.patch)
+* [`ruby-2.7.0-Initialize-ABRT-hook.patch`](../SOURCES/ruby-2.7.0-Initialize-ABRT-hook.patch)
+* [`ruby-2.7.2-disable-eaccess-tests.patch`](../SOURCES/ruby-2.7.2-disable-eaccess-tests.patch)
+* [`ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch`](../SOURCES/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch)
+* [`ruby-2.7.0-Remove-RubyGems-dependency.patch`](../SOURCES/ruby-2.7.0-Remove-RubyGems-dependency.patch)
+* [`ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch`](../SOURCES/ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch)
+* [`ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch`](../SOURCES/ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch)
 
 ## SBT
 
+The [SBT](http://www.scala-sbt.org) source archives are obtained
+directly from [GitHub](https://github.com/sbt/sbt) and are Apache licensed.
+
 ## SFCGAL
+
+The [SFCGAL](https://www.sfcgal.org) source archives are obtained
+directly from [GitLab](https://gitlab.com/Oslandia/SFCGAL) and
+is released under the [LGPLv2 license](https://gitlab.com/Oslandia/SFCGAL/-/blob/master/LICENSE)
 
 ## SQLite
 
+The [SQLite](https://www.sqlite.org) source archives are obtained
+directly from its website and are released into the public domain.
+
+The following packaging files originate from
+[Fedora's `sqlite` RPM](https://src.fedoraproject.org/rpms/sqlite)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`sqlite.spec`](../SPECS/sqlite.spec)
+* [`sqlite-3.6.23-lemon-system-template.patch`](../SOURCES/sqlite-3.6.23-lemon-system-template.patch)
+* [`sqlite-3.12.2-no-malloc-usable-size.patch`](../SOURCES/sqlite-3.12.2-no-malloc-usable-size.patch)
+* [`sqlite-3.8.0-percentile-test.patch`](../SOURCES/sqlite-3.8.0-percentile-test.patch)
+* [`sqlite-3.18.0-sync2-dirsync.patch`](../SOURCES/sqlite-3.18.0-sync2-dirsync.patch)
+
 ## TBB
 
-The `tbb` package provides Intel's Thread Building Blocks library.
+The `tbb` package provides Intel's [Thread Building Blocks](http://threadingbuildingblocks.org/) library.
+Source archives are obtained directly from [GitHub](https://github.com/intel/tbb) and are Apache licensed.
+
+The following packaging files originate from
+[Fedora's `tbb` RPM](https://src.fedoraproject.org/rpms/tbb)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`tbb.spec`](../SPECS/tbb.spec)
+* [`tbb.pc`](../SOURCES/tbb.pc)
+* [`tbbmalloc.pc`](../SOURCES/tbbmalloc.pc)
+* [`tbbmalloc_proxy.pc`](../SOURCES/tbbmalloc_proxy.pc)
+* [`tbbmalloc_proxy.pc`](../SOURCES/tbbmalloc_proxy.pc)
+* [`tbb-2019-dont-snip-Wall.patch`](../SOURCES/tbb-2019-dont-snip-Wall.patch)
+* [`tbb-2020-attributes.patch`](../SOURCES/tbb-2020-attributes.patch)
+* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
+* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)

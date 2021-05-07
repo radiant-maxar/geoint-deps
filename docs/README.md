@@ -1,4 +1,5 @@
 # FoundationGEOINT Documentation Index
 
-* [GPG Release Key](./geoint-gpg.md)
+* [Background](./background.md)
 * [Provenance](./provenance.md)
+* [GPG Release Key](./geoint-gpg.md)
