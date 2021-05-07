@@ -7,7 +7,10 @@ As this aggregate work was originally based on NGA's
 [Hootenanny RPMs](https://github.com/ngageoint/hootenanny-rpms), it is
 licensed under the [GPLv3](../LICENSE); there is no intent
 to supersede the original licensing of `.spec` files or patches -- and the
-provenance of all external code will be explained here.
+provenance of all external code will be explained here.  Unlike Hootenanny's
+RPMs, source code archives are not kept in this repository and
+downloaded upon RPM creation; licenses for these archives are noted for
+convenience.
 
 A majority of `.spec` files and patches in this repository were originally
 sourced from Fedora, who uses the [MIT license](./licenses/Fedora-LICENSE)
@@ -76,7 +79,26 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE).
 
 ## Google Noto Fonts
 
+The [Google Noto Fonts](https://github.com/googlefonts/noto-source) source
+archives are obtained directly from the project's GitHub page and are
+released under the Open Font License 1.1.
+
+The [`google-noto-fonts-extra.spec`](../SPECS/lgoogle-noto-fonts-extra.spec) originates from
+[Fedora's `google-noto-fonts` RPM](https://src.fedoraproject.org/rpms/google-noto-fonts)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Hanazono Fonts
+
+The [Hanazono Fonts](http://fonts.jp/hanazono/) source archives are obtained
+directly from the project's [OSDN downloads](https://osdn.net/projects/hanazono-font/releases/)
+and is released under the Hanazono Font License and the Open Font License 1.1.
+
+The following packaging files originate from
+[Fedora's `hanazono-fonts` RPM](https://src.fedoraproject.org/rpms/hanazono-fonts)
+repository and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`hanazono-fonts.spec`](../SPECS/hanazono-fonts.spec)
+* [`hanazono-fonts-fontconfig.conf`](../SOURCES/hanazono-fonts-fontconfig.conf)
 
 ## libgeotiff
 
