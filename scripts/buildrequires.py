@@ -13,7 +13,7 @@ def main():
     )
     parser.add_argument(
         "--define",
-        action="extend",
+        action="append",
         dest="defines",
         nargs="+",
         help="RPM macro definitions to use.",
