@@ -344,12 +344,14 @@ services:
     <<: *service_defaults
     depends_on:
       - rpmbuild-proj
+      - rpmbuild-sqlite
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_LIBGEOTIFF_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
         proj_version: *proj_version
+        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
   rpmbuild-libkml:
     <<: *service_defaults
