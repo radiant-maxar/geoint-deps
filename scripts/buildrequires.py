@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import itertools
 import json
 import sys
 
@@ -31,7 +32,10 @@ def main():
     build_defines = {}
     try:
         if args.defines:
-            build_defines = dict(define.split("=") for define in args.defines)
+            build_defines = dict(
+                define.split("=")
+                for define in itertools.chain.from_iterable(args.defines)
+            )
     except Exception as err:
         sys.stderr.write("Error: {}\n".format(err))
         sys.exit(2)
