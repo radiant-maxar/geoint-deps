@@ -43,20 +43,20 @@ SFCGAL applications.
 %build
 pushd build
 %cmake3 ..
-%cmake3_build
+%make_build
 popd
 
 
 %install
 pushd build
-%cmake3_install
+%make_install
 popd
 
 
 %check
-pushd build
+CGAL_DIR=%{buildroot}%{_usr} %cmake3 -DSFCGAL_BUILD_TESTS=ON
+%make_build
 %ctest3
-popd
 
 
 %files
