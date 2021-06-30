@@ -611,6 +611,7 @@ pushd gdalautotest-%{testversion}
     --deselect ogr/ogr_geojson.py::test_ogr_geojson_57 \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_basic \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_writer_check_xml_read_back \
+    --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_46 \
     --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_unique \
     --deselect ogr/ogr_mvt.py::test_ogr_mvt_point_polygon_clip \
     --deselect ogr/ogr_pg.py::test_ogr_pg_70 \
