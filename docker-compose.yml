@@ -2,9 +2,9 @@
 version: '3.7'
 
 x-rpmbuild:
-  dist: &rpmbuild_dist '.el7'
+  dist: &rpmbuild_dist .el7
   channel_name: &rpmbuild_channel stable
-  email: &rpmbuild_email 'foundationgeoint-packaging@maxar.com'
+  email: &rpmbuild_email foundationgeoint-packaging@maxar.com
   packager_name: &rpmbuild_name 'FoundationGEOINT Packaging'
   postgres_version: &postgres_version '13'
   vendor: &rpmbuild_vendor 'Maxar Technologies'
