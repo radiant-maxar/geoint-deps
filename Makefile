@@ -41,7 +41,6 @@ HANAZONO_RPM := $(call rpm_file,hanazono-fonts)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
-LUA_RPM := $(call rpm_file,lua)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
@@ -76,7 +75,6 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
-	rpmbuild-lua \
 	rpmbuild-openstreetmap-carto \
 	rpmbuild-osmctools \
 	rpmbuild-osmdbt \
@@ -107,7 +105,6 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	libkml \
 	libosmium \
-	lua \
 	openstreetmap-carto \
 	osmctools \
 	osmdbt \
@@ -160,7 +157,6 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
-	echo RPMBUILD_LUA_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/lua.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
@@ -213,9 +209,6 @@ rpmbuild-libkml: .env
 
 rpmbuild-libosmium: .env protozero
 	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
-
-rpmbuild-lua: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-lua
 
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
@@ -291,7 +284,6 @@ hanazono-fonts: rpmbuild-fonts $(HANAZONO_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
-lua: rpmbuild-lua $(LUA_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
 openstreetmap-carto: rpmbuild-openstreetmap-carto $(OPENSTREETMAP_CARTO_RPM)
 osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
