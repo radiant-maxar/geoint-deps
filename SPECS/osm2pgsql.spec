@@ -14,13 +14,15 @@ Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 
 License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
-Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  cmake3
 BuildRequires:  expat-devel
-BuildRequires:  gcc-c++
+# A newer C++ toolchain and libosmium 2.17.0+ are required to compile 1.5.0+.
+BuildRequires:  devtoolset-9-gcc
+BuildRequires:  devtoolset-9-gcc-c++
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
@@ -53,6 +55,7 @@ geospatial analysis.
 
 
 %build
+. /opt/rh/devtoolset-9/enable
 pushd build
 %cmake3 .. -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE=Release \
