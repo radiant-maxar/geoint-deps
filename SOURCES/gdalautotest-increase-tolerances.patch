@@ -1,6 +1,6 @@
-diff -uPNr gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/alg/warp.py gdal-3.2.2-fedora/gdalautotest-3.2.2/alg/warp.py
---- gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/alg/warp.py	2020-12-29 07:16:07.000000000 -0500
-+++ gdal-3.2.2-fedora/gdalautotest-3.2.2/alg/warp.py	2021-02-07 04:57:31.866254137 -0500
+diff -uPNr gdal-3.2.3-fedora/gdalautotest-3.2.3.orig/alg/warp.py gdal-3.2.3-fedora/gdalautotest-3.2.3/alg/warp.py
+--- gdal-3.2.3-fedora/gdalautotest-3.2.3.orig/alg/warp.py	2020-12-29 07:16:07.000000000 -0500
++++ gdal-3.2.3-fedora/gdalautotest-3.2.3/alg/warp.py	2021-02-07 04:57:31.866254137 -0500
 @@ -1628,9 +1628,9 @@
          for option in ('-wo USE_GENERAL_CASE=TRUE', ''):
              # First checksum is proj 4.8, second proj 4.9.2
@@ -14,9 +14,9 @@ diff -uPNr gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/alg/warp.py gdal-3.2.2-fedo
                  dst_ds.GetRasterBand(1).Fill(0)
                  dst_ds.GetRasterBand(2).Fill(0)
                  gdal.Warp(dst_ds, src_ds,
-diff -uPNr gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/gcore/transformer.py gdal-3.2.2-fedora/gdalautotest-3.2.2/gcore/transformer.py
---- gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/gcore/transformer.py	2020-12-29 07:15:48.000000000 -0500
-+++ gdal-3.2.2-fedora/gdalautotest-3.2.2/gcore/transformer.py	2021-02-07 04:38:46.980284425 -0500
+diff -uPNr gdal-3.2.3-fedora/gdalautotest-3.2.3.orig/gcore/transformer.py gdal-3.2.3-fedora/gdalautotest-3.2.3/gcore/transformer.py
+--- gdal-3.2.3-fedora/gdalautotest-3.2.3.orig/gcore/transformer.py	2020-12-29 07:15:48.000000000 -0500
++++ gdal-3.2.3-fedora/gdalautotest-3.2.3/gcore/transformer.py	2021-02-07 04:38:46.980284425 -0500
 @@ -785,11 +785,11 @@
      tr = gdal.Transformer(ds, None, ['METHOD=RPC', 'RPC_HEIGHT_SCALE=2', 'RPC_DEM=/vsimem/dem.tif', 'RPC_DEM_SRS=EPSG:32652+5773'])
  
@@ -32,9 +32,9 @@ diff -uPNr gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/gcore/transformer.py gdal-3
 -    gdal.Unlink('/vsimem/dem.tif')
 \ No newline at end of file
 +    gdal.Unlink('/vsimem/dem.tif')
-diff -uPNr gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/gdrivers/jp2openjpeg.py gdal-3.2.2-fedora/gdalautotest-3.2.2/gdrivers/jp2openjpeg.py
---- gdal-3.2.2-fedora/gdalautotest-3.2.2.orig/gdrivers/jp2openjpeg.py	2021-02-07 04:42:44.757957113 -0500
-+++ gdal-3.2.2-fedora/gdalautotest-3.2.2/gdrivers/jp2openjpeg.py	2021-02-07 04:27:49.783685518 -0500
+diff -uPNr gdal-3.2.3-fedora/gdalautotest-3.2.3.orig/gdrivers/jp2openjpeg.py gdal-3.2.3-fedora/gdalautotest-3.2.3/gdrivers/jp2openjpeg.py
+--- gdal-3.2.3-fedora/gdalautotest-3.2.3.orig/gdrivers/jp2openjpeg.py	2021-02-07 04:42:44.757957113 -0500
++++ gdal-3.2.3-fedora/gdalautotest-3.2.3/gdrivers/jp2openjpeg.py	2021-02-07 04:27:49.783685518 -0500
 @@ -597,7 +597,7 @@
      assert ds.GetRasterBand(2).GetColorInterpretation() == gdal.GCI_GreenBand
      assert ds.GetRasterBand(3).GetColorInterpretation() == gdal.GCI_BlueBand

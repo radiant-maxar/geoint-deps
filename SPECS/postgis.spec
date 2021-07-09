@@ -37,8 +37,6 @@ Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}.pdf
 Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev_version}.tar.gz
 Source4:        postgis-filter-requires-perl-Pg.sh
 Patch0:         postgis-%{postgis_majorversion}-gdalfpic.patch
-# Fix fixedoverlay test for newer GEOS versions; fixed after 3.1.1.
-Patch1:         postgis-3.1.1-fixedoverlay-test.patch
 
 URL:		http://www.postgis.net/
 
