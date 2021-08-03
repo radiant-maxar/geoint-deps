@@ -215,6 +215,9 @@ x-rpmbuild:
     sqlite:
       image: rpmbuild-sqlite
       version: &sqlite_version '3.36.0-1'
+    sqlite-pcre:
+      image: rpmbuild-sqlite-pcre
+      version: &sqlite_pcre_version '2007.1.20-1'
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version '2020.3-1'
@@ -602,6 +605,17 @@ services:
       args:
         packages: "${RPMBUILD_SQLITE_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-sqlite-pcre:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-sqlite
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_SQLITE_PCRE_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+        sqlite_version: *sqlite_version
+      dockerfile: docker/Dockerfile.rpmbuild-proj
   rpmbuild-tbb:
     <<: *service_defaults
     depends_on:
