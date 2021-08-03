@@ -28,15 +28,15 @@ libs=$(pkg-config --libs sqlite3 libpcre)
 
 
 %check
-sqlite3 >out <<EOF
+%{_bindir}/sqlite3 >out <<EOF
 .load ./pcre.so
 SELECT "asdf" REGEXP "(?i)^A";
 EOF
-grep 1 out
+%{_bindir}/grep 1 out
 
 
 %install
-%{__install} -pD -m755 pcre.so %{buildroot}%{_libdir}/sqlite/pcre.so
+%{__install} -pD -m0755 pcre.so %{buildroot}%{_libdir}/sqlite/pcre.so
 
 
 %files
