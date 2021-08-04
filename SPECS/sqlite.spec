@@ -138,6 +138,7 @@ export CFLAGS="$RPM_OPT_FLAGS $RPM_LD_FLAGS -DSQLITE_ENABLE_COLUMN_METADATA=1 \
                -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -fno-strict-aliasing"
 export TCLLIBDIR=%{tcl_sitearch}/sqlite3
 %configure --enable-all \
+           --enable-fts5 \
            --enable-threadsafe \
            --enable-threads-override-locks \
            --enable-load-extension
