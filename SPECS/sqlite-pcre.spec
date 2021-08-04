@@ -36,11 +36,11 @@ EOF
 
 
 %install
-%{__install} -pD -m0755 pcre.so %{buildroot}%{_libdir}/sqlite/pcre.so
+%{__install} -pD -m0755 pcre.so %{buildroot}%{_libdir}/sqlite3/pcre.so
 
 
 %files
-%{_libdir}/sqlite/pcre.so
+%{_libdir}/sqlite3/pcre.so
 
 
 %changelog
