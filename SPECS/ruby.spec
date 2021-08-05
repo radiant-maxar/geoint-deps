@@ -169,6 +169,9 @@ Patch13: ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch
 # Avoid possible timeout errors in TestBugReporter#test_bug_reporter_add.
 # https://bugs.ruby-lang.org/issues/16492
 Patch19: ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch
+# Backport CVE-2021-31810, CVE-2021-32066, and CVE-2021-31799 from
+# Ruby 2.7.4.
+Patch20: ruby-2.7.4-security-fixes.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -576,6 +579,7 @@ rm -rf ext/fiddle/libffi*
 %patch10 -p1
 %patch13 -p1
 %patch19 -p1
+%patch20 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -849,6 +853,7 @@ MSPECOPTS=""
 # Avoid dependency on IPv6 to run the tests.
 sed -i -e 's/localhost/127.0.0.1/g' test/net/http/test_http.rb
 rm -f test/net/smtp/test_smtp.rb
+
 %if %{with zfs_host}
 # Remove tests that make assumptions of underlying filesystem and crash
 # with ZFS on Linux.
@@ -857,8 +862,8 @@ rm -f \
    test/ruby/test_io.rb \
    test/ruby/test_io_m17n.rb \
    test/ruby/test_require.rb
-%endif
 
+%endif
 # Disable "File.utime allows Time instances in the far future to set
 # mtime and atime".
 # https://bugs.ruby-lang.org/issues/16410

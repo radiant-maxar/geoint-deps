@@ -1,0 +1,373 @@
+Backports of Ruby 2.7.4 security fixes for:
+
+* CVE-2021-31810
+* CVE-2021-32066
+* CVE-2021-31799
+
+Rest of 2.7.4 changes cause issues with JIT tests (test/ruby/test_jit.rb), see also:
+  https://bugzilla.redhat.com/show_bug.cgi?id=1721553#c34
+  https://bugs.ruby-lang.org/issues/16694
+
+
+diff --git a/lib/net/ftp.rb b/lib/net/ftp.rb
+index 610027dc38..1e078453a8 100644
+--- a/lib/net/ftp.rb
++++ b/lib/net/ftp.rb
+@@ -97,6 +97,10 @@ class FTP < Protocol
+     # When +true+, the connection is in passive mode.  Default: +true+.
+     attr_accessor :passive
+ 
++    # When +true+, use the IP address in PASV responses.  Otherwise, it uses
++    # the same IP address for the control connection.  Default: +false+.
++    attr_accessor :use_pasv_ip
++
+     # When +true+, all traffic to and from the server is written
+     # to +$stdout+.  Default: +false+.
+     attr_accessor :debug_mode
+@@ -205,6 +209,9 @@ def FTP.open(host, *args)
+     #                          handshake.
+     #                          See Net::FTP#ssl_handshake_timeout for
+     #                          details.  Default: +nil+.
++    # use_pasv_ip::  When +true+, use the IP address in PASV responses.
++    #                Otherwise, it uses the same IP address for the control
++    #                connection.  Default: +false+.
+     # debug_mode::  When +true+, all traffic to and from the server is
+     #               written to +$stdout+.  Default: +false+.
+     #
+@@ -265,6 +272,7 @@ def initialize(host = nil, user_or_options = {}, passwd = nil, acct = nil)
+       @open_timeout = options[:open_timeout]
+       @ssl_handshake_timeout = options[:ssl_handshake_timeout]
+       @read_timeout = options[:read_timeout] || 60
++      @use_pasv_ip = options[:use_pasv_ip] || false
+       if host
+         connect(host, options[:port] || FTP_PORT)
+         if options[:username]
+@@ -1370,7 +1378,12 @@ def parse227(resp) # :nodoc:
+         raise FTPReplyError, resp
+       end
+       if m = /\((?<host>\d+(,\d+){3}),(?<port>\d+,\d+)\)/.match(resp)
+-        return parse_pasv_ipv4_host(m["host"]), parse_pasv_port(m["port"])
++        if @use_pasv_ip
++          host = parse_pasv_ipv4_host(m["host"])
++        else
++          host = @bare_sock.remote_address.ip_address
++        end
++        return host, parse_pasv_port(m["port"])
+       else
+         raise FTPProtoError, resp
+       end
+diff --git a/lib/net/imap.rb b/lib/net/imap.rb
+index 720acbc86d..94ef78198f 100644
+--- a/lib/net/imap.rb
++++ b/lib/net/imap.rb
+@@ -1216,12 +1216,14 @@ def get_tagged_response(tag, cmd)
+       end
+       resp = @tagged_responses.delete(tag)
+       case resp.name
++      when /\A(?:OK)\z/ni
++        return resp
+       when /\A(?:NO)\z/ni
+         raise NoResponseError, resp
+       when /\A(?:BAD)\z/ni
+         raise BadResponseError, resp
+       else
+-        return resp
++        raise UnknownResponseError, resp
+       end
+     end
+ 
+@@ -3717,6 +3719,10 @@ class BadResponseError < ResponseError
+     class ByeResponseError < ResponseError
+     end
+ 
++    # Error raised upon an unknown response from the server.
++    class UnknownResponseError < ResponseError
++    end
++
+     RESPONSE_ERRORS = Hash.new(ResponseError)
+     RESPONSE_ERRORS["NO"] = NoResponseError
+     RESPONSE_ERRORS["BAD"] = BadResponseError
+diff --git a/lib/rdoc/rdoc.rb b/lib/rdoc/rdoc.rb
+index c60e017609..f356c368ff 100644
+--- a/lib/rdoc/rdoc.rb
++++ b/lib/rdoc/rdoc.rb
+@@ -430,7 +430,7 @@ def remove_unparseable files
+     files.reject do |file|
+       file =~ /\.(?:class|eps|erb|scpt\.txt|svg|ttf|yml)$/i or
+         (file =~ /tags$/i and
+-         open(file, 'rb') { |io|
++         File.open(file, 'rb') { |io|
+            io.read(100) =~ /\A(\f\n[^,]+,\d+$|!_TAG_)/
+          })
+     end
+diff --git a/lib/rdoc/version.rb b/lib/rdoc/version.rb
+index 5c70744061..335aec3e1a 100644
+--- a/lib/rdoc/version.rb
++++ b/lib/rdoc/version.rb
+@@ -3,6 +3,6 @@ module RDoc
+   ##
+   # RDoc version you are using
+ 
+-  VERSION = '6.2.1'
++  VERSION = '6.2.1.1'
+ 
+ end
+diff --git a/test/net/ftp/test_ftp.rb b/test/net/ftp/test_ftp.rb
+index 2504a48d0a..24c5d3a12f 100644
+--- a/test/net/ftp/test_ftp.rb
++++ b/test/net/ftp/test_ftp.rb
+@@ -61,7 +61,7 @@ def test_connect_fail
+   end
+ 
+   def test_parse227
+-    ftp = Net::FTP.new
++    ftp = Net::FTP.new(nil, use_pasv_ip: true)
+     host, port = ftp.send(:parse227, "227 Entering Passive Mode (192,168,0,1,12,34)")
+     assert_equal("192.168.0.1", host)
+     assert_equal(3106, port)
+@@ -80,6 +80,14 @@ def test_parse227
+     assert_raise(Net::FTPProtoError) do
+       ftp.send(:parse227, "227 ) foo bar (")
+     end
++
++    ftp = Net::FTP.new
++    sock = OpenStruct.new
++    sock.remote_address = OpenStruct.new
++    sock.remote_address.ip_address = "10.0.0.1"
++    ftp.instance_variable_set(:@bare_sock, sock)
++    host, port = ftp.send(:parse227, "227 Entering Passive Mode (192,168,0,1,12,34)")
++    assert_equal("10.0.0.1", host)
+   end
+ 
+   def test_parse228
+@@ -2459,10 +2467,155 @@ def test_puttextfile_command_injection
+     end
+   end
+ 
++  def test_ignore_pasv_ip
++    commands = []
++    binary_data = (0..0xff).map {|i| i.chr}.join * 4 * 3
++    server = create_ftp_server(nil, "127.0.0.1") { |sock|
++      sock.print("220 (test_ftp).\r\n")
++      commands.push(sock.gets)
++      sock.print("331 Please specify the password.\r\n")
++      commands.push(sock.gets)
++      sock.print("230 Login successful.\r\n")
++      commands.push(sock.gets)
++      sock.print("200 Switching to Binary mode.\r\n")
++      line = sock.gets
++      commands.push(line)
++      data_server = TCPServer.new("127.0.0.1", 0)
++      port = data_server.local_address.ip_port
++      sock.printf("227 Entering Passive Mode (999,0,0,1,%s).\r\n",
++                  port.divmod(256).join(","))
++      commands.push(sock.gets)
++      sock.print("150 Opening BINARY mode data connection for foo (#{binary_data.size} bytes)\r\n")
++      conn = data_server.accept
++      binary_data.scan(/.{1,1024}/nm) do |s|
++        conn.print(s)
++      end
++      conn.shutdown(Socket::SHUT_WR)
++      conn.read
++      conn.close
++      data_server.close
++      sock.print("226 Transfer complete.\r\n")
++    }
++    begin
++      begin
++        ftp = Net::FTP.new
++        ftp.passive = true
++        ftp.read_timeout *= 5 if defined?(RubyVM::MJIT) && RubyVM::MJIT.enabled? # for --jit-wait
++        ftp.connect("127.0.0.1", server.port)
++        ftp.login
++        assert_match(/\AUSER /, commands.shift)
++        assert_match(/\APASS /, commands.shift)
++        assert_equal("TYPE I\r\n", commands.shift)
++        buf = ftp.getbinaryfile("foo", nil)
++        assert_equal(binary_data, buf)
++        assert_equal(Encoding::ASCII_8BIT, buf.encoding)
++        assert_equal("PASV\r\n", commands.shift)
++        assert_equal("RETR foo\r\n", commands.shift)
++        assert_equal(nil, commands.shift)
++      ensure
++        ftp.close if ftp
++      end
++    ensure
++      server.close
++    end
++  end
++
++  def test_use_pasv_ip
++    commands = []
++    binary_data = (0..0xff).map {|i| i.chr}.join * 4 * 3
++    server = create_ftp_server(nil, "127.0.0.1") { |sock|
++      sock.print("220 (test_ftp).\r\n")
++      commands.push(sock.gets)
++      sock.print("331 Please specify the password.\r\n")
++      commands.push(sock.gets)
++      sock.print("230 Login successful.\r\n")
++      commands.push(sock.gets)
++      sock.print("200 Switching to Binary mode.\r\n")
++      line = sock.gets
++      commands.push(line)
++      data_server = TCPServer.new("127.0.0.1", 0)
++      port = data_server.local_address.ip_port
++      sock.printf("227 Entering Passive Mode (127,0,0,1,%s).\r\n",
++                  port.divmod(256).join(","))
++      commands.push(sock.gets)
++      sock.print("150 Opening BINARY mode data connection for foo (#{binary_data.size} bytes)\r\n")
++      conn = data_server.accept
++      binary_data.scan(/.{1,1024}/nm) do |s|
++        conn.print(s)
++      end
++      conn.shutdown(Socket::SHUT_WR)
++      conn.read
++      conn.close
++      data_server.close
++      sock.print("226 Transfer complete.\r\n")
++    }
++    begin
++      begin
++        ftp = Net::FTP.new
++        ftp.passive = true
++        ftp.use_pasv_ip = true
++        ftp.read_timeout *= 5 if defined?(RubyVM::MJIT) && RubyVM::MJIT.enabled? # for --jit-wait
++        ftp.connect("127.0.0.1", server.port)
++        ftp.login
++        assert_match(/\AUSER /, commands.shift)
++        assert_match(/\APASS /, commands.shift)
++        assert_equal("TYPE I\r\n", commands.shift)
++        buf = ftp.getbinaryfile("foo", nil)
++        assert_equal(binary_data, buf)
++        assert_equal(Encoding::ASCII_8BIT, buf.encoding)
++        assert_equal("PASV\r\n", commands.shift)
++        assert_equal("RETR foo\r\n", commands.shift)
++        assert_equal(nil, commands.shift)
++      ensure
++        ftp.close if ftp
++      end
++    ensure
++      server.close
++    end
++  end
++
++  def test_use_pasv_invalid_ip
++    commands = []
++    binary_data = (0..0xff).map {|i| i.chr}.join * 4 * 3
++    server = create_ftp_server(nil, "127.0.0.1") { |sock|
++      sock.print("220 (test_ftp).\r\n")
++      commands.push(sock.gets)
++      sock.print("331 Please specify the password.\r\n")
++      commands.push(sock.gets)
++      sock.print("230 Login successful.\r\n")
++      commands.push(sock.gets)
++      sock.print("200 Switching to Binary mode.\r\n")
++      line = sock.gets
++      commands.push(line)
++      sock.print("227 Entering Passive Mode (999,0,0,1,48,57).\r\n")
++      commands.push(sock.gets)
++    }
++    begin
++      begin
++        ftp = Net::FTP.new
++        ftp.passive = true
++        ftp.use_pasv_ip = true
++        ftp.read_timeout *= 5 if defined?(RubyVM::MJIT) && RubyVM::MJIT.enabled? # for --jit-wait
++        ftp.connect("127.0.0.1", server.port)
++        ftp.login
++        assert_match(/\AUSER /, commands.shift)
++        assert_match(/\APASS /, commands.shift)
++        assert_equal("TYPE I\r\n", commands.shift)
++        assert_raise(SocketError) do
++          ftp.getbinaryfile("foo", nil)
++        end
++      ensure
++        ftp.close if ftp
++      end
++    ensure
++      server.close
++    end
++  end
++
+   private
+ 
+-  def create_ftp_server(sleep_time = nil)
+-    server = TCPServer.new(SERVER_ADDR, 0)
++  def create_ftp_server(sleep_time = nil, addr = SERVER_ADDR)
++    server = TCPServer.new(addr, 0)
+     @thread = Thread.start do
+       if sleep_time
+         sleep(sleep_time)
+diff --git a/test/net/imap/test_imap.rb b/test/net/imap/test_imap.rb
+index 33b305e116..0ce0eb67ba 100644
+--- a/test/net/imap/test_imap.rb
++++ b/test/net/imap/test_imap.rb
+@@ -127,6 +127,16 @@ def test_starttls
+         imap.disconnect
+       end
+     end
++
++    def test_starttls_stripping
++      starttls_stripping_test do |port|
++        imap = Net::IMAP.new("localhost", :port => port)
++        assert_raise(Net::IMAP::UnknownResponseError) do
++          imap.starttls(:ca_file => CA_FILE)
++        end
++        imap
++      end
++    end
+   end
+ 
+   def start_server
+@@ -784,6 +794,27 @@ def starttls_test
+     end
+   end
+ 
++  def starttls_stripping_test
++    server = create_tcp_server
++    port = server.addr[1]
++    start_server do
++      sock = server.accept
++      begin
++        sock.print("* OK test server\r\n")
++        sock.gets
++        sock.print("RUBY0001 BUG unhandled command\r\n")
++      ensure
++        sock.close
++        server.close
++      end
++    end
++    begin
++      imap = yield(port)
++    ensure
++      imap.disconnect if imap && !imap.disconnected?
++    end
++  end
++
+   def create_tcp_server
+     return TCPServer.new(server_addr, 0)
+   end
+diff --git a/test/rdoc/test_rdoc_rdoc.rb b/test/rdoc/test_rdoc_rdoc.rb
+index f2cc901283..f3228c31e0 100644
+--- a/test/rdoc/test_rdoc_rdoc.rb
++++ b/test/rdoc/test_rdoc_rdoc.rb
+@@ -426,6 +426,19 @@ def test_remove_unparseable_tags_vim
+     end
+   end
+ 
++  def test_remove_unparseable_CVE_2021_31799
++    omit 'for Un*x platforms' if Gem.win_platform?
++    temp_dir do
++      file_list = ['| touch evil.txt && echo tags']
++      file_list.each do |f|
++        FileUtils.touch f
++      end
++
++      assert_equal file_list, @rdoc.remove_unparseable(file_list)
++      assert_equal file_list, Dir.children('.')
++    end
++  end
++
+   def test_setup_output_dir
+     Dir.mktmpdir {|d|
+       path = File.join d, 'testdir'
