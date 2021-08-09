@@ -5,7 +5,7 @@ Release: %{rpmbuild_release}%{?dist}
 Summary: Perl-compatible regular expression support for SQLite
 License: Public Domain
 URL: http://git.altlinux.org/people/at/packages/?p=sqlite3-pcre.git
-Source: http://archive.ubuntu.com/ubuntu/pool/universe/s/sqlite3-pcre/sqlite3-pcre_0~git20070120091816+4229ecc.orig.tar.gz
+Source: https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/sqlite3-pcre/0~git20070120091816+4229ecc-2/sqlite3-pcre_0~git20070120091816+4229ecc.orig.tar.gz
 
 BuildRequires: pcre-devel
 BuildRequires: pkgconfig
