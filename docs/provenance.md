@@ -350,6 +350,12 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`sqlite-3.8.0-percentile-test.patch`](../SOURCES/sqlite-3.8.0-percentile-test.patch)
 * [`sqlite-3.18.0-sync2-dirsync.patch`](../SOURCES/sqlite-3.18.0-sync2-dirsync.patch)
 
+## sqlite-pcre
+
+The `sqlite-pcre` package is derived from
+[Ubuntu's `sqlite3-pcre`](https://launchpad.net/ubuntu/+source/sqlite3-pcre/0~git20070120091816+4229ecc-2);
+its source code and spec file are considered public domain.
+
 ## TBB
 
 The `tbb` package provides Intel's [Thread Building Blocks](http://threadingbuildingblocks.org/) library.
