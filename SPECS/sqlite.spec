@@ -132,16 +132,33 @@ This package contains the analysis program for %{name}.
 
 
 %build
-export CFLAGS="$RPM_OPT_FLAGS $RPM_LD_FLAGS -DSQLITE_ENABLE_COLUMN_METADATA=1 \
-               -DSQLITE_DISABLE_DIRSYNC=1 -DSQLITE_SECURE_DELETE=1 \
-               -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -DSQLITE_ENABLE_DBSTAT_VTAB=1 \
-               -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -fno-strict-aliasing"
+export CFLAGS="$RPM_OPT_FLAGS $RPM_LD_FLAGS \
+  -DSQLITE_DISABLE_DIRSYNC \
+  -DSQLITE_ENABLE_API_ARMOR \
+  -DSQLITE_ENABLE_COLUMN_METADATA \
+  -DSQLITE_ENABLE_DBSTAT_VTAB \
+  -DSQLITE_ENABLE_FTS3 \
+  -DSQLITE_ENABLE_FTS3_PARENTHESIS \
+  -DSQLITE_ENABLE_GEOPOLY \
+  -DSQLITE_ENABLE_JSON1 \
+  -DSQLITE_ENABLE_MATH_FUNCTIONS \
+  -DSQLITE_ENABLE_PREUPDATE_HOOK \
+  -DSQLITE_ENABLE_RTREE \
+  -DSQLITE_ENABLE_SESSION \
+  -DSQLITE_ENABLE_SOUNDEX \
+  -DSQLITE_ENABLE_STMTVTAB \
+  -DSQLITE_ENABLE_UNLOCK_NOTIFY \
+  -DSQLITE_LIKE_DOESNT_MATCH_BLOBS \
+  -DSQLITE_SECURE_DELETE \
+  -DSQLITE_USE_URI \
+  -Wall -fno-strict-aliasing"
 export TCLLIBDIR=%{tcl_sitearch}/sqlite3
 %configure --enable-all \
+           --enable-fts4 \
+           --enable-fts5 \
            --enable-threadsafe \
            --enable-threads-override-locks \
            --enable-load-extension
-
 
 # rpath removal
 %{__sed} -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
