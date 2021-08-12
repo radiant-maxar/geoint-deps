@@ -36,7 +36,7 @@ x-rpmbuild:
   rpms:
     CGAL:
       image: rpmbuild-cgal
-      version: &CGAL_version '4.14.3-1'
+      version: &CGAL_version '4.14.3-2'
     FileGDBAPI:
       image: rpmbuild-generic
       version: &FileGDBAPI_version '1.5.1-1'
