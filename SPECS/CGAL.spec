@@ -1,5 +1,4 @@
 %global fullversion %{rpmbuild_version}
-#global fullversion 5.2-beta1
 
 
 Name:           CGAL
@@ -10,6 +9,9 @@ Summary:        Computational Geometry Algorithms Library
 License:        LGPLv3+ and GPLv3+ and Boost
 URL:            http://www.cgal.org/
 Source0:        https://github.com/CGAL/cgal/releases/download/releases/%{name}-%{fullversion}/%{name}-%{fullversion}.tar.xz
+
+# Patch for rounding math error
+Patch0:         cgal-rounding-math.patch
 
 # Required devel packages.
 BuildRequires: cmake3
@@ -58,6 +60,7 @@ CGAL algorithms.
 
 %prep
 %setup -q -n %{name}-%{fullversion}
+%patch0
 %{__mkdir} build
 
 
