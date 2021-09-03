@@ -15,6 +15,11 @@ Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+Patch0:         osm2pgsql-replication-prefix-argument.patch
+Patch1:         osm2pgsql-replication-status.patch
+Patch2:         osm2pgsql-replication-analyze.patch
+Patch3:         osm2pgsql-replication-older-python.patch
+Patch4:         osm2pgsql-replication-osm-server.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
@@ -84,7 +89,7 @@ pushd build
 %if %{with db_tests}
 export PGDATA="${HOME}/pgdata"
 pg_ctl -s stop || true
-%{__rm} -fr ${PGDATA}
+%{__rm} -fr ${PGDATA} /tmp/psql-tablespace
 # Create PostgreSQL database.
 initdb --encoding UTF-8 --locale en_US.UTF-8
 
@@ -97,7 +102,7 @@ echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 pg_ctl start
 
 # Create testing tablespace required by the osm2pgsql tests.
-%{__mkdir_p} "/tmp/psql-tablespace"
+%{__mkdir_p} /tmp/psql-tablespace
 psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tablespace'"
 
 # Set the SMP flags so only one process is used for the tests, otherwise database

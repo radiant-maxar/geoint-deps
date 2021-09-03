@@ -1,0 +1,25 @@
+From: Amanda McCann <amanda@technomancy.org>
+Date: Wed, 4 Aug 2021 10:05:08 +0200
+Subject: support older versions of python
+
+Older versions don't have .fromisoformat() function
+---
+ scripts/osm2pgsql-replication | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/osm2pgsql-replication b/scripts/osm2pgsql-replication
+index a848f369..06cd81f8 100755
+--- a/scripts/osm2pgsql-replication
++++ b/scripts/osm2pgsql-replication
+@@ -77,7 +77,7 @@ def compute_database_date(conn, prefix):
+     LOG.debug("Found timestamp %s", date)
+ 
+     try:
+-        date = dt.datetime.fromisoformat(date.replace('Z', '+00:00'))
++        date = dt.datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=dt.timezone.utc)
+     except ValueError:
+         LOG.fatal("Cannot parse timestamp '%s'", date)
+         return None
+-- 
+2.30.2
+
