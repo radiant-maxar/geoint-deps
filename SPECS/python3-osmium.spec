@@ -31,6 +31,8 @@ BuildRequires:  python36-nose
 BuildRequires:  python36-requests
 BuildRequires:  zlib-devel
 
+Requires:       python36-requests
+
 %description
 Provides Python bindings for the Libosmium C++ library, a library
 for working with OpenStreetMap data in a fast and flexible manner.
