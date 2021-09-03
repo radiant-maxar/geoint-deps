@@ -40,13 +40,24 @@ BuildRequires:  postgresql%{postgres_dotless}-server
 BuildRequires:  python3-psycopg2
 %endif
 
-
 %description
 Processes the planet file from the community mapping project at
 http://www.openstreetmap.org. The map data is converted from XML to a
 database stored in PostgreSQL with PostGIS geospatial extensions. This
 database may then be used to render maps with Mapnik or for other
 geospatial analysis.
+
+%package replication
+Summary:        Update an osm2pgsql database with changes from a OSM replication server.
+Requires:	%{name} = %{version}-%{release}
+Requires:       python3-osmium
+Requires:       python3-psycopg2
+
+%description replication
+This tool initialises the updating process by looking at the import file
+or the newest object in the database. The state is then saved in a table
+in the database. Subsequent runs download newly available data and apply
+it to the database.
 
 
 %prep
@@ -110,6 +121,7 @@ pushd build
 %cmake3_install
 %{_bindir}/find %{buildroot} -name '*.la' -delete
 popd
+%{__install} -m 0755 scripts/osm2pgsql-replication %{buildroot}/%{_bindir}
 
 
 %files
@@ -118,6 +130,9 @@ popd
 %{_mandir}/man1/%{name}.1*
 %{_bindir}/%{name}
 %{_datadir}/%{name}/
+
+%files replication
+%{_bindir}/osm2pgsql-replication
 
 
 %changelog
