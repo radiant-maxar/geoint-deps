@@ -170,8 +170,14 @@ Its data package contains archives that are public domain and
 ## osm2pgsql
 
 The [osm2pgsql](https://github.com/openstreetmap/osm2pgsql) source archives are
-obtained directly from GitHub and is
+obtained directly from GitHub and are
 [GPLv2 licensed](https://github.com/openstreetmap/osm2pgsql/blob/master/COPYING).
+Using the same license, the following patch files were derived from changesets in GitHub:
+
+* [`osm2pgsql-replication-analyze.patch`](../SOURCES/osm2pgsql-replication-analyze.patch)
+* [`osm2pgsql-replication-older-python.patch`](../SOURCES/osm2pgsql-replication-older-python.patch)
+* [`osm2pgsql-replication-prefix-argument.patch`](../SOURCES/osm2pgsql-replication-prefix-argument.patch)
+* [`osm2pgsql-replication-status.patch`](../SOURCES/osm2pgsql-replication-status.patch)
 
 The [`osm2pgsql.spec`](../SPECS/osm2pgsql.spec) originates from
 [Fedora's `osm2pgsql` RPM](https://src.fedoraproject.org/rpms/osm2pgsql)

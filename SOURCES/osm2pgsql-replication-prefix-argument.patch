@@ -1,0 +1,57 @@
+From: Amanda McCann <amanda@technomancy.org>
+Date: Thu, 12 Aug 2021 17:31:45 +0200
+Subject: Add -p (for --prefix) argument for osm2pgsql-replication too
+
+Regular osm2pgsql takes -p as an alias for --prefix, so make them match
+---
+ docs/osm2pgsql-replication.1  | 6 +++---
+ scripts/osm2pgsql-replication | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/docs/osm2pgsql-replication.1 b/docs/osm2pgsql-replication.1
+index c0053b9d..29e5a975 100644
+--- a/docs/osm2pgsql-replication.1
++++ b/docs/osm2pgsql-replication.1
+@@ -35,7 +35,7 @@ how to use osm2pgsql\-replication.
+     Download newly available data and apply it to the database.
+ .SH OPTIONS 'osm2pgsql-replication init'
+ usage: osm2pgsql-replication init [-h] [-q] [-v] [-d DB] [-U NAME] [-H HOST]
+-                                  [-P PORT] [--prefix PREFIX]
++                                  [-P PORT] [-p PREFIX]
+                                   [--osm-file FILE | --server URL]
+ 
+ Initialise the replication process.
+@@ -93,7 +93,7 @@ Database server host name or socket location
+ Database server port
+ 
+ .TP
+-\fB\-\-prefix\fR PREFIX
++\fB\-p\fR PREFIX, \fB\-\-prefix\fR PREFIX
+ Prefix for table names (default 'planet_osm')
+ 
+ .TP
+@@ -174,7 +174,7 @@ Database server host name or socket location
+ Database server port
+ 
+ .TP
+-\fB\-\-prefix\fR PREFIX
++\fB\-p\fR PREFIX, \fB\-\-prefix\fR PREFIX
+ Prefix for table names (default 'planet_osm')
+ 
+ .SH DISTRIBUTION
+diff --git a/scripts/osm2pgsql-replication b/scripts/osm2pgsql-replication
+index 06cd81f8..fc8cd0e1 100755
+--- a/scripts/osm2pgsql-replication
++++ b/scripts/osm2pgsql-replication
+@@ -300,7 +300,7 @@ def get_parser():
+                        help='Database server host name or socket location')
+     group.add_argument('-P', '--port', metavar='PORT',
+                        help='Database server port')
+-    group.add_argument('--prefix', metavar='PREFIX', default='planet_osm',
++    group.add_argument('-p', '--prefix', metavar='PREFIX', default='planet_osm',
+                        help="Prefix for table names (default 'planet_osm')")
+ 
+     # Arguments for init
+-- 
+2.30.2
+
