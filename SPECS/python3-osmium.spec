@@ -28,7 +28,10 @@ BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  protozero-devel >= %{protozero_min_version}
 BuildRequires:  python3-devel
 BuildRequires:  python36-nose
+BuildRequires:  python36-requests
 BuildRequires:  zlib-devel
+
+Requires:       python36-requests
 
 %description
 Provides Python bindings for the Libosmium C++ library, a library
