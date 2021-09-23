@@ -1,12 +1,16 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+
+ARG gem_packages=""
 ARG packages=""
 
 # If any package dependencies are needed, install them.
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN --mount=type=cache,target=/var/cache/yum \
+    /usr/local/bin/geoint-deps-repo.sh && \
     if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+    if [ -n "${gem_packages}" ] ; then gem install ${gem_packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
     rm -f /usr/local/bin/rpmbuild-user.sh
 

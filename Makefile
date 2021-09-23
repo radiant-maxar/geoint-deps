@@ -58,6 +58,8 @@ PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
 PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
 RACK_RPM := $(call rpm_file,rubygem-rack)
 RUBY_RPM := $(call rpm_file,ruby)
+RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
+RUBYGEM_PG_RPM := $(call rpm_file,rubygem-pg)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_RPM := $(call rpm_file,sqlite)
@@ -90,6 +92,8 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-pyosmium \
 	rpmbuild-rack \
 	rpmbuild-ruby \
+	rpmbuild-rubygem-libxml-ruby \
+	rpmbuild-rubygem-pg \
 	rpmbuild-sfcgal \
 	rpmbuild-sqlite \
 	rpmbuild-tbb
@@ -175,6 +179,8 @@ distclean: .env
 	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
 	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
+	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-libxml-ruby.spec) >> .env
+	echo RPMBUILD_RUBYGEM_PG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-pg.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite-pcre.spec) >> .env
@@ -231,7 +237,7 @@ rpmbuild-osmium-tool: .env libosmium
 rpmbuild-osm2pgsql: .env libosmium postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
 
-rpmbuild-passenger: .env rack
+rpmbuild-passenger: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-passenger
 
 rpmbuild-pgdg: .env
@@ -258,11 +264,17 @@ rpmbuild-pyosmium: .env libosmium
 rpmbuild-python-mapnik: .env mapnik
 	$(DOCKER_COMPOSE) up -d rpmbuild-python-mapnik
 
-rpmbuild-rack: .env ruby
+rpmbuild-rack: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-rack
 
 rpmbuild-ruby: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-ruby
+
+rpmbuild-rubygem-libxml-ruby: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-rubygem-libxml-ruby
+
+rpmbuild-rubygem-pg: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-rubygem-pg
 
 rpmbuild-sfcgal: .env $(CGAL_RPM)
 	$(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
@@ -307,6 +319,8 @@ pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
 python-mapnik: rpmbuild-python-mapnik $(PYTHON_MAPNIK_RPM)
 rack: rpmbuild-rack $(RACK_RPM)
 ruby: rpmbuild-ruby $(RUBY_RPM)
+rubygem-libxml-ruby: rpmbuild-rubygem-libxml-ruby $(RUBYGEM_LIBXML_RUBY_RPM)
+rubygem-pg: rpmbuild-rubygem-pg $(RUBYGEM_PG_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 sqlite-pcre: rpmbuild-sqlite-pcre $(SQLITE_PCRE_RPM)

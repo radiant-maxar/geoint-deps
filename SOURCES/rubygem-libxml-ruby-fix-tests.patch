@@ -1,0 +1,150 @@
+From: Justin Bronn <justin.bronn@maxar.com>
+Subject: Various Test Fixes
+
+* Patch had to be formatted assuming CRLF endings like in gem source.
+* Add `rt` mode to `IO.read` to adjust for CRLF test case sources.
+* Don't assume a Windows-style path for test file source.
+* Fix differences for EL7's `libxml2` library.
+
+diff --git a/test/test_canonicalize.rb b/test/test_canonicalize.rb
+index 6aec5a8..ee6a3ee 100644
+--- a/test/test_canonicalize.rb
++++ b/test/test_canonicalize.rb
+@@ -12,16 +12,16 @@ class TestCanonicalize < Minitest::Test
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-1.xml'))
+ 
+     # With Comments
+-    expected_with_comments = IO.read(self.path('c14n/result/with-comments/example-1'))
++    expected_with_comments = IO.read(self.path('c14n/result/with-comments/example-1'), mode: 'rt')
+     assert_equal(expected_with_comments, given_doc.canonicalize(:comments => true))
+ 
+     # Without Comments
+-    expected_without_comments = IO.read(self.path('c14n/result/without-comments/example-1'))
++    expected_without_comments = IO.read(self.path('c14n/result/without-comments/example-1'), mode: 'rt')
+     assert_equal(expected_without_comments, given_doc.canonicalize)
+     assert_equal(expected_without_comments, given_doc.canonicalize(:comments => false))
+ 
+     # Without Comments (XML_C14N_1_1)
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-1'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-1'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end#test_canonicalize_with_w3c_c14n_3_1
+@@ -31,10 +31,10 @@ class TestCanonicalize < Minitest::Test
+   # http://www.w3.org/TR/xml-c14n#Example-WhitespaceInContent
+   def test_canonicalize_with_w3c_c14n_3_2
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-2.xml'))
+-    expected = IO.read(self.path('c14n/result/without-comments/example-2'))
++    expected = IO.read(self.path('c14n/result/without-comments/example-2'), mode: 'rt')
+     assert_equal(expected, given_doc.canonicalize)
+ 
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-2'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-2'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end
+@@ -46,10 +46,10 @@ class TestCanonicalize < Minitest::Test
+   #     not applied to canonicalization.
+   def test_canonicalize_with_w3c_c14n_3_3
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-3.xml'))
+-    expected = IO.read(self.path('c14n/result/without-comments/example-3'))
++    expected = IO.read(self.path('c14n/result/without-comments/example-3'), mode: 'rt')
+     assert_equal(expected, given_doc.canonicalize)
+ 
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-3'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-3'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end
+@@ -58,10 +58,10 @@ class TestCanonicalize < Minitest::Test
+   # http://www.w3.org/TR/xml-c14n#Example-Chars
+   def test_canonicalize_with_w3c_c14n_3_4
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-4.xml'))
+-    expected = IO.read(self.path('c14n/result/without-comments/example-4'))
++    expected = IO.read(self.path('c14n/result/without-comments/example-4'), mode: 'rt')
+     assert_equal(expected, given_doc.canonicalize)
+ 
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-4'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-4'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end
+diff --git a/test/test_document.rb b/test/test_document.rb
+index d77b0d7..b4b00ff 100644
+--- a/test/test_document.rb
++++ b/test/test_document.rb
+@@ -126,6 +126,6 @@ class TestDocument < Minitest::Test
+   def test_nonet
+     xml_string = '<ruby_array uga="booga" foo="bar"><fixnum>one</fixnum><fixnum>two</fixnum></ruby_array>'
+     xml = LibXML::XML::Document.string(xml_string, options: LibXML::XML::Parser::Options::NONET)
+-    schema_document = LibXML::XML::Document.file('d:/src/libxml-ruby/test/model/atom.xml', options: LibXML::XML::Parser::Options::NONET)
++    schema_document = LibXML::XML::Document.file('test/model/atom.xml', options: LibXML::XML::Parser::Options::NONET)
+   end
+ end
+diff --git a/test/test_dtd.rb b/test/test_dtd.rb
+index a1398aa..b787c10 100644
+--- a/test/test_dtd.rb
++++ b/test/test_dtd.rb
+@@ -84,7 +84,7 @@ class TestDtd < Minitest::Test
+     assert_nil(error.file)
+     assert_nil(error.line)
+     assert_equal('invalid', error.str1)
+-    assert_nil(error.str2)
++    assert_equal('invalid', error.str2)
+     assert_nil(error.str3)
+     assert_equal(0, error.int1)
+     assert_equal(0, error.int2)
+diff --git a/test/test_parser.rb b/test/test_parser.rb
+index f46481f..4302ff8 100644
+--- a/test/test_parser.rb
++++ b/test/test_parser.rb
+@@ -293,7 +293,7 @@ class TestParser < Minitest::Test
+     assert_nil(error.str2)
+     assert_nil(error.str3)
+     assert_equal(0, error.int1)
+-    assert_equal(34, error.int2)
++    assert_equal(20, error.int2)
+     assert_nil(error.node)
+   end
+ 
+diff --git a/test/test_sax_parser.rb b/test/test_sax_parser.rb
+index ac8a9cc..dae4efd 100644
+--- a/test/test_sax_parser.rb
++++ b/test/test_sax_parser.rb
+@@ -249,26 +249,25 @@ EOS
+     # Check callbacks
+     result = parser.callbacks.result
+ 
+-    i = -1
+-    assert_equal("startdoc", result[i+=1])
+-    assert_equal("start_element: Results, attr: {}", result[i+=1])
+-    assert_equal("start_element_ns: Results, attr: {}, prefix: , uri: , ns: {}", result[i+=1])
+-    assert_equal("characters: \n", result[i+=1])
+-    assert_equal("error: Fatal error: EndTag: '</' not found at :2.", result[i+=1])
+-    assert_equal("end_document", result[i+=1])
++    assert_equal("startdoc", result[0])
++    assert_equal("start_element: Results, attr: {}", result[1])
++    assert_equal("start_element_ns: Results, attr: {}, prefix: , uri: , ns: {}", result[2])
++    assert_equal("characters: \n", result[3])
++    assert_equal("error: Fatal error: Premature end of data in tag Results line 1 at :2.", result[4])
++    assert_equal("end_document", result[5])
+ 
+     refute_nil(error)
+     assert_kind_of(LibXML::XML::Error, error)
+-    assert_equal("Fatal error: EndTag: '</' not found at :2.", error.message)
++    assert_equal("Fatal error: Premature end of data in tag Results line 1 at :2.", error.message)
+     assert_equal(LibXML::XML::Error::PARSER, error.domain)
+-    assert_equal(LibXML::XML::Error::LTSLASH_REQUIRED, error.code)
++    assert_equal(LibXML::XML::Error::TAG_NOT_FINISHED, error.code)
+     assert_equal(LibXML::XML::Error::FATAL, error.level)
+     assert_nil(error.file)
+     assert_equal(2, error.line)
+-    assert_nil(error.str1)
++    assert_equal('Results', error.str1)
+     assert_nil(error.str2)
+     assert_nil(error.str3)
+-    assert_equal(0, error.int1)
++    assert_equal(1, error.int1)
+     assert_equal(1, error.int2)
+     assert_nil(error.node)
+   end

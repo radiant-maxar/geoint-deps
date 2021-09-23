@@ -330,6 +330,16 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch`](../SOURCES/ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch)
 * [`ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch`](../SOURCES/ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch)
 
+## `rubygem-pg`
+
+The [pg](https://github.com/ged/ruby-pg) source archives are obtained
+directly from [RubyGems](https://rubygems.org/gems/pg). The following packaging files
+originate from [Fedora's `rubygem-pg` RPM repository](https://src.fedoraproject.org/rpms/rubygem-pg)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`rubygem-pg.spec`](../SPECS/rubygem-pg.spec)
+* [`rubygem-pg-remove-rpath.patch`](../SOURCES/rubygem-pg-remove-rpath.patch)
+
 ## SBT
 
 The [SBT](http://www.scala-sbt.org) source archives are obtained

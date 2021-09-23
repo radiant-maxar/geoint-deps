@@ -1,0 +1,27 @@
+ARG rpmbuild_channel
+ARG rpmbuild_image=rpmbuild
+FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+
+ARG gem_packages=""
+ARG packages=""
+ARG postgres_version
+
+# If any package dependencies are needed, install them.
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+RUN --mount=type=cache,target=/var/cache/yum \
+    /usr/local/bin/geoint-deps-repo.sh && \
+    /usr/local/bin/pgdg-repo.sh ${postgres_version} && \
+    /usr/local/bin/postgres-install.sh ${postgres_version} && \
+    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+    if [ -n "${gem_packages}" ] ; then gem install ${gem_packages}; fi && \
+    /usr/local/bin/rpmbuild-user.sh && \
+    rm -f /usr/local/bin/rpmbuild-user.sh
+
+RUN chown -R ${RPMBUILD_USER}:${RPMBUILD_GROUP} /var/run/postgresql
+
+# Use unprivileged RPM build user and work directory by default.
+USER ${RPMBUILD_USER}
+WORKDIR ${RPMBUILD_HOME}
+RUN echo "%postgres_version ${postgres_version}" >> ${RPMBUILD_HOME}/.rpmmacros && \
+    echo "%postgres_dotless %(echo %{postgres_version} | awk '{ gsub(/\\\\./, \"\"); print substr(\$0, 1, 2) }')" >> ${RPMBUILD_HOME}/.rpmmacros && \
+    echo "%postgres_instdir /usr/pgsql-%{postgres_version}" >> ${RPMBUILD_HOME}/.rpmmacros
