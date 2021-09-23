@@ -16,7 +16,7 @@ ARG rpmbuild_locale=en_US.utf8
 
 # Ensure proper language/locale environment settings, and place key arguments
 # in environment to allow access in child containers.
-SHELL ["/bin/bash", "-c"]
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 ENV LANG=${rpmbuild_lang} \
     LC_ALL=${rpmbuild_locale} \
     RPMBUILD_DIST=${rpmbuild_dist} \
@@ -65,7 +65,8 @@ RUN --mount=type=cache,target=/var/cache/yum \
       zip
 
 # Copy in necessary scripts.
-COPY scripts/nodesource-repo.sh \
+COPY scripts/geoint-deps-repo.sh \
+     scripts/nodesource-repo.sh \
      scripts/postgres-install.sh \
      scripts/pgdg-repo.sh \
      scripts/rpmbuild-user.sh \

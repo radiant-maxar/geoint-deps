@@ -124,16 +124,6 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
         postgis_min_version: *postgis_min_version
         protobuf_c_min_version: *protobuf_c_min_version
-    rack:
-      image: rpmbuild-rack
-      version: &rack_version '2.2.3-1'
-      arch: noarch
-      name: rubygem-rack
-      spec_file: 'SPECS/rubygem-rack.spec'
-    sbt:
-      image: rpmbuild-generic
-      version: &sbt_version '1.4.7-1'
-      arch: noarch
     passenger:
       image: rpmbuild-passenger
       version: &passenger_version '6.0.9-1'
@@ -181,6 +171,12 @@ x-rpmbuild:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
         pybind11_version: '2.7.1'
+    rack:
+      image: rpmbuild-rack
+      version: &rack_version '2.2.3-1'
+      arch: noarch
+      name: rubygem-rack
+      spec_file: 'SPECS/rubygem-rack.spec'
     ruby:
       image: rpmbuild-ruby
       version: &ruby_version '2.7.3-2'
@@ -208,6 +204,12 @@ x-rpmbuild:
         rubygems_molinillo_version: '0.5.7'
         test_unit_version: '3.3.4'
         xmlrpc_version: '0.3.0'
+    rubygem-pg:
+      image: rpmbuild-rubygem-pg
+      version: &rubygem_pg_version '1.2.3-1'
+    rubygem-libxml-ruby:
+      image: rpmbuild-rubygem-libxml-ruby
+      version: &rubygem_libxml_ruby_version '3.2.1-1'
     # Use the following to run the Ruby tests on a host with
     # ZFS on Linux:
     #  with:
@@ -221,6 +223,10 @@ x-rpmbuild:
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version '2020.3-1'
+    sbt:
+      image: rpmbuild-generic
+      version: &sbt_version '1.4.7-1'
+      arch: noarch
   service_volumes: &service_volumes
     - "./RPMS:/rpmbuild/RPMS:rw"
     - "./SOURCES:/rpmbuild/SOURCES:rw"
@@ -467,16 +473,13 @@ services:
   rpmbuild-passenger:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-rack
+      - rpmbuild
     build:
       <<: *build_defaults
       args:
-        <<: *ruby_bundled_versions
         packages: "${RPMBUILD_PASSENGER_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-        rack_version: *rack_version
-        ruby_version: *ruby_version
-      dockerfile: docker/Dockerfile.rpmbuild-passenger
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-pgdg:
     <<: *service_defaults
     depends_on:
@@ -561,11 +564,10 @@ services:
   rpmbuild-rack:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-ruby
+      - rpmbuild
     build:
       <<: *build_defaults
       args:
-        <<: *ruby_bundled_versions
         gem_packages: >-
           fcgi
           minitest
@@ -574,8 +576,7 @@ services:
           thin
         packages: "${RPMBUILD_RACK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-        ruby_version: *ruby_version
-      dockerfile: docker/Dockerfile.rpmbuild-rubygems
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-ruby:
     <<: *service_defaults
     depends_on:
@@ -585,6 +586,34 @@ services:
       args:
         packages: "${RPMBUILD_RUBY_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-rubygem-libxml-ruby:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild
+    build:
+      <<: *build_defaults
+      args:
+        gem_packages: >-
+          minitest
+          rake-compiler
+        rpmbuild_channel: *rpmbuild_channel
+        packages: "${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}"
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-rubygem-pg:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild
+    build:
+      <<: *build_defaults
+      args:
+        gem_packages: >-
+          hoe
+          rake-compiler
+          rspec
+        rpmbuild_channel: *rpmbuild_channel
+        packages: "${RPMBUILD_RUBYGEM_PG_PACKAGES}"
+        postgres_version: *postgres_version
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:

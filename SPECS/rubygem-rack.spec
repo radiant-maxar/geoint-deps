@@ -8,7 +8,6 @@ Version: %{rpmbuild_version}
 Epoch:  1
 Release: %{rpmbuild_release}%{?dist}
 Summary: A modular Ruby webserver interface
-Group: Development/Languages
 # lib/rack/show_{status,exceptions}.rb contains snippets from Django under BSD license.
 License: MIT and BSD
 URL: https://rack.github.io/
@@ -25,6 +24,7 @@ Source1: https://geoint-deps.s3.amazonaws.com/support-files/%{gem_name}-%{versio
 %endif
 
 BuildRequires: ruby
+BuildRequires: ruby-devel
 BuildRequires: rubygems-devel
 %if %{with tests}
 BuildRequires: fcgi

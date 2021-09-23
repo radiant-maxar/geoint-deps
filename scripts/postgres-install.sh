@@ -22,5 +22,7 @@ alternatives --install /usr/bin/pg_config pgsql-pg_config \
              "/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config" 500
 alternatives --install /usr/bin/pg_ctl pgsql-pg_ctl \
              "/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_ctl" 500
+alternatives --install /usr/bin/pg_isready pgsql-pg_isready \
+             "/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_isready" 500
 alternatives --install /usr/bin/postgres pgsql-postgres \
              "/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/postgres" 500
