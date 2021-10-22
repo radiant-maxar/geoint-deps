@@ -14,7 +14,7 @@ convenience.
 
 A majority of `.spec` files and patches in this repository were originally
 sourced from Fedora, who uses the [MIT license](./licenses/Fedora-LICENSE)
-([source](https://fedoraproject.org/wiki/Legal:Licenses/LicenseAgreement).
+([source](https://fedoraproject.org/wiki/Legal:Licenses/LicenseAgreement)).
 In addition, the PostgreSQL Development Group (PGDG) was used as a source for
 portions of the GEOS, GDAL, and PostGIS `.spec` files and patches.  PGDG uses
 the  [PostgreSQL license](./licenses/PostgreSQL-LICENSE)
@@ -186,7 +186,7 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 ## osmctools
 
 The [osmctools](https://gitlab.com/osm-c-tools/osmctools) source archives
-obtained directly from its GitLab] and are
+obtained directly from its GitLab and are
 released under the [AGPLv3 license](https://gitlab.com/osm-c-tools/osmctools/-/blob/master/COPYING).
 
 ## osmdbt
