@@ -172,6 +172,8 @@ Patch19: ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch
 # Backport CVE-2021-31810, CVE-2021-32066, and CVE-2021-31799 from
 # Ruby 2.7.4.
 Patch20: ruby-2.7.4-security-fixes.patch
+# Backport CVE-2021-41817 from date gem v3.0.2.
+Patch21: rubygems-date-cve-2021-41817.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -580,6 +582,7 @@ rm -rf ext/fiddle/libffi*
 %patch13 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -1131,7 +1134,7 @@ MSPECOPTS="$MSPECOPTS -P 'File.utime allows Time instances in the far future to 
 %{gem_dir}/specifications/default/benchmark-0.1.0.gemspec
 %{gem_dir}/specifications/default/cgi-0.1.0.gemspec
 %{gem_dir}/specifications/default/csv-3.1.2.gemspec
-%{gem_dir}/specifications/default/date-3.0.0.gemspec
+%{gem_dir}/specifications/default/date-3.0.2.gemspec
 %{gem_dir}/specifications/default/dbm-1.1.0.gemspec
 %{gem_dir}/specifications/default/delegate-0.1.0.gemspec
 %{gem_dir}/specifications/default/did_you_mean-%{did_you_mean_version}.gemspec

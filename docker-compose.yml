@@ -179,7 +179,7 @@ x-rpmbuild:
       spec_file: 'SPECS/rubygem-rack.spec'
     ruby:
       image: rpmbuild-ruby
-      version: &ruby_version '2.7.3-2'
+      version: &ruby_version '2.7.3-3'
       defines: &ruby_bundled_versions
         bundler_version: '2.1.4'
         bundler_connection_pool_version: '2.2.2'
@@ -204,16 +204,16 @@ x-rpmbuild:
         rubygems_molinillo_version: '0.5.7'
         test_unit_version: '3.3.4'
         xmlrpc_version: '0.3.0'
+      # Use the following to run the Ruby tests on a host with
+      # ZFS on Linux:
+      # with:
+      #   - zfs_host
     rubygem-pg:
       image: rpmbuild-rubygem-pg
       version: &rubygem_pg_version '1.2.3-1'
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
       version: &rubygem_libxml_ruby_version '3.2.1-1'
-    # Use the following to run the Ruby tests on a host with
-    # ZFS on Linux:
-    #  with:
-    #    - zfs_host
     sqlite:
       image: rpmbuild-sqlite
       version: &sqlite_version '3.36.0-2'
