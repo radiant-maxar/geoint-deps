@@ -8,15 +8,14 @@ ipaddr is a builtin class for ruby, that is occasionally merged. If the version 
  ext/openssl/openssl.gemspec | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/ext/openssl/openssl.gemspec b/ext/openssl/openssl.gemspec
-index 7c17cd54..f721f247 100644
+index c22eece7d6..eb42803c5d 100644
 --- a/ext/openssl/openssl.gemspec
 +++ b/ext/openssl/openssl.gemspec
-@@ -21,7 +21,6 @@ Gem::Specification.new do |spec|
-   s.rubygems_version = "3.0.0.beta1"
-   s.summary = "OpenSSL provides SSL, TLS and general purpose cryptography."
+@@ -17,7 +17,6 @@
  
--  s.add_runtime_dependency("ipaddr", [">= 0"])
-   s.add_development_dependency("rake", [">= 0"])
-   s.add_development_dependency("rake-compiler", [">= 0"])
-   s.add_development_dependency("test-unit", ["~> 3.0"])
+   spec.required_ruby_version = ">= 2.3.0"
+ 
+-  spec.add_runtime_dependency "ipaddr"
+   spec.add_development_dependency "rake"
+   spec.add_development_dependency "rake-compiler"
+   spec.add_development_dependency "test-unit", "~> 3.0"
