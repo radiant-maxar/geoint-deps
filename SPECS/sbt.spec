@@ -41,8 +41,11 @@ popd
 %{__cp} -pv conf/* %{buildroot}%{_sysconfdir}/%{name}
 %{__ln_s} %{_sysconfdir}/%{name} %{buildroot}%{_datadir}/%{name}/conf
 
-%{__install} -m 0755 bin/java9-rt-export.jar bin/sbt-launch.jar bin/sbt \
-  %{buildroot}%{_datadir}/%{name}/bin/
+# Install script and jar.
+%{__install} -m 0755 \
+ bin/sbt-launch.jar \
+ bin/sbt \
+ %{buildroot}%{_datadir}/%{name}/bin
 
 # Link /usr/bin/sbt to /usr/share/sbt/bin/sbt.
 %{__ln_s} %{_datadir}/%{name}/bin/sbt %{buildroot}%{_bindir}/sbt

@@ -225,7 +225,7 @@ x-rpmbuild:
       version: &tbb_version '2020.3-1'
     sbt:
       image: rpmbuild-generic
-      version: &sbt_version '1.4.7-1'
+      version: &sbt_version '1.5.8-1'
       arch: noarch
   service_volumes: &service_volumes
     - "./RPMS:/rpmbuild/RPMS:rw"
