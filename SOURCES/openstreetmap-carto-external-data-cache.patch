@@ -2,19 +2,24 @@ diff --git a/scripts/get-external-data.py b/scripts/get-external-data.py
 index e4910e6..77e314b 100755
 --- a/scripts/get-external-data.py
 +++ b/scripts/get-external-data.py
-@@ -227,19 +227,33 @@ def main():
+@@ -231,24 +231,38 @@ def main():
                  else:
                      headers = {}
  
+-                logging.info("  Fetching {}".format(source["url"]))
 -                download = s.get(source["url"], headers=headers)
 -                download.raise_for_status()
 -
--                if (download.status_code == 200):
+-                if download.status_code == requests.codes.ok:
 -                    if "Last-Modified" in download.headers:
 -                        new_last_modified = download.headers["Last-Modified"]
 -                    else:
 -                        new_last_modified = None
+-
+-                    logging.info("  Download complete ({} bytes)".format(len(download.content)))
+-
 -                    if "archive" in source and source["archive"]["format"] == "zip":
+-                        logging.info("  Decompressing file")
 -                        zip = zipfile.ZipFile(io.BytesIO(download.content))
 -                        for member in source["archive"]["files"]:
 -                            zip.extract(member, workingdir)
@@ -31,15 +36,20 @@ index e4910e6..77e314b 100755
 +                    new_last_modified = None
 +                    source_ok = True
 +                else:
-+                    logging.info("Downloading ZIP from {}".format(source["url"]))
++                    logging.info("  Fetching {}".format(source["url"]))
 +                    download = s.get(source["url"], headers=headers)
 +                    download.raise_for_status()
-+                    if (download.status_code == 200):
++
++                    if download.status_code == requests.codes.ok:
 +                        if "Last-Modified" in download.headers:
 +                            new_last_modified = download.headers["Last-Modified"]
 +                        else:
 +                            new_last_modified = None
++
++                        logging.info("  Download complete ({} bytes)".format(len(download.content)))
++
 +                        if "archive" in source and source["archive"]["format"] == "zip":
++                            logging.info("  Decompressing file")
 +                            zip = zipfile.ZipFile(io.BytesIO(download.content))
 +                            for member in source["archive"]["files"]:
 +                                zip.extract(member, workingdir)
