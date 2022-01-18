@@ -11,7 +11,6 @@ Source1:        geos-check_doxygen_errors.cmake
 
 # Honor libsuffix
 Patch1:         geos-libsuffix.patch
-Patch2:         geos-3.9.1-heuristic-overlay.patch
 
 BuildRequires:  cmake3
 BuildRequires:  doxygen
