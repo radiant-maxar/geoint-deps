@@ -10,13 +10,14 @@ License:        Boost
 URL:            http://osmcode.org/libosmium/
 Source0:        https://github.com/osmcode/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  bzip2-devel
 BuildRequires:  boost-devel
+BuildRequires:  bzip2-devel
 BuildRequires:  cmake3
 BuildRequires:  doxygen
 BuildRequires:  expat-devel
 BuildRequires:  gcc-c++
 BuildRequires:  graphviz
+BuildRequires:  lz4-devel
 BuildRequires:  xmlstarlet
 BuildRequires:  zlib-devel
 
@@ -28,9 +29,10 @@ A fast and flexible C++ library for working with OpenStreetMap data.
 Summary:        Development files for %{name}
 BuildArch:      noarch
 
-Requires:       bzip2-devel
 Requires:       boost-devel
+Requires:       bzip2-devel
 Requires:       expat-devel
+Requires:       lz4-devel
 Requires:       protozero-devel >= %{protozero_min_version}
 Requires:       zlib-devel
 
@@ -47,7 +49,12 @@ developing applications that use %{name}.
 
 %build
 pushd build
-%cmake3 -DBUILD_EXAMPLES=OFF -DBUILD_HEADERS=OFF -DINSTALL_GDALCPP=ON ..
+%cmake3 \
+  -DBUILD_EXAMPLES=OFF \
+  -DBUILD_HEADERS=OFF \
+  -DBUILD_TESTING=OFF \
+  -DINSTALL_GDALCPP=ON \
+  ..
 %cmake3_build
 popd
 
