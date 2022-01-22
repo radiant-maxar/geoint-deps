@@ -244,7 +244,7 @@ lua scripts/lua/test.lua
 %{__install} -d %{buildroot}%{openstreetmap_carto_home}/scripts
 %{__cp} --preserve scripts/*.py %{buildroot}%{openstreetmap_carto_home}/scripts
 %{__cp} --recursive --preserve scripts/lua %{buildroot}%{openstreetmap_carto_home}/scripts
-%{__cp} --recursive --preserve style symbols %{buildroot}%{openstreetmap_carto_home}
+%{__cp} --recursive --preserve patterns style symbols %{buildroot}%{openstreetmap_carto_home}
 %{__cp} --preserve indexes.* openstreetmap-carto.* road-colors.yaml %{buildroot}%{openstreetmap_carto_home}
 
 %{__ln_s} %{openstreetmap_carto_data}/data %{buildroot}%{openstreetmap_carto_home}
@@ -252,6 +252,7 @@ lua scripts/lua/test.lua
 %{__install} -d %{buildroot}%{openstreetmap_carto_sysconf}
 %{__cp} --preserve project.mml external-data.yml %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_sysconf}/external-data.yml %{buildroot}%{openstreetmap_carto_home}
+%{__ln_s} %{openstreetmap_carto_home}/patterns %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_home}/style %{buildroot}%{openstreetmap_carto_sysconf}
 %{__ln_s} %{openstreetmap_carto_home}/symbols %{buildroot}%{openstreetmap_carto_sysconf}
 
@@ -261,6 +262,7 @@ lua scripts/lua/test.lua
 %license LICENSE.txt
 %{openstreetmap_carto_home}/*
 %dir %{openstreetmap_carto_sysconf}
+%{openstreetmap_carto_sysconf}/patterns
 %{openstreetmap_carto_sysconf}/style
 %{openstreetmap_carto_sysconf}/symbols
 %config(noreplace) %{openstreetmap_carto_sysconf}/project.mml
