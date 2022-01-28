@@ -10,6 +10,8 @@ License:        Boost
 URL:            http://osmcode.org/libosmium/
 Source0:        https://github.com/osmcode/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
+Patch0:         libosmium-CentOS7GCC.patch
+
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  cmake3
@@ -52,7 +54,6 @@ pushd build
 %cmake3 \
   -DBUILD_EXAMPLES=OFF \
   -DBUILD_HEADERS=OFF \
-  -DBUILD_TESTING=OFF \
   -DINSTALL_GDALCPP=ON \
   ..
 %cmake3_build
