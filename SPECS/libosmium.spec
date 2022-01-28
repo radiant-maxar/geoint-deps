@@ -18,8 +18,14 @@ BuildRequires:  cmake3
 BuildRequires:  doxygen
 BuildRequires:  expat-devel
 BuildRequires:  gcc-c++
+BuildRequires:  gdal-devel
+BuildRequires:  geos-devel
 BuildRequires:  graphviz
 BuildRequires:  lz4-devel
+BuildRequires:  protozero-devel >= %{protozero_min_version}
+BuildRequires:  ruby
+BuildRequires:  rubygem-json
+BuildRequires:  sparsehash-devel
 BuildRequires:  xmlstarlet
 BuildRequires:  zlib-devel
 
@@ -52,7 +58,6 @@ developing applications that use %{name}.
 %build
 pushd build
 %cmake3 \
-  -DBUILD_EXAMPLES=OFF \
   -DBUILD_HEADERS=OFF \
   -DINSTALL_GDALCPP=ON \
   ..
