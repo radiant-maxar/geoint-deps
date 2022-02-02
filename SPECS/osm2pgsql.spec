@@ -15,11 +15,7 @@ Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
-Patch0:         osm2pgsql-replication-prefix-argument.patch
-Patch1:         osm2pgsql-replication-status.patch
-Patch2:         osm2pgsql-replication-analyze.patch
-Patch3:         osm2pgsql-replication-older-python.patch
-Patch4:         osm2pgsql-replication-osm-server.patch
+Patch0:         osm2pgsql-replication-osm-server.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
@@ -94,9 +90,9 @@ pg_ctl -s stop || true
 initdb --encoding UTF-8 --locale en_US.UTF-8
 
 # Tune the database.
-echo "fsync = off" >> "${PGDATA}/postgresql.conf"
-echo "shared_buffers = 1GB" >> "${PGDATA}/postgresql.conf"
-echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
+echo "fsync = off
+shared_buffers = 1GB
+listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start PostgreSQL
 pg_ctl start
@@ -126,7 +122,6 @@ pushd build
 %cmake3_install
 %{_bindir}/find %{buildroot} -name '*.la' -delete
 popd
-%{__install} -m 0755 scripts/osm2pgsql-replication %{buildroot}/%{_bindir}
 
 
 %files
@@ -138,6 +133,7 @@ popd
 
 %files replication
 %{_bindir}/osm2pgsql-replication
+%{_mandir}/man1/osm2pgsql-replication.1*
 
 
 %changelog

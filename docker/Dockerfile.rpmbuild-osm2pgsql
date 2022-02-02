@@ -90,6 +90,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
     && \
     rm -f /tmp/*.rpm && \
     if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi
+RUN chown -R ${RPMBUILD_USER}:${RPMBUILD_GROUP} /var/run/postgresql
 
 # Switch back to build user.
 USER ${RPMBUILD_USER}
