@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import subprocess
 import sys
 import yaml
 
@@ -56,7 +55,7 @@ def main():
         "--variable",
         action="store_true",
         default=False,
-        help="Output RPM version.",
+        help="Output value by key.",
     )
     args = parser.parse_args()
 
@@ -64,7 +63,20 @@ def main():
         args.config_key, {"rpms": {}}
     )
     if args.variable:
-        output = config_data[args.rpm]
+        if "." in args.rpm:
+            var_parts = args.rpm.split(".")
+            try:
+                output = config_data
+                for var_part in var_parts:
+                    output = output[var_part]
+            except KeyError:
+                if var_parts[-1] == "rpmbuild_image":
+                    output = "rpmbuild-generic"
+                else:
+                    sys.stderr.write("Invalid key.\n")
+                    sys.exit(1)
+        else:
+            output = config_data[args.rpm]
         sys.stdout.write(output + "\n")
         sys.exit(0)
     elif not args.rpm in config_data["rpms"]:

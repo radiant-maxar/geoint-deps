@@ -1,6 +1,8 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild
-FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+ARG rpmbuild_image_prefix
+# hadolint ignore=DL3007
+FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
 ARG packages=""
 
 # If any package dependencies are needed, install them.

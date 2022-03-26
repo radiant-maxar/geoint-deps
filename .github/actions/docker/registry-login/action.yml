@@ -1,0 +1,25 @@
+---
+name: Log in to a Docker registry
+
+inputs:
+  password:
+    default: ${{ github.token }}
+    description: Password
+    required: false
+  server:
+    default: ghcr.io
+    description: Server
+    required: false
+  username:
+    default: $
+    description: Username
+    required: false
+
+runs:
+  using: composite
+
+  steps:
+    - name: Log in to ${{ inputs.server }}
+      run: |
+        echo "${{ inputs.password }}" | docker login --password-stdin --username ${{ inputs.username }} ${{ inputs.server }}
+      shell: bash --noprofile --norc -euxo pipefail {0}

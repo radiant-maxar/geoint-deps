@@ -1,6 +1,8 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-generic
-FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+ARG rpmbuild_image_prefix
+# hadolint ignore=DL3007
+FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
 ARG go_version=1.18.1
 ARG go_checksum=b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334
 ARG packages
