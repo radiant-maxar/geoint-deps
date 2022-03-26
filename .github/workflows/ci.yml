@@ -1,0 +1,223 @@
+---
+name: CI
+
+on:
+  - push
+
+env:
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  build-images:
+    name: Build `${{ matrix.image }}` Image
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Uncomment the following lines in order to build & push base images
+      max-parallel: 1
+      matrix:
+        image:
+          - rpmbuild
+          - rpmbuild-fonts
+          - rpmbuild-generic
+          - rpmbuild-pgdg
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # - name: Delete old images
+      #   uses: ./.github/actions/github-api/delete-package
+      #   with:
+      #     package_name: geoint-apps%2F${{ matrix.image }}
+      #     token: ${{ secrets.PKG_DELETE_TOKEN }}
+      #     token_type: token
+
+      - name: Build `${{ matrix.image }}` Image
+        uses: ./.github/actions/build
+        with:
+          make_target: ${{ matrix.image }}
+          push_image: true
+
+
+  build-rpms-1:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-images
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - CGAL
+          - dumb-init
+          - FileGDBAPI
+          - geos
+          - google-noto-fonts-extra
+          - gpsbabel
+          - hanazono-fonts
+          - journald-cloudwatch-logs
+          - libkml
+          - ogdi
+          - openstreetmap-carto
+          - osmctools
+          - osmosis
+          - passenger
+          - protobuf
+          - rack
+          - ruby
+          - rubygem-libxml-ruby
+          - rubygem-pg
+          - sqlite
+          - sbt
+          - tbb
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-2:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-1
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - proj
+          - protobuf-c
+          - protozero
+          - SFCGAL
+          - sqlite-pcre
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-3:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-2
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - libgeotiff
+          - libosmium
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-4:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-3
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - gdal
+          - osmdbt
+          - osmium-tool
+          - pyosmium
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-5:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-4
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - postgis
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-6:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-5
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - mapnik
+          - osm2pgsql
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-7:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-6
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - python-mapnik
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
