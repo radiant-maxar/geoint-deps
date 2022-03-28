@@ -406,7 +406,7 @@ services:
   rpmbuild-mod_tile:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-mapnik
+      - rpmbuild
     build:
       <<: *build_defaults
       args:
