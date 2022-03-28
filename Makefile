@@ -42,6 +42,7 @@ LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
+MOD_TILE_RPM := $(call rpm_file,mod_tile)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
 OSMDBT_RPM := $(call rpm_file,osmdbt)
@@ -164,6 +165,7 @@ distclean: .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
+	echo RPMBUILD_MOD_TILE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mod_tile.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
 	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
@@ -221,6 +223,9 @@ rpmbuild-libosmium: .env protozero
 
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
+
+rpmbuild-mod_tile: .env mapnik
+	$(DOCKER_COMPOSE) up -d rpmbuild-mod_tile
 
 rpmbuild-openstreetmap-carto: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-openstreetmap-carto
@@ -303,6 +308,7 @@ libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
+mod_tile: rpmbuild-mod_tile $(MOD_TILE_RPM)
 openstreetmap-carto: rpmbuild-openstreetmap-carto $(OPENSTREETMAP_CARTO_RPM)
 osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
 osmdbt: rpmbuild-osmdbt $(OSMDBT_RPM)
