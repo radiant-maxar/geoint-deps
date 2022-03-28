@@ -158,6 +158,12 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`mapnik-proj.patch`](../SOURCES/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/mapnik-build-json-fix.patch)
 
+## mod_tile
+
+The [mod_tile](https://wiki.openstreetmap.org/wiki/Mod_tile) source archives are obtained directly from
+[GitHub](https://github.com/openstreetmap/mod_tile/releases) and are
+[GPLv2 licensed](https://github.com/openstreetmap/mod_tile/blob/master/COPYING).
+
 ## openstreetmap-carto
 
 The [openstreetmap-carto](https://github.com/gravitystorm/openstreetmap-carto)
