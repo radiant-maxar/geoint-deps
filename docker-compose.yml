@@ -410,23 +410,9 @@ services:
     build:
       <<: *build_defaults
       args:
-        cgal_version: *CGAL_version
-        filegdbapi_version: *FileGDBAPI_version
-        gdal_version: *gdal_version
-        geos_version: *geos_version
-        gpsbabel_version: *gpsbabel_version
-        libgeotiff_version: *libgeotiff_version
-        libkml_version: *libkml_version
-        mapnik_version: *mapnik_version
         packages: "${RPMBUILD_MOD_TILE_PACKAGES}"
-        postgis_version: *postgis_version
-        proj_version: *proj_version
-        protobuf_c_version: *protobuf-c_version
-        protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
-        sfcgal_version: *SFCGAL_version
-        sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-mapnik-generic
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
     <<: *service_defaults
     depends_on:
