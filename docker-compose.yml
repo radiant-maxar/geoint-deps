@@ -92,7 +92,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     mod_tile:
       image: rpmbuild-mod_tile
-      version: &mod_tile_version '0.6.1-1'
+      version: &mod_tile_version '0.6.1-2'
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
       version: &openstreetmap_carto_version '5.4.0-1'

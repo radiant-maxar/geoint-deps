@@ -13,6 +13,7 @@ Summary:       A program to efficiently render and serve map tiles for www.opens
 License:       GPLv2
 URL:           https://github.com/openstreetmap/mod_tile
 Source0:       https://github.com/openstreetmap/mod_tile/archive/%{rpmbuild_version}/%{name}-%{rpmbuild_version}.tar.gz
+Patch0:        mod_tile-20220328.patch
 
 Requires:      httpd >= 2.4.6
 Requires:      iniparser
@@ -32,7 +33,7 @@ BuildRequires: mapnik-devel
 
 
 %prep
-%autosetup
+%autosetup -p1
 %{__mkdir_p} includes/iniparser
 %{__ln_s} /usr/include/iniparser.h includes/iniparser/iniparser.h
 
