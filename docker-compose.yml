@@ -166,7 +166,7 @@ x-rpmbuild:
         commit: '7da019cf9eb12af8f8aa88b7d75789dfcd1e901b'
     python3-osmium:
       image: rpmbuild-pyosmium
-      version: &pyosmium_version '3.2.0-1'
+      version: &pyosmium_version '3.3.0-1'
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
@@ -535,6 +535,7 @@ services:
         protozero_version: *protozero_version
         packages: "${RPMBUILD_PYOSMIUM_PACKAGES}"
         protobuf_version: *protobuf_version
+        python3_packages: pytest==7.0.1
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-libosmium-generic
   rpmbuild-python-mapnik:

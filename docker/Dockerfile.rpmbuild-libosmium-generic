@@ -2,6 +2,7 @@ ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-generic
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG packages
+ARG python3_packages
 ARG libosmium_version
 ARG protozero_version
 
@@ -18,7 +19,8 @@ RUN --mount=type=cache,target=/var/cache/yum \
     /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
     && \
     rm -f /tmp/*.rpm && \
-    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi
+    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+    if [ -n "${python3_packages}" ] ; then pip3 install --disable-pip-version-check ${python3_packages}; fi
 
 # Use unprivileged RPM build user and work directory by default.
 USER ${RPMBUILD_USER}
