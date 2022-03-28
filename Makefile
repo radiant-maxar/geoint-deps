@@ -224,7 +224,7 @@ rpmbuild-libosmium: .env protozero
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
 
-rpmbuild-mod_tile: .env mapnik
+rpmbuild-mod_tile: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-mod_tile
 
 rpmbuild-openstreetmap-carto: .env
