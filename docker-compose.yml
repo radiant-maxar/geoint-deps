@@ -90,6 +90,9 @@ x-rpmbuild:
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
         proj_min_version: *proj_min_version
+    mod_tile:
+      image: rpmbuild-mod_tile
+      version: &mod_tile_version '0.6.1-2'
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
       version: &openstreetmap_carto_version '5.4.0-1'
@@ -400,6 +403,16 @@ services:
         sfcgal_version: *SFCGAL_version
         sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-postgis-generic
+  rpmbuild-mod_tile:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_MOD_TILE_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
     <<: *service_defaults
     depends_on:
@@ -555,8 +568,8 @@ services:
         packages: "${RPMBUILD_PYTHON_MAPNIK_PACKAGES}"
         postgis_version: *postgis_version
         proj_version: *proj_version
-        protobuf_version: *protobuf_version
         protobuf_c_version: *protobuf-c_version
+        protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
         sqlite_version: *sqlite_version
