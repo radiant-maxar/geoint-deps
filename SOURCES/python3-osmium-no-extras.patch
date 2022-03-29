@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9de80c7..4b607cf 100644
+index 4621f69..96150ce 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -38,7 +38,7 @@ endfunction()
+@@ -64,7 +64,7 @@ endfunction()
  set(PYOSMIUM_MODULES geom index io)
  
  foreach(PYMOD geom index io)
@@ -11,7 +11,7 @@ index 9de80c7..4b607cf 100644
      set_module_output(${PYMOD} osmium)
      target_link_libraries(${PYMOD} PRIVATE ${OSMIUM_LIBRARIES})
      if(APPLE)
-@@ -46,15 +46,15 @@ foreach(PYMOD geom index io)
+@@ -72,15 +72,15 @@ foreach(PYMOD geom index io)
      endif()
  endforeach()
  
@@ -30,7 +30,7 @@ index 9de80c7..4b607cf 100644
  set_module_output(_replication osmium/replication)
  
  target_link_libraries(_osmium PRIVATE ${OSMIUM_LIBRARIES})
-@@ -65,4 +65,3 @@ if(APPLE)
+@@ -91,4 +91,3 @@ if(APPLE)
      set_target_properties(_osmium PROPERTIES CXX_VISIBILITY_PRESET "default")
      set_target_properties(_osm PROPERTIES CXX_VISIBILITY_PRESET "default")
  endif()

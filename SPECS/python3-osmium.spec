@@ -28,6 +28,7 @@ BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  protozero-devel >= %{protozero_min_version}
 BuildRequires:  python3-devel
 BuildRequires:  python36-nose
+BuildRequires:  python36-pip
 BuildRequires:  python36-requests
 BuildRequires:  zlib-devel
 
@@ -68,8 +69,8 @@ export LDFLAGS="${LDFLAGS:-%__global_ldflags}"
 
 
 %check
-cd test
-%{__python3} run_tests.py
+export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:$(python3 -c "import sys; print(':'.join(sys.path))")
+pytest test
 
 
 %files

@@ -1,12 +1,12 @@
 diff --git a/test/test_examples.py b/test/test_examples.py
-index 5433339..c1a14f5 100644
+index 5b8e913..d0f7e8e 100644
 --- a/test/test_examples.py
 +++ b/test/test_examples.py
-@@ -38,6 +38,7 @@ def test_amenity_list():
-     eq_(835, len(output))
-     eq_('1.535245 42.556681 parking', output[0].strip())
-     eq_('1.570729 42.529562 parking         Aparcament Comunal', output[-1].strip())
+@@ -31,6 +31,7 @@ def test_amenity_list(capsys):
+     assert 835 == len(output)
+     assert '1.535245 42.556681 parking' == output[0].strip()
+     assert '1.570729 42.529562 parking         Aparcament Comunal' == output[-1].strip()
 +test_amenity_list.__test__ = False
  
- def test_road_length():
-     script = load_example("road_length")
+ 
+ def test_road_length(capsys):
