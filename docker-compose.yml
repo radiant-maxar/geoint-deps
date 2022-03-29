@@ -95,11 +95,10 @@ x-rpmbuild:
       version: &mod_tile_version '0.6.1-2'
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
-      version: &openstreetmap_carto_version '5.4.0-1'
+      version: &openstreetmap_carto_version '5.4.0-2'
       arch: noarch
       defines:
-        data_fossgis_version: '3857'
-        data_natural_earth_version: '5.0.0'
+        data_natural_earth_version: '5.0.1'
     osmctools:
       image: rpmbuild-osmctools
       version: &osmctools_version '0.9-1'

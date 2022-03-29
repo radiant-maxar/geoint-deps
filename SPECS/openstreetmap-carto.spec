@@ -1,5 +1,4 @@
 # The following macros are also required:
-# * data_fossgis_version
 # * data_natural_earth_version
 
 %global openstreetmap_carto_home %{_datadir}/%{name}
@@ -17,12 +16,12 @@ Summary:        A general-purpose OpenStreetMap mapnik style, in CartoCSS
 License:        CC0 1.0
 URL:            https://github.com/gravitystorm/openstreetmap-carto
 Source0:        https://github.com/gravitystorm/openstreetmap-carto/archive/v%{version}.tar.gz
-Source1:        https://github.com/nvkelso/natural-earth-vector/blob/v%{data_natural_earth_version}/LICENSE.md
-Source2:        https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_boundary_lines_land.zip
-Source3:        https://osmdata.openstreetmap.de/download/antarctica-icesheet-outlines-%{data_fossgis_version}.zip
-Source4:        https://osmdata.openstreetmap.de/download/antarctica-icesheet-polygons-%{data_fossgis_version}.zip
-Source5:        https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-%{data_fossgis_version}.zip
-Source6:        https://osmdata.openstreetmap.de/download/water-polygons-split-%{data_fossgis_version}.zip
+Source1:        https://github.com/nvkelso/natural-earth-vector/blob/master/LICENSE.md
+Source2:        https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_boundary_lines_land.zip
+Source3:        https://osmdata.openstreetmap.de/download/antarctica-icesheet-outlines-3857.zip
+Source4:        https://osmdata.openstreetmap.de/download/antarctica-icesheet-polygons-3857.zip
+Source5:        https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip
+Source6:        https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip
 
 Patch0:         openstreetmap-carto-external-data-cache.patch
 
@@ -208,24 +207,24 @@ URL:       https://osmdata.openstreetmap.de
 %{__grep} -q %{data_natural_earth_version} VERSION.ne_110m_admin_0_boundary_lines_land.txt
 
 %{__cp} %{SOURCE3} data
-%{__unzip} %{SOURCE3} antarctica-icesheet-outlines-%{data_fossgis_version}/README
-%{__mv} antarctica-icesheet-outlines-%{data_fossgis_version}/README README.antarctica-icesheet-outlines.txt
-rmdir antarctica-icesheet-outlines-%{data_fossgis_version}
+%{__unzip} %{SOURCE3} antarctica-icesheet-outlines-3857/README
+%{__mv} antarctica-icesheet-outlines-3857/README README.antarctica-icesheet-outlines.txt
+rmdir antarctica-icesheet-outlines-3857
 
 %{__cp} %{SOURCE4} data
-%{__unzip} %{SOURCE4} antarctica-icesheet-polygons-%{data_fossgis_version}/README
-%{__mv} antarctica-icesheet-polygons-%{data_fossgis_version}/README README.antarctica-icesheet-polygons.txt
-rmdir antarctica-icesheet-polygons-%{data_fossgis_version}
+%{__unzip} %{SOURCE4} antarctica-icesheet-polygons-3857/README
+%{__mv} antarctica-icesheet-polygons-3857/README README.antarctica-icesheet-polygons.txt
+rmdir antarctica-icesheet-polygons-3857
 
 %{__cp} %{SOURCE5} data
-%{__unzip} %{SOURCE5} simplified-water-polygons-split-%{data_fossgis_version}/README.txt
-%{__mv} simplified-water-polygons-split-%{data_fossgis_version}/README.txt README.simplified-water-polygons-split.txt
-rmdir simplified-water-polygons-split-%{data_fossgis_version}
+%{__unzip} %{SOURCE5} simplified-water-polygons-split-3857/README.txt
+%{__mv} simplified-water-polygons-split-3857/README.txt README.simplified-water-polygons-split.txt
+rmdir simplified-water-polygons-split-3857
 
 %{__cp} %{SOURCE6} data
-%{__unzip} %{SOURCE6} water-polygons-split-%{data_fossgis_version}/README.txt
-%{__mv} water-polygons-split-%{data_fossgis_version}/README.txt README.water-polygons-split.txt
-rmdir water-polygons-split-%{data_fossgis_version}
+%{__unzip} %{SOURCE6} water-polygons-split-3857/README.txt
+%{__mv} water-polygons-split-3857/README.txt README.water-polygons-split.txt
+rmdir water-polygons-split-3857
 %{__sed} -n '/^LICENSE$/,$p' README.water-polygons-split.txt > LICENSE.%{name}-data-fossgis.txt
 
 
@@ -278,10 +277,10 @@ lua scripts/lua/test.lua
 %files data-fossgis
 %doc README.antarctica-icesheet-outlines.txt README.antarctica-icesheet-polygons.txt README.simplified-water-polygons-split.txt README.water-polygons-split.txt
 %license LICENSE.%{name}-data-fossgis.txt
-%{openstreetmap_carto_data}/data/antarctica-icesheet-outlines-%{data_fossgis_version}.zip
-%{openstreetmap_carto_data}/data/antarctica-icesheet-polygons-%{data_fossgis_version}.zip
-%{openstreetmap_carto_data}/data/simplified-water-polygons-split-%{data_fossgis_version}.zip
-%{openstreetmap_carto_data}/data/water-polygons-split-%{data_fossgis_version}.zip
+%{openstreetmap_carto_data}/data/antarctica-icesheet-outlines-3857.zip
+%{openstreetmap_carto_data}/data/antarctica-icesheet-polygons-3857.zip
+%{openstreetmap_carto_data}/data/simplified-water-polygons-split-3857.zip
+%{openstreetmap_carto_data}/data/water-polygons-split-3857.zip
 
 
 %changelog
