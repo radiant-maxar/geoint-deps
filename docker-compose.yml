@@ -73,6 +73,9 @@ x-rpmbuild:
       version: &libgeotiff_version '1.6.0-1'
       defines:
         proj_min_version: *proj_min_version
+    journald-cloudwatch-logs:
+      image: rpmbuild-journald-cloudwatch-logs
+      version: &journald-cloudwatch-logs_version '0.2.0-1'
     libkml:
       image: rpmbuild-libkml
       version: &libkml_version '1.3.0-1'
@@ -379,6 +382,16 @@ services:
         protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-libosmium
+  rpmbuild-journald-cloudwatch-logs:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-go
   rpmbuild-mapnik:
     <<: *service_defaults
     depends_on:

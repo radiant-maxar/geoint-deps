@@ -21,7 +21,7 @@ RUN chown -R ${RPMBUILD_USER}:${RPMBUILD_GROUP} /var/run/postgresql
 USER ${RPMBUILD_USER}
 WORKDIR ${RPMBUILD_HOME}
 
-# Add in RPM macros necessary for creating ROME RPMs and GDAL packages.
+# Add in macros necessary for creating RPMs and GDAL packages.
 RUN echo "%postgres_version ${postgres_version}" >> ${RPMBUILD_HOME}/.rpmmacros && \
     echo "%postgres_dotless %(echo %{postgres_version} | awk '{ gsub(/\\\\./, \"\"); print substr(\$0, 1, 2) }')" >> ${RPMBUILD_HOME}/.rpmmacros && \
     echo "%postgres_instdir /usr/pgsql-%{postgres_version}" >> ${RPMBUILD_HOME}/.rpmmacros

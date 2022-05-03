@@ -38,6 +38,7 @@ GEOS_RPM := $(call rpm_file,geos)
 GOOGLE_NOTO_RPM := $(call rpm_file,google-noto-fonts-extra)
 GPSBABEL_RPM := $(call rpm_file,gpsbabel)
 HANAZONO_RPM := $(call rpm_file,hanazono-fonts)
+JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
@@ -76,6 +77,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-gdal \
 	rpmbuild-geos \
 	rpmbuild-gpsbabel \
+	rpmbuild-journald-cloudwatch-logs \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
@@ -108,6 +110,7 @@ RPMBUILD_RPMS := \
 	google-noto-fonts-extra \
 	gpsbabel \
 	hanazono-fonts \
+	journald-cloudwatch-logs \
 	libgeotiff \
 	libkml \
 	libosmium \
@@ -161,6 +164,7 @@ distclean: .env
 	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
+	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/journald-cloudwatch-logs.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
@@ -220,6 +224,9 @@ rpmbuild-libkml: .env
 
 rpmbuild-libosmium: .env protozero
 	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
+
+rpmbuild-journald-cloudwatch-logs: .env
+	$(DOCKER_COMPOSE) up -d rpmbuild-journald-cloudwatch-logs
 
 rpmbuild-mapnik: .env gdal postgis
 	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
@@ -304,6 +311,7 @@ geos: rpmbuild-geos $(GEOS_RPM)
 google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
 gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 hanazono-fonts: rpmbuild-fonts $(HANAZONO_RPM)
+journald-cloudwatch-logs: rpmbuild-journald-cloudwatch-logs $(JOURNALD_CLOUDWATCH_LOGS_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
