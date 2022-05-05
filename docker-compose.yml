@@ -215,7 +215,7 @@ x-rpmbuild:
       version: &rubygem_pg_version '1.2.3-1'
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
-      version: &rubygem_libxml_ruby_version '3.2.1-1'
+      version: &rubygem_libxml_ruby_version '3.2.2-1'
     sqlite:
       image: rpmbuild-sqlite
       version: &sqlite_version '3.36.0-2'
