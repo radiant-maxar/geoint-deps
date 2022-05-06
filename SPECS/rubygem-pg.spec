@@ -11,7 +11,7 @@ Summary: A Ruby interface to the PostgreSQL RDBMS
 #
 License: (BSD or Ruby) and PostgreSQL
 URL: https://github.com/ged/ruby-pg
-Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
+Source0: https://github.com/ged/ruby-pg/archive/v%{version}/ruby-pg-%{version}.tar.gz
 # Disable RPATH.
 # https://github.com/ged/ruby-pg/issues/183
 Patch0: rubygem-pg-remove-rpath.patch
@@ -22,6 +22,7 @@ BuildRequires: postgresql%{postgres_dotless}-devel
 BuildRequires: ruby
 BuildRequires: ruby-devel
 BuildRequires: rubygem-bigdecimal
+BuildRequires: rubygem-bundler
 BuildRequires: rubygem-rake
 BuildRequires: rubygems-devel
 
@@ -35,39 +36,27 @@ This library works with PostgreSQL 9.1 and later.
 
 
 %prep
-%setup -c -n %{gem_name}-%{version}
-%{__tar} -xzf data.tar.gz
-%patch0 -p1
+%autosetup -p1 -n ruby-pg-%{version}
 
 
 %build
-%{_bindir}/rake gemspec
-%{__sed} -i -e 's/^  s\.version = ".\+"/  s\.version = "%{version}"/' %{gem_name}.gemspec
-%{_bindir}/gem build %{gem_name}.gemspec
+%{_bindir}/rake build
+mv pkg/%{gem_name}-%{version}.gem .
 %gem_install
+%{_bindir}/rake compile
 
 
 %install
-%{__mkdir_p} %{buildroot}%{gem_dir} %{buildroot}%{gem_extdir_mri}
+%{__install} -d %{buildroot}%{gem_dir} %{buildroot}%{gem_extdir_mri} %{buildroot}%{gem_instdir}/lib
 %{__cp} -a .%{gem_dir}/* %{buildroot}%{gem_dir}/
-%{__cp} -a .%{gem_extdir_mri}/{gem.build_complete,*.so} %{buildroot}%{gem_extdir_mri}/
+%{__cp} -a lib/pg lib/pg.rb %{buildroot}%{gem_instdir}/lib
+%{__cp} -a .%{gem_extdir_mri}/gem.build_complete lib/*.so %{buildroot}%{gem_extdir_mri}/
 
 # Prevent dangling symlink in -debuginfo (rhbz#878863).
 %{__rm} -rf %{buildroot}%{gem_instdir}/ext/
 
-# Remove useless shebangs.
-%{__sed} -i -e '/^#!\/usr\/bin\/env/d' %{buildroot}%{gem_instdir}/Rakefile
-%{__sed} -i -e '/^#!\/usr\/bin\/env/d' %{buildroot}%{gem_instdir}/Rakefile.cross
-
-# Files under %%{gem_libdir} are not executable.
-for file in `find %{buildroot}%{gem_libdir} -type f -name "*.rb"`; do
-    %{__sed} -i '/^#!\/usr\/bin\/env/ d' $file \
-    && %{__chmod} -v 0644 $file
-done
-
 
 %check
-pushd .%{gem_instdir}
 # Set --verbose to show detail log by $VERBOSE.
 # See https://github.com/ged/ruby-pg/blob/master/spec/helpers.rb $VERBOSE
 # Assign a random port to consider a case of multi builds in parallel in a host.
@@ -79,24 +68,10 @@ if ! PGPORT="$((54321 + ${RANDOM} % 1000))" ruby -S --verbose \
   echo "==== [setup.log end ] ===="
   false
 fi
-popd
 
 
 %files
 %doc %{gem_docdir}
-%doc %{gem_instdir}/ChangeLog
-%doc %{gem_instdir}/Contributors.rdoc
-%doc %{gem_instdir}/History.rdoc
-%doc %{gem_instdir}/Manifest.txt
-%doc %{gem_instdir}/README-OS_X.rdoc
-%doc %{gem_instdir}/README-Windows.rdoc
-%doc %{gem_instdir}/README.ja.rdoc
-%doc %{gem_instdir}/README.rdoc
-%doc %{gem_instdir}/Rakefile*
-%doc %{gem_instdir}/spec
-%license %{gem_instdir}/BSDL
-%license %{gem_instdir}/POSTGRES
-%license %{gem_instdir}/LICENSE
 %dir %{gem_instdir}
 %exclude %{gem_instdir}/.gemtest
 %{gem_extdir_mri}
