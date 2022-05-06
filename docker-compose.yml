@@ -131,7 +131,7 @@ x-rpmbuild:
         protobuf_c_min_version: *protobuf_c_min_version
     passenger:
       image: rpmbuild-passenger
-      version: &passenger_version '6.0.12-1'
+      version: &passenger_version '6.0.13-1'
     postgis:
       image: rpmbuild-postgis
       version: &postgis_version '3.2.1-1'
