@@ -198,7 +198,7 @@ rpmbuild-geos: .env
 rpmbuild-gpsbabel: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-gpsbabel
 
-rpmbuild-libgeotiff: .env proj sqlite
+rpmbuild-libgeotiff: .env proj
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
 
 rpmbuild-libkml: .env

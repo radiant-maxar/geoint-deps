@@ -70,7 +70,7 @@ x-rpmbuild:
       arch: noarch
     libgeotiff:
       image: rpmbuild-libgeotiff
-      version: &libgeotiff_version '1.6.0-1'
+      version: &libgeotiff_version 1.7.1-1
       defines:
         proj_min_version: *proj_min_version
     journald-cloudwatch-logs:

@@ -72,13 +72,14 @@ EOF
 %doc ChangeLog README
 %{_bindir}/applygeo
 %{_bindir}/geotifcp
-%{_bindir}/invgeod
-%{_bindir}/invproj
 %{_bindir}/listgeo
+%{_bindir}/makegeo
 %{_libdir}/%{name}.so.5*
 %{_mandir}/man1/*.1*
 
 %files devel
+%exclude %{_usr}/doc
+%{_datadir}/cmake/GeoTIFF
 %{_includedir}/%{name}
 %{_libdir}/%{name}.so
 %{_libdir}/pkgconfig/%{name}.pc
