@@ -10,13 +10,12 @@ License:        BSD
 URL:            https://github.com/mapbox/protozero
 Source0:        https://github.com/mapbox/protozero/archive/v%{version}/protozero-%{version}.tar.gz
 
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  gcc-c++
 BuildRequires:  graphviz
-BuildRequires:  protobuf-devel >= %{protobuf_min_version}
-BuildRequires:  protobuf-lite-devel >= %{protobuf_min_version}
-BuildRequires:  protobuf-compiler >= %{protobuf_min_version}
+BuildRequires:  protobuf >= %{protobuf_min_version}
+BuildRequires:  protobuf-lite >= %{protobuf_min_version}
 
 %description
 Minimalistic protocol buffer decoder and encoder in C++.
@@ -52,31 +51,24 @@ Protobufs protoc program.
 
 
 %prep
-%autosetup -p 1 -n %{name}-%{version}
-%{__mkdir} build
+%autosetup -p1
 
 
 %build
-pushd build
-%cmake3 -DWERROR=OFF ..
-%cmake3_build
-popd
+%cmake -DWERROR=OFF
+%cmake_build
 
 
 %install
-pushd build
-%cmake3_install
-popd
+%cmake_install
 
 
 %check
-pushd build
-%ctest3
-popd
+%ctest
 
 
 %files devel
-%doc CHANGELOG.md CONTRIBUTING.md README.md UPGRADING.md doc/*.md build/doc/html
+%doc README.md doc/*.md %{__cmake_builddir}/doc/html
 %license LICENSE.md LICENSE.from_folly
 %{_includedir}/%{name}
 

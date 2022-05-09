@@ -81,7 +81,7 @@ x-rpmbuild:
       version: &libkml_version '1.3.0-1'
     libosmium:
       image: rpmbuild-libosmium
-      version: &libosmium_version '2.17.3-1'
+      version: &libosmium_version 2.18.0-1
       arch: noarch
       name: libosmium-devel
       defines:
@@ -147,17 +147,9 @@ x-rpmbuild:
       defines:
         data_version: '1.9'
         googletest_version: 1.11.0
-    protobuf:
-      image: rpmbuild-protobuf
-      version: &protobuf_version '3.15.8-1'
-    protobuf-c:
-      image: rpmbuild-protobuf-c
-      version: &protobuf-c_version '1.4.0-1'
-      defines:
-        protobuf_c_min_version: *protobuf_c_min_version
     protozero:
       image: rpmbuild-protozero
-      version: &protozero_version '1.7.0-1'
+      version: &protozero_version 1.7.1-1
       arch: noarch
       name: protozero-devel
       defines:
@@ -288,26 +280,6 @@ services:
       args:
         packages: "${RPMBUILD_PROJ_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-  rpmbuild-protobuf:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
-    build:
-      <<: *build_defaults
-      args:
-        packages: "${RPMBUILD_PROTOBUF_PACKAGES}"
-        rpmbuild_channel: *rpmbuild_channel
-  rpmbuild-protobuf-c:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-protobuf
-    build:
-      <<: *build_defaults
-      args:
-        packages: "${RPMBUILD_PROTOBUF_C_PACKAGES}"
-        protobuf_version: *protobuf_version
-        rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-protobuf-c
   rpmbuild-libgeotiff:
     <<: *service_defaults
     depends_on:
@@ -366,8 +338,6 @@ services:
         packages: "${RPMBUILD_MAPNIK_PACKAGES}"
         postgis_version: *postgis_version
         proj_version: *proj_version
-        protobuf_version: *protobuf_version
-        protobuf_c_version: *protobuf-c_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
       dockerfile: docker/Dockerfile.rpmbuild-postgis-generic
@@ -444,8 +414,6 @@ services:
         packages: "${RPMBUILD_OSM2PGSQL_PACKAGES}"
         postgis_version: *postgis_version
         proj_version: *proj_version
-        protobuf_version: *protobuf_version
-        protobuf_c_version: *protobuf-c_version
         protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
@@ -474,7 +442,6 @@ services:
     <<: *service_defaults
     depends_on:
       - rpmbuild-gdal
-      - rpmbuild-protobuf-c
     build:
       <<: *build_defaults
       args:
@@ -487,22 +454,18 @@ services:
         libkml_version: *libkml_version
         packages: "${RPMBUILD_POSTGIS_PACKAGES}"
         proj_version: *proj_version
-        protobuf_version: *protobuf_version
-        protobuf_c_version: *protobuf-c_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
       dockerfile: docker/Dockerfile.rpmbuild-postgis
   rpmbuild-protozero:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-protobuf
+      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_PROTOZERO_PACKAGES}"
-        protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-protozero
   rpmbuild-pyosmium:
     <<: *service_defaults
     depends_on:
@@ -513,7 +476,6 @@ services:
         libosmium_version: *libosmium_version
         protozero_version: *protozero_version
         packages: "${RPMBUILD_PYOSMIUM_PACKAGES}"
-        protobuf_version: *protobuf_version
         python3_packages: pytest==7.0.1
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-libosmium-generic
@@ -535,8 +497,6 @@ services:
         packages: "${RPMBUILD_PYTHON_MAPNIK_PACKAGES}"
         postgis_version: *postgis_version
         proj_version: *proj_version
-        protobuf_c_version: *protobuf-c_version
-        protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
       dockerfile: docker/Dockerfile.rpmbuild-mapnik-generic

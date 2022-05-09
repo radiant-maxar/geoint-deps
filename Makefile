@@ -53,8 +53,6 @@ OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 PASSENGER_RPM := $(call rpm_file,passenger)
 POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
-PROTOBUF_RPM := $(call rpm_file,protobuf)
-PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
 PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
 PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
@@ -86,8 +84,6 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-passenger \
 	rpmbuild-postgis \
 	rpmbuild-proj \
-	rpmbuild-protobuf \
-	rpmbuild-protobuf-c \
 	rpmbuild-protozero \
 	rpmbuild-pyosmium \
 	rpmbuild-rack \
@@ -116,8 +112,6 @@ RPMBUILD_RPMS := \
 	osm2pgsql \
 	passenger \
 	postgis \
-	protobuf \
-	protobuf-c \
 	proj \
 	protozero \
 	pyosmium \
@@ -171,8 +165,6 @@ distclean: .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
 	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
-	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
-	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
 	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
@@ -245,17 +237,11 @@ rpmbuild-passenger: .env
 rpmbuild-pgdg: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-pgdg
 
-rpmbuild-postgis: .env gdal protobuf-c
+rpmbuild-postgis: .env gdal
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-postgis
 
 rpmbuild-proj: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-proj
-
-rpmbuild-protobuf: .env
-	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protobuf
-
-rpmbuild-protobuf-c: .env protobuf
-	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protobuf-c
 
 rpmbuild-protozero: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protozero
@@ -307,8 +293,6 @@ osm2pgsql: rpmbuild-osm2pgsql $(OSM2PGSQL_RPM)
 passenger: rpmbuild-passenger $(PASSENGER_RPM)
 postgis: rpmbuild-postgis $(POSTGIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
-protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
-protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
 pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
 python-mapnik: rpmbuild-python-mapnik $(PYTHON_MAPNIK_RPM)
