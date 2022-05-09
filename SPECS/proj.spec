@@ -1,7 +1,6 @@
 # The following macros are also required:
 # * data_version
 # * googletest_version
-# * sqlite_min_version
 
 Name:           proj
 # Also check whether there is a new proj-data release when upgrading!
@@ -16,20 +15,14 @@ Source1:        https://github.com/OSGeo/PROJ/releases/download/%{version}/proj-
 Source2:        https://github.com/OSGeo/PROJ-data/releases/download/%{data_version}.0/proj-data-%{data_version}.tar.gz
 Source3:        https://github.com/google/googletest/archive/release-%{googletest_version}.zip
 
-# Ship a pkgconfig file
-Patch0:         proj-pkgconfig.patch
-
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  libtiff-devel
-# Upgraded SQLite necessary for PROJ performance:
-#   https://github.com/OSGeo/PROJ/issues/1718
-BuildRequires:  sqlite-devel >= %{sqlite_min_version}
+BuildRequires:  sqlite-devel
 
-Requires:       sqlite >= %{sqlite_min_version}
-Obsoletes:      proj-datumgrid
+Requires:       sqlite
 
 %description
 Proj and invproj perform respective forward and inverse transformation of
@@ -81,14 +74,18 @@ License:      CC-BY and MIT and BSD and Public Domain \
 %data_subpkg -c fr -n France
 %data_subpkg -c is -n Island -e ISL
 %data_subpkg -c jp -n Japan
+%data_subpkg -c mx -n Mexico
+%data_subpkg -c no -n Norway
 %data_subpkg -c nc -n New\ Caledonia
 %data_subpkg -c nl -n Netherlands
 %data_subpkg -c nz -n New\ Zealand
+%data_subpkg -c pl -n Poland
 %data_subpkg -c pt -n Portugal
 %data_subpkg -c se -n Sweden
 %data_subpkg -c sk -n Slovakia
 %data_subpkg -c uk -n United\ Kingdom
 %data_subpkg -c us -n United\ States
+%data_subpkg -c za -n South\ Africa
 
 
 %prep
@@ -104,41 +101,38 @@ popd
 
 
 %build
-pushd build
-%cmake3 ..
-%cmake3_build
-popd
+%cmake
+%cmake_build
 
 
 %install
-pushd build
-%cmake3_install
-popd
+%cmake_install
 
 # Install data
-mkdir -p %{buildroot}%{_datadir}/%{name}
-tar -xf %{SOURCE2} --directory %{buildroot}%{_datadir}/%{name}
+%{__mkdir_p} %{buildroot}%{_datadir}/%{name}
+%{__tar} -xf %{SOURCE2} --directory %{buildroot}%{_datadir}/%{name}
 
 
 %check
-pushd build
-%ctest3
-popd
+# nkg test is flaky
+%ctest -- -E nkg
 
 
 %files
-%license COPYING
-%doc NEWS AUTHORS README.md
+%doc README.md
+%doc %{_docdir}/%{name}/AUTHORS
+%doc %{_docdir}/%{name}/NEWS
+%license %{_docdir}/%{name}/COPYING
 %{_bindir}/cct
 %{_bindir}/cs2cs
 %{_bindir}/geod
 %{_bindir}/gie
+%{_bindir}/invgeod
+%{_bindir}/invproj
 %{_bindir}/proj
 %{_bindir}/projinfo
 %{_bindir}/projsync
-%{_libdir}/libproj.so.21*
-%{_libdir}/libproj.so.19
-%{_mandir}/man1/*.1*
+%{_libdir}/libproj.so.25*
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/CH
 %{_datadir}/%{name}/GL27
@@ -157,6 +151,7 @@ popd
 %{_datadir}/%{name}/deformation_model.schema.json
 %{_datadir}/%{name}/projjson.schema.json
 %{_datadir}/%{name}/triangulation.schema.json
+%{_mandir}/man1/*.1*
 
 %files devel
 %{_includedir}/*.h
@@ -165,10 +160,6 @@ popd
 %{_libdir}/cmake/proj/
 %{_libdir}/cmake/proj4/
 %{_libdir}/pkgconfig/%{name}.pc
-
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
 
 
 %changelog

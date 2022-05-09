@@ -3,11 +3,11 @@ version: '3.7'
 
 x-rpmbuild:
   dist: &rpmbuild_dist .el7
-  channel_name: &rpmbuild_channel stable
+  channel_name: &rpmbuild_channel stable-el9
   email: &rpmbuild_email foundationgeoint-packaging@maxar.com
-  packager_name: &rpmbuild_name 'FoundationGEOINT Packaging'
-  postgres_version: &postgres_version '13'
-  vendor: &rpmbuild_vendor 'Maxar Technologies'
+  packager_name: &rpmbuild_name FoundationGEOINT Packaging
+  postgres_version: &postgres_version '14'
+  vendor: &rpmbuild_vendor Maxar Technologies
   base_args: &rpmbuild_base_args
     rpmbuild_dist: *rpmbuild_dist
     rpmbuild_email: *rpmbuild_email
@@ -23,15 +23,15 @@ x-rpmbuild:
   # Use consistent values for minimum versions for RPM build
   # and runtime requirements.
   minimum_versions:
-    geos: &geos_min_version '3.9.0'
-    gdal: &gdal_min_version '3.2.0'
-    libosmium: &libosmium_min_version '2.16.0'
-    postgis_min_version: &postgis_min_version '3.1.0'
-    proj: &proj_min_version '7.2.0'
-    protobuf: &protobuf_min_version '3.0.0'
-    protobuf-c: &protobuf_c_min_version '1.3.0'
-    protozero: &protozero_min_version '1.7.0'
-    sqlite_min_version: &sqlite_min_version '3.11.0'
+    geos: &geos_min_version 3.10.0
+    gdal: &gdal_min_version 3.4.0
+    libosmium: &libosmium_min_version 2.18.0
+    postgis_min_version: &postgis_min_version 3.2.0
+    proj: &proj_min_version 7.2.0
+    protobuf: &protobuf_min_version 3.0.0
+    protobuf-c: &protobuf_c_min_version 1.3.0
+    protozero: &protozero_min_version 1.7.0
+    sqlite_min_version: &sqlite_min_version 3.11.0
   # Configuration for building every dependency RPM.
   rpms:
     CGAL:
@@ -54,7 +54,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-geos
-      version: &geos_version '3.9.2-1'
+      version: &geos_version 3.10.2-1
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version '1.7.0-1'
@@ -143,11 +143,10 @@ x-rpmbuild:
         protobuf_c_min_version: *protobuf_c_min_version
     proj:
       image: rpmbuild-proj
-      version: &proj_version '7.2.1-1'
+      version: &proj_version 9.0.0-1
       defines:
-        data_version: '1.4'
-        googletest_version: '1.8.1'
-        sqlite_min_version: *sqlite_min_version
+        data_version: '1.9'
+        googletest_version: 1.11.0
     protobuf:
       image: rpmbuild-protobuf
       version: &protobuf_version '3.15.8-1'
@@ -182,46 +181,9 @@ x-rpmbuild:
       arch: noarch
       name: rubygem-rack
       spec_file: 'SPECS/rubygem-rack.spec'
-    ruby:
-      image: rpmbuild-ruby
-      version: &ruby_version '2.7.6-1'
-      defines: &ruby_bundled_versions
-        bundler_version: '2.1.4'
-        bundler_connection_pool_version: '2.2.2'
-        bundler_fileutils_version: '1.3.0'
-        bundler_molinillo_version: '0.6.6'
-        bundler_net_http_persistent_version: '3.1.0'
-        bundler_thor_version: '1.0.0'
-        bigdecimal_version: '2.0.0'
-        did_you_mean_version: '1.4.0'
-        io_console_version: '0.5.6'
-        irb_version: '1.2.6'
-        json_version: '2.3.0'
-        minitest_version: '5.13.0'
-        net_telnet_version: '0.2.0'
-        openssl_version: '2.1.3'
-        power_assert_version: '1.1.7'
-        psych_version: '3.1.0'
-        racc_version: '1.4.16'
-        rake_version: '13.0.1'
-        rdoc_version: '6.2.1.1'
-        rubygems_version: '3.1.6'
-        rubygems_molinillo_version: '0.5.7'
-        test_unit_version: '3.3.4'
-        xmlrpc_version: '0.3.0'
-      # Use the following to run the Ruby tests on a host with
-      # ZFS on Linux:
-      # with:
-      #   - zfs_host
-    rubygem-pg:
-      image: rpmbuild-rubygem-pg
-      version: &rubygem_pg_version '1.3.5-1'
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
       version: &rubygem_libxml_ruby_version '3.2.2-1'
-    sqlite:
-      image: rpmbuild-sqlite
-      version: &sqlite_version '3.36.0-2'
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version '2007.1.20-1'
@@ -298,7 +260,6 @@ services:
         proj_version: *proj_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
-        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-gdal
   rpmbuild-geos:
     <<: *service_defaults
@@ -321,14 +282,12 @@ services:
   rpmbuild-proj:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-sqlite
+      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_PROJ_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-        sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-proj
   rpmbuild-protobuf:
     <<: *service_defaults
     depends_on:
@@ -353,14 +312,12 @@ services:
     <<: *service_defaults
     depends_on:
       - rpmbuild-proj
-      - rpmbuild-sqlite
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_LIBGEOTIFF_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
         proj_version: *proj_version
-        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
   rpmbuild-libkml:
     <<: *service_defaults
@@ -413,7 +370,6 @@ services:
         protobuf_c_version: *protobuf-c_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
-        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-postgis-generic
   rpmbuild-mod_tile:
     <<: *service_defaults
@@ -493,7 +449,6 @@ services:
         protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
-        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-osm2pgsql
   rpmbuild-passenger:
     <<: *service_defaults
@@ -536,7 +491,6 @@ services:
         protobuf_c_version: *protobuf-c_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
-        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-postgis
   rpmbuild-protozero:
     <<: *service_defaults
@@ -585,7 +539,6 @@ services:
         protobuf_version: *protobuf_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
-        sqlite_version: *sqlite_version
       dockerfile: docker/Dockerfile.rpmbuild-mapnik-generic
   rpmbuild-rack:
     <<: *service_defaults
@@ -603,15 +556,6 @@ services:
         packages: "${RPMBUILD_RACK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
-  rpmbuild-ruby:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
-    build:
-      <<: *build_defaults
-      args:
-        packages: "${RPMBUILD_RUBY_PACKAGES}"
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults
     depends_on:
@@ -625,21 +569,6 @@ services:
         rpmbuild_channel: *rpmbuild_channel
         packages: "${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}"
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
-  rpmbuild-rubygem-pg:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild
-    build:
-      <<: *build_defaults
-      args:
-        gem_packages: >-
-          hoe
-          rake-compiler
-          rspec
-        rpmbuild_channel: *rpmbuild_channel
-        packages: "${RPMBUILD_RUBYGEM_PG_PACKAGES}"
-        postgres_version: *postgres_version
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:
@@ -651,26 +580,15 @@ services:
         packages: "${RPMBUILD_SFCGAL_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-sfcgal
-  rpmbuild-sqlite:
+  rpmbuild-sqlite-pcre:
     <<: *service_defaults
     depends_on:
       - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_SQLITE_PACKAGES}"
-        rpmbuild_channel: *rpmbuild_channel
-  rpmbuild-sqlite-pcre:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-sqlite
-    build:
-      <<: *build_defaults
-      args:
         packages: "${RPMBUILD_SQLITE_PCRE_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-        sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-proj
   rpmbuild-tbb:
     <<: *service_defaults
     depends_on:

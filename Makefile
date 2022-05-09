@@ -59,12 +59,9 @@ PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
 PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
 RACK_RPM := $(call rpm_file,rubygem-rack)
-RUBY_RPM := $(call rpm_file,ruby)
 RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
-RUBYGEM_PG_RPM := $(call rpm_file,rubygem-pg)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
-SQLITE_RPM := $(call rpm_file,sqlite)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
 TBB_RPM := $(call rpm_file,tbb)
 
@@ -94,11 +91,8 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-protozero \
 	rpmbuild-pyosmium \
 	rpmbuild-rack \
-	rpmbuild-ruby \
 	rpmbuild-rubygem-libxml-ruby \
-	rpmbuild-rubygem-pg \
 	rpmbuild-sfcgal \
-	rpmbuild-sqlite \
 	rpmbuild-tbb
 RPMBUILD_RPMS := \
 	CGAL \
@@ -128,9 +122,8 @@ RPMBUILD_RPMS := \
 	protozero \
 	pyosmium \
 	rack \
-	ruby \
+	rubygem-libxml-ruby \
 	sbt \
-	sqlite \
 	sqlite-pcre \
 	tbb
 
@@ -184,11 +177,8 @@ distclean: .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
 	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
-	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-libxml-ruby.spec) >> .env
-	echo RPMBUILD_RUBYGEM_PG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-pg.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
-	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite-pcre.spec) >> .env
 	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/tbb.spec) >> .env
 
@@ -196,109 +186,100 @@ distclean: .env
 
 # Build containers.
 rpmbuild: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild
 
 rpmbuild-cgal: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-cgal
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-cgal
 
 rpmbuild-generic: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-generic
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-generic
 
 rpmbuild-fonts: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-fonts
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-fonts
 
 rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL geos gpsbabel libgeotiff libkml proj sqlite
-	$(DOCKER_COMPOSE) up -d rpmbuild-gdal
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
 rpmbuild-geos: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-geos
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-geos
 
 rpmbuild-gpsbabel: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-gpsbabel
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-gpsbabel
 
 rpmbuild-libgeotiff: .env proj sqlite
-	$(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
 
 rpmbuild-libkml: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-libkml
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libkml
 
 rpmbuild-libosmium: .env protozero
-	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libosmium
 
 rpmbuild-journald-cloudwatch-logs: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-journald-cloudwatch-logs
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-journald-cloudwatch-logs
 
 rpmbuild-mapnik: .env gdal postgis
-	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-mapnik
 
 rpmbuild-mod_tile: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-mod_tile
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-mod_tile
 
 rpmbuild-openstreetmap-carto: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-openstreetmap-carto
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-openstreetmap-carto
 
 rpmbuild-osmctools: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-osmctools
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osmctools
 
 rpmbuild-osmdbt: .env libosmium
-	$(DOCKER_COMPOSE) up -d rpmbuild-osmdbt
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osmdbt
 
 rpmbuild-osmium-tool: .env libosmium
-	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
 
 rpmbuild-osm2pgsql: .env libosmium postgis
-	$(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
 
 rpmbuild-passenger: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-passenger
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-passenger
 
 rpmbuild-pgdg: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-pgdg
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-pgdg
 
 rpmbuild-postgis: .env gdal protobuf-c
-	$(DOCKER_COMPOSE) up -d rpmbuild-postgis
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-postgis
 
-rpmbuild-proj: .env sqlite
-	$(DOCKER_COMPOSE) up -d rpmbuild-proj
+rpmbuild-proj: .env
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-proj
 
 rpmbuild-protobuf: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-protobuf
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protobuf
 
 rpmbuild-protobuf-c: .env protobuf
-	$(DOCKER_COMPOSE) up -d rpmbuild-protobuf-c
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protobuf-c
 
 rpmbuild-protozero: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-protozero
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protozero
 
 rpmbuild-pyosmium: .env libosmium
-	$(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
 
 rpmbuild-python-mapnik: .env mapnik
-	$(DOCKER_COMPOSE) up -d rpmbuild-python-mapnik
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-python-mapnik
 
 rpmbuild-rack: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-rack
-
-rpmbuild-ruby: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-ruby
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-rack
 
 rpmbuild-rubygem-libxml-ruby: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-rubygem-libxml-ruby
-
-rpmbuild-rubygem-pg: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-rubygem-pg
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-rubygem-libxml-ruby
 
 rpmbuild-sfcgal: .env $(CGAL_RPM)
-	$(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
-
-rpmbuild-sqlite: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
 
 rpmbuild-sqlite-pcre: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite-pcre
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-sqlite-pcre
 
 rpmbuild-tbb: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-tbb
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-tbb
 
 ## RPM targets
 
@@ -332,11 +313,8 @@ protozero: rpmbuild-protozero $(PROTOZERO_RPM)
 pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
 python-mapnik: rpmbuild-python-mapnik $(PYTHON_MAPNIK_RPM)
 rack: rpmbuild-rack $(RACK_RPM)
-ruby: rpmbuild-ruby $(RUBY_RPM)
 rubygem-libxml-ruby: rpmbuild-rubygem-libxml-ruby $(RUBYGEM_LIBXML_RUBY_RPM)
-rubygem-pg: rpmbuild-rubygem-pg $(RUBYGEM_PG_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
-sqlite: rpmbuild-sqlite $(SQLITE_RPM)
 sqlite-pcre: rpmbuild-sqlite-pcre $(SQLITE_PCRE_RPM)
 tbb: rpmbuild-tbb $(TBB_RPM)
 

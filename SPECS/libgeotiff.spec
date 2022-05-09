@@ -9,10 +9,10 @@ License:        MIT
 URL:            http://trac.osgeo.org/geotiff/
 Source:         https://github.com/OSGeo/libgeotiff/releases/download/%{version}/libgeotiff-%{version}.tar.gz
 
+BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  libjpeg-devel
 BuildRequires:  libtiff-devel
-BuildRequires:  make
 BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  zlib-devel
 
@@ -39,26 +39,17 @@ The GeoTIFF library provides support for development of geotiff image format.
 
 
 %build
-%configure \
-        --prefix=%{_prefix} \
-        --includedir=%{_includedir}/%{name}/ \
-        --with-proj \
-        --with-tiff \
-        --with-jpeg \
-        --with-zip  \
-        --disable-static
+%cmake -DGEOTIFF_BIN_SUBDIR=bin -DGEOTIFF_INCLUDE_SUBDIR=include/%{name} -DGEOTIFF_LIB_SUBDIR=%{_lib}
+%cmake_build
 
-%{__sed} -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-%{__sed} -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
-
-%make_build %{?_smp_mflags}
 
 
 %install
-%{__make} install DESTDIR=%{buildroot} INSTALL="%{__install} -p"
+%cmake_install
 
 # install pkgconfig file
-%{__cat} > %{name}.pc <<EOF
+%{__mkdir_p} %{buildroot}%{_libdir}/pkgconfig/
+%{__cat} > %{buildroot}%{_libdir}/pkgconfig/%{name}.pc <<EOF
 prefix=%{_prefix}
 exec_prefix=%{_prefix}
 libdir=%{_libdir}
@@ -71,31 +62,21 @@ Libs: -L\${libdir} -lgeotiff
 Cflags: -I\${includedir}
 EOF
 
-%{__mkdir_p} %{buildroot}%{_libdir}/pkgconfig/
-%{__install} -p -m 0644 %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
-
-#clean up junks
-%{__rm} -fv %{buildroot}%{_libdir}/lib*.la
-
 
 %check
-# Run tests, but use installed path for libraries.
-LD_LIBRARY_PATH=%{buildroot}%{_libdir} %{__make} check
-
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ctest
 
 
 %files
-%license LICENSE
+%license COPYING
 %doc ChangeLog README
 %{_bindir}/applygeo
 %{_bindir}/geotifcp
+%{_bindir}/invgeod
+%{_bindir}/invproj
 %{_bindir}/listgeo
 %{_libdir}/%{name}.so.5*
 %{_mandir}/man1/*.1*
-
 
 %files devel
 %{_includedir}/%{name}

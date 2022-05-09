@@ -1,4 +1,4 @@
-FROM centos:7
+FROM quay.io/centos/centos:stream9
 
 # Required arguments.
 ARG rpmbuild_dist
@@ -29,17 +29,14 @@ ENV LANG=${rpmbuild_lang} \
     RPMBUILD_USER=${rpmbuild_user}
 
 # Install basic development and RPM authoring tools.
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum-config-manager --save \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf -q -y install "dnf-command(config-manager)" && \
+    dnf config-manager --save \
         --setopt=keepcache=1 \
-        --setopt=base.repo_gpgcheck=1 \
-        --setopt=extras.repo_gpgcheck=1 \
-        --setopt=updates.repo_gpgcheck=1 &> /dev/null && \
-    yum -q -y install \
-        centos-release-scl \
-        epel-release && \
-    yum -q -y update && \
-    yum -q -y install \
+        --setopt=baseos.repo_gpgcheck=1 \
+        --setopt=appstream.repo_gpgcheck=1 && \
+    dnf -q -y update && \
+    dnf -q -y install \
       autoconf \
       automake \
       bzip2 \
@@ -53,7 +50,6 @@ RUN --mount=type=cache,target=/var/cache/yum \
       libtool \
       make \
       m4 \
-      redhat-lsb-core \
       redhat-rpm-config \
       rpm-build \
       rpm-sign \

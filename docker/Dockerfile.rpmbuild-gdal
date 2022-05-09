@@ -14,7 +14,6 @@ ARG libkml_version
 ARG packages
 ARG proj_version
 ARG sfcgal_version
-ARG sqlite_version
 
 # Switch to root temporarily for dependency installs.
 USER root
@@ -34,16 +33,14 @@ COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
      SPECS/gdalautotest-requirements.txt \
      /tmp/
 
 # Install GDAL prerequisites first, before installing the package list
 # so they take precedence over packages from other repositories.
 SHELL ["/bin/bash", "-c"]
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install -y \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y \
     /tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -58,11 +55,9 @@ RUN --mount=type=cache,target=/var/cache/yum \
     /tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
     && \
     rm -f /tmp/*.rpm && \
-    if [ -n "${packages}" ] ; then yum -y install ${packages}; fi
+    if [ -n "${packages}" ] ; then dnf -y install ${packages}; fi
 
 # Install Python 3 documentation and packages.
 RUN pip3 install --disable-pip-version-check --require-hashes \

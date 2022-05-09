@@ -7,8 +7,6 @@ ARG sqlite_version
 
 COPY RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
      /tmp/
 
 SHELL ["/bin/bash", "-c"]
@@ -16,8 +14,6 @@ RUN --mount=type=cache,target=/var/cache/yum \
     yum install -y \
     /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
     && \
     rm -f /tmp/*.rpm
 
