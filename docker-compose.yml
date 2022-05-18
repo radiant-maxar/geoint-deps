@@ -43,6 +43,12 @@ x-rpmbuild:
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version '1.3.10-1'
+    armadillo:
+      image: rpmbuild-armadillo
+      version: &armadillo_version 11.1.1-1
+    arpack:
+      image: rpmbuild-arpack
+      version: &arpack_version 3.8.0-1
     dumb-init:
       image: rpmbuild-generic
       version: '1.2.5-1'
@@ -81,7 +87,7 @@ x-rpmbuild:
       version: &journald-cloudwatch-logs_version '0.2.0-1'
     libkml:
       image: rpmbuild-libkml
-      version: &libkml_version '1.3.0-1'
+      version: &libkml_version  1.3.0-1
     libosmium:
       image: rpmbuild-libosmium
       version: &libosmium_version 2.18.0-1
@@ -222,6 +228,26 @@ services:
     build:
       <<: *build_defaults
       args:
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-armadillo:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-arpack
+    build:
+      <<: *build_defaults
+      args:
+        arpack_version: *arpack_version
+        packages: "${RPMBUILD_ARMADILLO_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-armadillo
+  rpmbuild-arpack:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_ARPACK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-cgal:
     <<: *service_defaults

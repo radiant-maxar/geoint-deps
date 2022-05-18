@@ -131,9 +131,9 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch`](../SOURCES/libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch)
 * [`libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch`](../SOURCES/libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch)
 * [`libkml-0003-Fix-python-tests.patch`](../SOURCES/libkml-0003-Fix-python-tests.patch)
-* [`libkml-0004-Correctly-build-and-run-java-test.patch`](../SOURCES/libkml-0004-Correctly-build-and-run-java-test.patch)
 * [`libkml-fragile_test.patch`](../SOURCES/libkml-fragile_test.patch)
 * [`libkml-dont-bytecompile.patch`](../SOURCES/libkml-dont-bytecompile.patch)
+* [`minizip-1.3.0.tar.gz`](../SOURCES/minizip-1.3.0.tar.gz)
 
 ## libosmium
 
@@ -163,12 +163,6 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`mapnik-rpath.patch`](../SOURCES/mapnik-rpath.patch)
 * [`mapnik-proj.patch`](../SOURCES/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/mapnik-build-json-fix.patch)
-
-## minizip
-
-The [minizip](https://github.com/zlib-ng/minizip-ng) code archives are obtained directly from [GitHub](https://github.com/zlib-ng/minizip-ng/releases) and are [zlib licensed](https://github.com/zlib-ng/minizip-ng/blob/master/LICENSE).
-
-The [`minizip.spec`](../SPECS/minizip.spec) originates from [Fedora's `minizip` RPM](https://src.fedoraproject.org/rpms/minizip) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## mod_tile
 

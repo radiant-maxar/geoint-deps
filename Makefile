@@ -30,6 +30,8 @@ RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
+ARMADILLO_RPM := $(call rpm_file,armadillo)
+ARPACK_RPM := $(call rpm_file,arpack)
 CGAL_RPM := $(call rpm_file,CGAL)
 DUMB_INIT_RPM := $(call rpm_file,dumb-init)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
@@ -68,6 +70,8 @@ URIPARSER_RPM := $(call rpm_file,uriparser)
 # Build containers and RPMs.
 RPMBUILD_CONTAINERS := \
 	rpmbuild \
+	rpmbuild-armadillo \
+	rpmbuild-arpack \
 	rpmbuild-cgal \
 	rpmbuild-fonts \
 	rpmbuild-generic \
@@ -96,6 +100,8 @@ RPMBUILD_RPMS := \
 	CGAL \
 	FileGDBAPI \
 	SFCGAL \
+	armadillo \
+	arpack \
 	dumb-init \
 	gdal \
 	geos \
@@ -151,6 +157,8 @@ distclean: .env
 	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo RPMBUILD_ARMADILLO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/armadillo.spec) >> .env
+	echo RPMBUILD_ARPACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/arpack.spec) >> .env
 	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/CGAL.spec) >> .env
 	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
@@ -183,6 +191,12 @@ distclean: .env
 # Build containers.
 rpmbuild: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild
+
+rpmbuild-armadillo: .env arpack
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-armadillo
+
+rpmbuild-arpack: .env
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-arpack
 
 rpmbuild-cgal: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-cgal
@@ -276,6 +290,8 @@ rpmbuild-uriparser: .env
 CGAL: rpmbuild-cgal $(CGAL_RPM)
 FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
 SFCGAL: rpmbuild-sfcgal $(SFCGAL_RPM)
+armadillo: rpmbuild-armadillo $(ARMADILLO_RPM)
+arpack: rpmbuild-arpack $(ARPACK_RPM)
 dumb-init: rpmbuild-generic $(DUMB_INIT_RPM)
 gdal: rpmbuild-gdal $(GDAL_RPM)
 geos: rpmbuild-generic $(GEOS_RPM)
