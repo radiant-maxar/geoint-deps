@@ -14,7 +14,7 @@ Patch0:         libosmium-CentOS7GCC.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  doxygen
 BuildRequires:  expat-devel
 BuildRequires:  gcc-c++
@@ -56,26 +56,18 @@ developing applications that use %{name}.
 
 
 %build
-pushd build
-%cmake3 \
-  -DBUILD_HEADERS=OFF \
-  -DINSTALL_GDALCPP=ON \
-  ..
-%cmake3_build
+%cmake -DBUILD_HEADERS=OFF -DINSTALL_GDALCPP=ON
+%cmake_build
 popd
 
 
 %install
-pushd build
-%cmake3_install
+%cmake_install
 %{__rm} -rf %{buildroot}%{_docdir}
-popd
 
 
 %check
-pushd build
-%ctest3
-popd
+%ctest
 
 
 %files devel

@@ -164,6 +164,12 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`mapnik-proj.patch`](../SOURCES/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/mapnik-build-json-fix.patch)
 
+## minizip
+
+The [minizip](https://github.com/zlib-ng/minizip-ng) code archives are obtained directly from [GitHub](https://github.com/zlib-ng/minizip-ng/releases) and are [zlib licensed](https://github.com/zlib-ng/minizip-ng/blob/master/LICENSE).
+
+The [`minizip.spec`](../SPECS/minizip.spec) originates from [Fedora's `minizip` RPM](https://src.fedoraproject.org/rpms/minizip) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## mod_tile
 
 The [mod_tile](https://wiki.openstreetmap.org/wiki/Mod_tile) source archives are obtained directly from
@@ -402,3 +408,9 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`tbb-2020-attributes.patch`](../SOURCES/tbb-2020-attributes.patch)
 * [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
 * [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
+
+## uriparser
+
+The [uriparser](https://uriparser.github.io) library code archives are obtained directly from [GitHub](https://github.com/uriparser/uriparser/releases) and are [BSD licensed](https://github.com/uriparser/uriparser/blob/master/COPYING).
+
+The [`uriparser.spec`](../SPECS/uriparser.spec) file originates from [Fedora's `uriparser` RPM](https://src.fedoraproject.org/rpms/uriparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).

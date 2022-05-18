@@ -63,6 +63,7 @@ SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
 TBB_RPM := $(call rpm_file,tbb)
+URIPARSER_RPM := $(call rpm_file,uriparser)
 
 # Build containers and RPMs.
 RPMBUILD_CONTAINERS := \
@@ -89,7 +90,8 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-rack \
 	rpmbuild-rubygem-libxml-ruby \
 	rpmbuild-sfcgal \
-	rpmbuild-tbb
+	rpmbuild-tbb \
+	rpmbuild-uriparser
 RPMBUILD_RPMS := \
 	CGAL \
 	FileGDBAPI \
@@ -120,7 +122,8 @@ RPMBUILD_RPMS := \
 	rubygem-libxml-ruby \
 	sbt \
 	sqlite-pcre \
-	tbb
+	tbb \
+	uriparser
 
 ## General targets
 
@@ -173,6 +176,7 @@ distclean: .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite-pcre.spec) >> .env
 	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/tbb.spec) >> .env
+	echo RPMBUILD_URIPARSER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/uriparser.spec) >> .env
 
 ## Container targets
 
@@ -198,7 +202,7 @@ rpmbuild-gpsbabel: .env
 rpmbuild-libgeotiff: .env proj
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
 
-rpmbuild-libkml: .env
+rpmbuild-libkml: .env uriparser
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libkml
 
 rpmbuild-libosmium: .env protozero
@@ -264,6 +268,9 @@ rpmbuild-sqlite-pcre: .env
 rpmbuild-tbb: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-tbb
 
+rpmbuild-uriparser: .env
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-uriparser
+
 ## RPM targets
 
 CGAL: rpmbuild-cgal $(CGAL_RPM)
@@ -299,6 +306,7 @@ rubygem-libxml-ruby: rpmbuild-rubygem-libxml-ruby $(RUBYGEM_LIBXML_RUBY_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite-pcre: rpmbuild-sqlite-pcre $(SQLITE_PCRE_RPM)
 tbb: rpmbuild-tbb $(TBB_RPM)
+uriparser: rpmbuild-uriparser $(URIPARSER_RPM)
 
 ## Build patterns
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:

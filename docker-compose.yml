@@ -179,16 +179,19 @@ x-rpmbuild:
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
       version: &rubygem_libxml_ruby_version '3.2.2-1'
-    sqlite-pcre:
-      image: rpmbuild-sqlite-pcre
-      version: &sqlite_pcre_version '2007.1.20-1'
-    tbb:
-      image: rpmbuild-tbb
-      version: &tbb_version '2020.3-1'
     sbt:
       image: rpmbuild-generic
-      version: &sbt_version '1.6.1-1'
+      version: &sbt_version 1.6.1-1
       arch: noarch
+    sqlite-pcre:
+      image: rpmbuild-sqlite-pcre
+      version: &sqlite_pcre_version 2007.1.20-1
+    tbb:
+      image: rpmbuild-tbb
+      version: &tbb_version 2020.3-1
+    uriparser:
+      image: rpmbuild-uriparser
+      version: &uriparser_version 0.9.6-1
   service_volumes: &service_volumes
     - "./RPMS:/rpmbuild/RPMS:rw"
     - "./SOURCES:/rpmbuild/SOURCES:rw"
@@ -288,12 +291,14 @@ services:
   rpmbuild-libkml:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-generic
+      - rpmbuild-uriparser
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_LIBKML_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
+        uriparser_version: *uriparser_version
+      dockerfile: docker/Dockerfile.rpmbuild-libkml
   rpmbuild-libosmium:
     <<: *service_defaults
     depends_on:
@@ -551,4 +556,13 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_TBB_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-uriparser:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_URIPARSER_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
