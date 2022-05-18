@@ -8,15 +8,15 @@ COPY RPMS/noarch/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm
      /tmp/
 
 SHELL ["/bin/bash", "-c"]
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install -y \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y \
     /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
     && \
     rm -f /tmp/*.rpm
 
 # If any package dependencies are needed, install them.
-RUN --mount=type=cache,target=/var/cache/yum \
-    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
     rm -f /usr/local/bin/rpmbuild-user.sh
 

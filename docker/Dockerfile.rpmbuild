@@ -11,8 +11,8 @@ ARG rpmbuild_user=rpmbuild
 ARG rpmbuild_gid=${rpmbuild_uid}
 ARG rpmbuild_group=${rpmbuild_user}
 ARG rpmbuild_home=/${rpmbuild_user}
-ARG rpmbuild_lang=en_US.utf8
-ARG rpmbuild_locale=en_US.utf8
+ARG rpmbuild_lang=en_US.UTF-8
+ARG rpmbuild_locale=C.UTF-8
 
 # Ensure proper language/locale environment settings, and place key arguments
 # in environment to allow access in child containers.
@@ -40,7 +40,9 @@ RUN --mount=type=cache,target=/var/cache/dnf \
       autoconf \
       automake \
       bzip2 \
+      cmake \
       createrepo \
+      doxygen \
       gcc \
       gcc-c++ \
       gdb \
@@ -50,6 +52,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
       libtool \
       make \
       m4 \
+      pinentry \
       redhat-rpm-config \
       rpm-build \
       rpm-sign \

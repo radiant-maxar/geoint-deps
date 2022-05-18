@@ -15,7 +15,7 @@ fi
 
 # Update (or create) the repository database with `createrepo`.
 if [ ! -d "${REPODATA}" ]; then
-    createrepo --database --unique-md-filenames --deltas "${REPO}"
+    createrepo --database --unique-md-filenames "${REPO}"
 else
     createrepo --update "${REPO}"
 fi

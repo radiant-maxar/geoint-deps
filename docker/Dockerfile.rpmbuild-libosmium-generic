@@ -13,13 +13,13 @@ COPY RPMS/noarch/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm
      /tmp/
 
 SHELL ["/bin/bash", "-c"]
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install -y \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y \
     /tmp/libosmium-devel-${libosmium_version}${RPMBUILD_DIST}.noarch.rpm \
     /tmp/protozero-devel-${protozero_version}${RPMBUILD_DIST}.noarch.rpm \
     && \
     rm -f /tmp/*.rpm && \
-    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
     if [ -n "${python3_packages}" ] ; then pip3 install --disable-pip-version-check ${python3_packages}; fi
 
 # Use unprivileged RPM build user and work directory by default.

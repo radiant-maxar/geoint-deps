@@ -111,6 +111,12 @@ The [`libgeotiff.spec`](../SPECS/libgeotiff.spec) originates from
 [Fedora's `libgeotiff` RPM](https://src.fedoraproject.org/rpms/libgeotiff)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
+## libgta
+
+The [Generic Tagged Arrays (GTA)](https://marlam.de/gta/) library code archives are obtained directly from [the project's website](https://github.com/OSGeo/libgeotiff/releases/download) and are [LGPLv2+](https://github.com/marlam/gta-mirror/blob/master/libgta/COPYING) licensed.
+
+The [`libgta.spec`](../SPECS/libgta.spec) originates from [Fedora's `libgta` RPM](https://src.fedoraproject.org/rpms/libgta) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## libkml
 
 The [libkml](https://github.com/libkml/libkml) source archives were obtained
