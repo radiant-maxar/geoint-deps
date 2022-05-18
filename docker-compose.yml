@@ -39,7 +39,7 @@ x-rpmbuild:
       version: &CGAL_version '4.14.3-2'
     FileGDBAPI:
       image: rpmbuild-generic
-      version: &FileGDBAPI_version '1.5.1-1'
+      version: &FileGDBAPI_version 1.5.2-1
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version '1.3.10-1'

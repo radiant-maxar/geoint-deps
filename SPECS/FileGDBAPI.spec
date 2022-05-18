@@ -6,7 +6,7 @@ Summary:	ESRI FileGDB API
 Group:		System Environment/Libraries
 License:	ASL 2.0
 URL:		https://github.com/Esri/file-geodatabase-api
-Source0:	https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_%{version}/FileGDB_API_%(echo %{version} | tr '.' '_')-64.tar.gz
+Source0:	https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_%{version}/FileGDB_API_RHEL7_64.tar.gz
 
 %description
 The FileGDB API provides basic tools that allow the creation of file
@@ -61,7 +61,7 @@ email: contracts@esri.com
 
 
 %prep
-%setup -q -n FileGDB_API-64
+%setup -q -n FileGDB_API_RHEL7_64
 
 
 %build
@@ -74,16 +74,16 @@ email: contracts@esri.com
 %{__install} -d %{buildroot}%{_datarootdir}/doc/%{name}-%{version}/FileGDB_SQL_files
 
 # TODO: Version dynamic libs?
-%{__install} -m 0755 -D %{_builddir}/FileGDB_API-64/lib/libFileGDBAPI.so %{buildroot}%{_libdir}/libFileGDBAPI.so
-%{__install} -m 0755 -D %{_builddir}/FileGDB_API-64/lib/libfgdbunixrtl.so %{buildroot}%{_libdir}/libfgdbunixrtl.so
+%{__install} -m 0755 -D %{_builddir}/FileGDB_API_RHEL7_64/lib/libFileGDBAPI.so %{buildroot}%{_libdir}/libFileGDBAPI.so
+%{__install} -m 0755 -D %{_builddir}/FileGDB_API_RHEL7_64/lib/libfgdbunixrtl.so %{buildroot}%{_libdir}/libfgdbunixrtl.so
 
 # devel
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64/lib/libfgdbunixrtl.a %{buildroot}%{_libdir}
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64/include/* %{buildroot}%{_includedir}/%{name}
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/lib/libfgdbunixrtl.a %{buildroot}%{_libdir}
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/include/* %{buildroot}%{_includedir}/%{name}
 
 # doc
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64/doc/html/*.{css,html,js,pdf,png,txt,xml} %{buildroot}%{_datarootdir}/doc/%{name}-%{version}
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64/doc/html/FileGDB_SQL_files/*.xml %{buildroot}%{_datarootdir}/doc/%{name}-%{version}/FileGDB_SQL_files
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/doc/html/*.{css,html,js,pdf,png,txt,xml} %{buildroot}%{_datarootdir}/doc/%{name}-%{version}
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/doc/html/FileGDB_SQL_files/*.xml %{buildroot}%{_datarootdir}/doc/%{name}-%{version}/FileGDB_SQL_files
 
 %{__cat} > %{buildroot}%{_libdir}/pkgconfig/%{name}.pc <<EOF
 prefix=%{_prefix}
