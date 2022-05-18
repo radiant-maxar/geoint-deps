@@ -2,7 +2,7 @@
 version: '3.7'
 
 x-rpmbuild:
-  dist: &rpmbuild_dist .el7
+  dist: &rpmbuild_dist .el9
   channel_name: &rpmbuild_channel stable-el9
   email: &rpmbuild_email foundationgeoint-packaging@maxar.com
   packager_name: &rpmbuild_name FoundationGEOINT Packaging
