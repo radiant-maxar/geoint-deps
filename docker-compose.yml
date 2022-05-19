@@ -72,6 +72,7 @@ x-rpmbuild:
       arch: noarch
     g2clib:
       image: rpmbuild-g2clib
+      name: g2clib-devel
       version: 1.6.4-1
     hanazono-fonts:
       image: rpmbuild-fonts
