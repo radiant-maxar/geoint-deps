@@ -64,7 +64,7 @@ x-rpmbuild:
       version: &geos_version 3.10.2-1
     gpsbabel:
       image: rpmbuild-gpsbabel
-      version: &gpsbabel_version '1.7.0-1'
+      version: &gpsbabel_version 1.8.0-1
     google-noto-fonts-extra:
       image: rpmbuild-fonts
       version: &google-noto-fonts-extra_version '20210210-1'
