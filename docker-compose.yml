@@ -70,6 +70,9 @@ x-rpmbuild:
       defines:
         commit: '0c0b4f8660099c9cda5db230f9ce38733089a2a9'
       arch: noarch
+    g2clib:
+      image: rpmbuild-g2clib
+      version: 1.6.4-1
     hanazono-fonts:
       image: rpmbuild-fonts
       version: &hanazono-fonts_version '20170904-1'
@@ -293,6 +296,15 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_GPSBABEL_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+  rpmbuild-g2clib:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_G2CLIB_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-proj:
     <<: *service_defaults
