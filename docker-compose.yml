@@ -37,12 +37,13 @@ x-rpmbuild:
     CGAL:
       image: rpmbuild-cgal
       version: &CGAL_version 5.4-1
+      name: CGAL-devel
     FileGDBAPI:
       image: rpmbuild-generic
       version: &FileGDBAPI_version 1.5.2-1
     SFCGAL:
       image: rpmbuild-sfcgal
-      version: &SFCGAL_version '1.3.10-1'
+      version: &SFCGAL_version 1.4.1-1
     armadillo:
       image: rpmbuild-armadillo
       version: &armadillo_version 11.1.1-1
@@ -73,7 +74,7 @@ x-rpmbuild:
     g2clib:
       image: rpmbuild-g2clib
       name: g2clib-devel
-      version: 1.6.4-1
+      version: &g2clib_version 1.6.4-1
     hanazono-fonts:
       image: rpmbuild-fonts
       version: &hanazono-fonts_version '20170904-1'
