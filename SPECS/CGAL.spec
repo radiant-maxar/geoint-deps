@@ -1,6 +1,3 @@
-%global fullversion %{rpmbuild_version}
-
-
 Name:           CGAL
 Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
@@ -8,13 +5,10 @@ Summary:        Computational Geometry Algorithms Library
 
 License:        LGPLv3+ and GPLv3+ and Boost
 URL:            http://www.cgal.org/
-Source0:        https://github.com/CGAL/cgal/releases/download/releases/%{name}-%{fullversion}/%{name}-%{fullversion}.tar.xz
-
-# Patch for rounding math error
-Patch0:         cgal-rounding-math.patch
+Source0:        https://github.com/CGAL/cgal/releases/download/v%{version}/%{name}-%{version}.tar.xz
 
 # Required devel packages.
-BuildRequires: cmake3
+BuildRequires: cmake
 BuildRequires: gcc-c++
 BuildRequires: gmp-devel
 BuildRequires: boost-devel
@@ -34,7 +28,7 @@ access to useful, reliable geometric algorithms.
 %package devel
 Summary:        Development files and tools for CGAL applications
 Provides:       CGAL-static = %{version}-%{release}
-Requires:       cmake3
+Requires:       cmake
 Requires:       boost-devel%{?_isa}
 Requires:       gmp-devel%{?_isa}
 Requires:       mpfr-devel%{?_isa}
@@ -59,50 +53,46 @@ CGAL algorithms.
 
 
 %prep
-%setup -q -n %{name}-%{fullversion}
-%patch0
+%autosetup -p1 -n %{name}-%{version}
 %{__mkdir} build
 
 
 %build
+%{__mkdir_p} build
 pushd build
-%cmake3 -DCGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE=ON -DCGAL_INSTALL_LIB_DIR=%{_lib} -DCGAL_INSTALL_DOC_DIR= ..
-%cmake3_build
+%cmake -DCGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE=ON -DCGAL_INSTALL_LIB_DIR=%{_lib} -DCGAL_INSTALL_DOC_DIR= ..
+%cmake_build
 popd
 
 
 %install
 pushd build
-%cmake3_install
+%cmake_install
 popd
 
 # Install demos and examples
-mkdir -p %{buildroot}%{_datadir}/CGAL
+%{__mkdir_p} %{buildroot}%{_datadir}/CGAL
 touch -r demo %{buildroot}%{_datadir}/CGAL/
-cp -a demo %{buildroot}%{_datadir}/CGAL/demo
-cp -a examples %{buildroot}%{_datadir}/CGAL/examples
+%{__cp} -a demo %{buildroot}%{_datadir}/CGAL/demo
+%{__cp} -a examples %{buildroot}%{_datadir}/CGAL/examples
+
 
 %check
 rm -rf include/
 mkdir build-example
 cd build-example
-%{__cmake3} -L "-DCMAKE_PREFIX_PATH=%{buildroot}/usr" %{buildroot}%{_datadir}/CGAL/examples/Triangulation_2
+%{__cmake} -L "-DCMAKE_PREFIX_PATH=%{buildroot}/usr" %{buildroot}%{_datadir}/CGAL/examples/Triangulation_2
 make constrained_plus
 ldd ./constrained_plus
 ./constrained_plus
 
 
-%files
-%doc AUTHORS LICENSE LICENSE.FREE_USE LICENSE.LGPL LICENSE.GPL CHANGES.md
-%{_libdir}/libCGAL*.so.13
-%{_libdir}/libCGAL*.so.13.0.3
-%{_libdir}/libCGAL_ImageIO.so.14
-%{_libdir}/libCGAL_ImageIO.so.14.0.0
-
 %files devel
+%license AUTHORS LICENSE LICENSE.BSL LICENSE.RFL LICENSE.LGPL LICENSE.GPL
+%doc CHANGES.md
 %{_includedir}/CGAL
-%{_libdir}/libCGAL*.so
 %{_libdir}/cmake/CGAL
+%exclude %{_includedir}/CGAL/Qt
 %dir %{_datadir}/CGAL
 %{_bindir}/*
 %exclude %{_bindir}/cgal_make_macosx_app
@@ -113,11 +103,6 @@ ldd ./constrained_plus
 %{_datadir}/CGAL/demo
 %{_datadir}/CGAL/examples
 %exclude %{_datadir}/CGAL/*/*/skip_vcproj_auto_generation
-
-
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
 
 
 %changelog
