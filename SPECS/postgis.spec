@@ -36,7 +36,7 @@ Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}.tar
 Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}.pdf
 Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev_version}.tar.gz
 Source4:        postgis-filter-requires-perl-Pg.sh
-Patch0:         postgis-%{postgis_majorversion}-gdalfpic.patch
+Patch0:         postgis-3.1-gdalfpic.patch
 
 URL:		http://www.postgis.net/
 
@@ -46,6 +46,7 @@ BuildRequires:  geos-devel >= %{geos_min_version}
 BuildRequires:  json-c-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  pcre-devel
+BuildRequires:  perl-Time-HiRes
 BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  postgresql%{postgres_dotless}-devel
 BuildRequires:  protobuf-devel >= %{protobuf_min_version}
@@ -138,9 +139,10 @@ export LDFLAGS="$LDFLAGS -L%{postgres_instdir}/lib"
 %check
 # Create PostgreSQL database.
 export PGDATA="${HOME}/pgdata"
-pg_ctl -s stop || true
-rm -fr ${PGDATA}
-initdb --encoding UTF-8 --locale en_US.UTF-8
+export TZ=Etc/UTC
+%{_bindir}/pg_ctl -m fast -s stop || true
+%{__rm} -fr ${PGDATA}
+%{_bindir}/initdb --encoding UTF-8 --locale C.UTF-8
 
 # Tune the database.
 echo "fsync = off" >> "${PGDATA}/postgresql.conf"
@@ -148,13 +150,18 @@ echo "shared_buffers = 1GB" >> "${PGDATA}/postgresql.conf"
 echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start PostgreSQL
-pg_ctl -s start
+%{_bindir}/pg_ctl -s start
+
+# Something up with Timezone usage on EL9 in this build container,
+# disable only test using timezones:
+#  ERROR:  invalid value for parameter "TimeZone": "utc"
+%{__rm} -f regress/core/flatgeobuf{.sql,_expected}
 
 # run tests
-LANG="C.UTF-8" make check
+LANG="C.UTF-8" %{__make} check
 
 # Stop PostgreSQL
-pg_ctl -s stop
+%{_bindir}/pg_ctl -m fast -s stop
 
 
 # Create alternatives entries for common binaries

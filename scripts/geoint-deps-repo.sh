@@ -2,7 +2,7 @@
 set -euo pipefail
 
 GEOINT_DEPS_CHANNEL="${GEOINT_DEPS_CHANNEL:-stable}"
-GEOINT_DEPS_BASEURL="${GEOINT_DEPS_BASEURL:-https://geoint-deps.s3.amazonaws.com/el7/${GEOINT_DEPS_CHANNEL}}"
+GEOINT_DEPS_BASEURL="${GEOINT_DEPS_BASEURL:-https://geoint-deps.s3.amazonaws.com/el9/${GEOINT_DEPS_CHANNEL}}"
 GEOINT_DEPS_KEY="${GEOINT_DEPS_KEY:-/etc/pki/rpm-gpg/RPM-GPG-KEY-GEOINT}"
 GEOINT_DEPS_REPO="${GEOINT_DEPS_REPO:-/etc/yum.repos.d/geoint-deps.repo}"
 

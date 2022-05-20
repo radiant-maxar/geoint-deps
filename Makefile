@@ -259,7 +259,7 @@ rpmbuild-passenger: .env
 rpmbuild-pgdg: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-pgdg
 
-rpmbuild-postgis: .env gdal
+rpmbuild-postgis: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-postgis
 
 rpmbuild-proj: .env
