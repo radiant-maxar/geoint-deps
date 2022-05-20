@@ -90,9 +90,8 @@ BuildRequires: xz-devel
 BuildRequires: zlib-devel
 BuildRequires: libzstd-devel
 
-# Run time dependency for gpsbabel driver
+# Run time dependency for gpsbabel driver.
 Requires:	gpsbabel
-
 Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 
 # We have multilib triage
@@ -121,7 +120,8 @@ This package contains development files for GDAL.
 
 
 %package libs
-Summary:       GDAL file format library
+Summary:        GDAL file format library
+Requires:       FileGDBAPI
 
 %description libs
 This package contains the GDAL file format library.
@@ -210,6 +210,11 @@ esac
 EOF
 touch -r NEWS.md %{buildroot}%{_bindir}/%{name}-config
 %{__chmod} 0755 %{buildroot}%{_bindir}/%{name}-config
+
+# Fix malformed include directory probably due to "unexpected" use of `CMAKE_INSTALL_INCLUDEDIR`.
+%{__sed} -i -e 's|usr//usr|usr|g' \
+%{buildroot}%{_bindir}/%{name}-config-%{cpuarch} \
+%{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 # Don't duplicate license files
 %{__rm} %{buildroot}%{_datadir}/%{name}/LICENSE.TXT
