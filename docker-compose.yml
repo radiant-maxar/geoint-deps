@@ -279,16 +279,21 @@ services:
     build:
       <<: *build_defaults
       args:
+        arpack_version: *arpack_version
+        armadillo_version: *armadillo_version
         cgal_version: *CGAL_version
         filegdbapi_version: *FileGDBAPI_version
         geos_version: *geos_version
         gpsbabel_version: *gpsbabel_version
+        g2clib_version: *g2clib_version
         libgeotiff_version: *libgeotiff_version
+        libgta_version: *libgta_version
         libkml_version: *libkml_version
         packages: "${RPMBUILD_GDAL_PACKAGES}"
         proj_version: *proj_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
+        uriparser_version: *uriparser_version
       dockerfile: docker/Dockerfile.rpmbuild-gdal
   rpmbuild-gpsbabel:
     <<: *service_defaults

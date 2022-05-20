@@ -5,34 +5,47 @@ FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 # Our GDAL package depends on RPMs we build; the desired package
 # versions, *including* the release iteration (e.g, '1.0.0-1') are
 # required arguments.
+ARG armadillo_version
+ARG arpack_version
 ARG cgal_version
 ARG filegdbapi_version
 ARG geos_version
 ARG gpsbabel_version
+ARG g2clib_version
 ARG libgeotiff_version
+ARG libgta_version
 ARG libkml_version
 ARG packages
 ARG proj_version
 ARG sfcgal_version
+ARG uriparser_version
 
 # Switch to root temporarily for dependency installs.
 USER root
 
 # Copy in dependency RPMs.
-COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/libgta-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
      SPECS/gdalautotest-requirements.txt \
      /tmp/
 

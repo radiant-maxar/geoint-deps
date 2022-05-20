@@ -6,7 +6,7 @@ Summary:	ESRI FileGDB API
 Group:		System Environment/Libraries
 License:	ASL 2.0
 URL:		https://github.com/Esri/file-geodatabase-api
-Source0:	https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_%{version}/FileGDB_API_RHEL7_64.tar.gz
+Source0:	https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_%{version}/FileGDB_API_%(echo %{version} | tr '.' '_')-64gcc51.tar.gz
 
 %description
 The FileGDB API provides basic tools that allow the creation of file
@@ -43,25 +43,17 @@ USA
 email: contracts@esri.com
 
 
-%files
-%{_libdir}/libFileGDBAPI.so
-%{_libdir}/libfgdbunixrtl.so
+%package devel
+Summary:        Development files for FileGDBAPI
+Requires:       %{name}%{?_isa} = %{version}-%{release}
 
-#%files devel
-%{_includedir}/%{name}/*
-%{_libdir}/libfgdbunixrtl.a
-%{_libdir}/pkgconfig/%{name}.pc
-
-#%files doc
-%{_datarootdir}/doc/%{name}-%{version}/*
-
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%description devel
+The FileGDBAPI-devel package contains libraries and header files for
+developing applications that use FileGDBAPI.
 
 
 %prep
-%setup -q -n FileGDB_API_RHEL7_64
+%autosetup -n FileGDB_API-64gcc51
 
 
 %build
@@ -69,26 +61,25 @@ email: contracts@esri.com
 
 %install
 %{__install} -d %{buildroot}%{_libdir}
-%{__install} -d %{buildroot}%{_includedir}/%{name}
+%{__install} -d %{buildroot}%{_includedir}
 %{__install} -d %{buildroot}%{_libdir}/pkgconfig
 %{__install} -d %{buildroot}%{_datarootdir}/doc/%{name}-%{version}/FileGDB_SQL_files
 
 # TODO: Version dynamic libs?
-%{__install} -m 0755 -D %{_builddir}/FileGDB_API_RHEL7_64/lib/libFileGDBAPI.so %{buildroot}%{_libdir}/libFileGDBAPI.so
-%{__install} -m 0755 -D %{_builddir}/FileGDB_API_RHEL7_64/lib/libfgdbunixrtl.so %{buildroot}%{_libdir}/libfgdbunixrtl.so
+%{__install} -m 0755 -D \
+ %{_builddir}/FileGDB_API-64gcc51/lib/libstdc++.so.6.0.21 \
+ %{_builddir}/FileGDB_API-64gcc51/lib/libFileGDBAPI.so \
+ %{_builddir}/FileGDB_API-64gcc51/lib/libfgdbunixrtl.so \
+ %{buildroot}%{_libdir}/
 
 # devel
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/lib/libfgdbunixrtl.a %{buildroot}%{_libdir}
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/include/* %{buildroot}%{_includedir}/%{name}
-
-# doc
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/doc/html/*.{css,html,js,pdf,png,txt,xml} %{buildroot}%{_datarootdir}/doc/%{name}-%{version}
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API_RHEL7_64/doc/html/FileGDB_SQL_files/*.xml %{buildroot}%{_datarootdir}/doc/%{name}-%{version}/FileGDB_SQL_files
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64gcc51/lib/libfgdbunixrtl.a %{buildroot}%{_libdir}
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64gcc51/include/* %{buildroot}%{_includedir}
 
 %{__cat} > %{buildroot}%{_libdir}/pkgconfig/%{name}.pc <<EOF
 prefix=%{_prefix}
 libdir=%{_libdir}
-includedir=%{_includedir}/%{name}
+includedir=%{_includedir}
 
 Name: %{name}
 Description: ESRI FileGDB API
@@ -98,10 +89,16 @@ EOF
 %{__chmod} 0644 %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 
-%check
+%files
+%{_libdir}/libstdc++.so.6.0.21
+%exclude %{_libdir}/libstdc++.so.6
+%{_libdir}/libFileGDBAPI.so
+%{_libdir}/libfgdbunixrtl.so
 
-
-%clean
+%files devel
+%{_includedir}/*
+%{_libdir}/libfgdbunixrtl.a
+%{_libdir}/pkgconfig/%{name}.pc
 
 
 %changelog
