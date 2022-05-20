@@ -26,6 +26,7 @@ USER root
 # Copy in dependency RPMs.
 COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -46,7 +47,6 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
-     SPECS/gdalautotest-requirements.txt \
      /tmp/
 
 # Install GDAL prerequisites first, before installing the package list
@@ -54,28 +54,33 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
 SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y \
-    /tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libgta-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
     && \
     rm -f /tmp/*.rpm && \
     if [ -n "${packages}" ] ; then dnf -y install ${packages}; fi
 
 # Install Python 3 documentation and packages.
-RUN pip3 install --disable-pip-version-check --require-hashes \
-    -r /tmp/gdalautotest-requirements.txt && \
-    rm -f /tmp/gdalautotest-requirements.txt
+RUN pip3 install --disable-pip-version-check breathe
 
 # Switch back to RPM build user.
 USER ${RPMBUILD_USER}
