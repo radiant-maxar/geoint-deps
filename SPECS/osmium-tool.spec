@@ -11,15 +11,10 @@ License:        GPLv3
 URL:            http://osmcode.org/osmium/
 Source0:        https://github.com/osmcode/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  man-db
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
-BuildRequires:  pandoc
 BuildRequires:  protozero-devel >= %{protozero_min_version}
-
-# Allows us to use Boost 1.53 instead of 1.55.
-Patch1: osmium-tool-boost-version.patch
 
 %description
 Command line tool for working with OpenStreetMap data
@@ -27,37 +22,29 @@ based on the Osmium library
 
 
 %prep
-%autosetup -p 1
+%autosetup -p1
 %{__sed} -i -e "s/-O3 -g//" CMakeLists.txt
-%{__mkdir} build
+
 
 %build
-pushd build
-%cmake3 ..
-%cmake3_build
-popd
+%cmake
+%cmake_build
 
 
 %install
-pushd build
-%cmake3_install
-popd
+%cmake_install
 %{__mkdir_p} %{buildroot}%{_datadir}/zsh/site-functions
-%{__install} -p -m644 zsh_completion/* %{buildroot}%{_datadir}/zsh/site-functions
+%{__install} -p -m 0644 zsh_completion/* %{buildroot}%{_datadir}/zsh/site-functions
 
 
 %check
-pushd build
-%ctest3
-popd
+%ctest
 
 
 %files
 %doc README.md CHANGELOG.md
 %license LICENSE.txt
 %{_bindir}/osmium
-%{_mandir}/man1/osmium*.1.gz
-%{_mandir}/man5/osmium*.5.gz
 %dir %{_datadir}/zsh
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_osmium

@@ -131,7 +131,7 @@ x-rpmbuild:
       arch: noarch
     osmium-tool:
       image: rpmbuild-osmium-tool
-      version: &osmium-tool_version '1.13.2-1'
+      version: &osmium-tool_version 1.14.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
@@ -347,14 +347,13 @@ services:
   rpmbuild-libosmium:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-protozero
+      - rpmbuild
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_LIBOSMIUM_PACKAGES}"
-        protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-libosmium
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
     depends_on:
@@ -416,52 +415,33 @@ services:
   rpmbuild-osmdbt:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-libosmium
       - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
-        libosmium_version: *libosmium_version
         packages: "${RPMBUILD_OSMDBT_PACKAGES}"
-        protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
-        rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-libosmium-generic
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-osmium-tool:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-libosmium
+      - rpmbuild
     build:
       <<: *build_defaults
       args:
-        libosmium_version: *libosmium_version
         packages: "${RPMBUILD_OSMIUM_TOOL_PACKAGES}"
-        protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-libosmium-generic
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-osm2pgsql:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-libosmium
-      - rpmbuild-postgis
+      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
-        cgal_version: *CGAL_version
-        filegdbapi_version: *FileGDBAPI_version
-        gdal_version: *gdal_version
-        geos_version: *geos_version
-        gpsbabel_version: *gpsbabel_version
-        libgeotiff_version: *libgeotiff_version
-        libkml_version: *libkml_version
-        libosmium_version: *libosmium_version
         packages: "${RPMBUILD_OSM2PGSQL_PACKAGES}"
-        postgis_version: *postgis_version
-        proj_version: *proj_version
-        protozero_version: *protozero_version
         rpmbuild_channel: *rpmbuild_channel
-        sfcgal_version: *SFCGAL_version
-      dockerfile: docker/Dockerfile.rpmbuild-osm2pgsql
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-passenger:
     <<: *service_defaults
     depends_on:

@@ -19,11 +19,10 @@ Patch0:         osm2pgsql-replication-osm-server.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  expat-devel
-# A newer C++ toolchain and libosmium 2.17.0+ are required to compile 1.5.0+.
-BuildRequires:  devtoolset-9-gcc
-BuildRequires:  devtoolset-9-gcc-c++
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
@@ -67,27 +66,23 @@ it to the database.
 
 
 %build
-. /opt/rh/devtoolset-9/enable
-pushd build
-%cmake3 .. -G "Unix Makefiles" \
+%cmake -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS:BOOL=ON \
     -DBUILD_TESTS:BOOL=ON \
     -DEXTERNAL_LIBOSMIUM:BOOL=ON \
     -DEXTERNAL_PROTOZERO:BOOL=ON \
     -DWITH_LUAJIT:BOOL=ON
-%cmake3_build
-popd
+%cmake_build
 
 
 %check
-pushd build
 %if %{with db_tests}
 export PGDATA="${HOME}/pgdata"
-pg_ctl -s stop || true
+%{_bindir}/pg_ctl -m fast -s stop || true
 %{__rm} -fr ${PGDATA} /tmp/psql-tablespace
 # Create PostgreSQL database.
-initdb --encoding UTF-8 --locale en_US.UTF-8
+%{_bindir}/initdb --encoding UTF-8 --locale C.UTF-8
 
 # Tune the database.
 echo "fsync = off
@@ -95,33 +90,30 @@ shared_buffers = 1GB
 listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start PostgreSQL
-pg_ctl start
+%{_bindir}/pg_ctl start
 
 # Create testing tablespace required by the osm2pgsql tests.
 %{__mkdir_p} /tmp/psql-tablespace
-psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tablespace'"
+%{_bindir}/psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tablespace'"
 
 # Set the SMP flags so only one process is used for the tests, otherwise database
 # connections will be exhausted resulting in test failures.
 %global _smp_mflags -j1
 
 # Run all tests.
-%ctest3
+%ctest
 
 # Stop PostgreSQL
-pg_ctl -s stop
+%{_bindir}/pg_ctl -m fast -s stop
 %else
 # Run tests that don't require a database.
-%ctest3 -L NoDB
+%ctest -L NoDB
 %endif
-popd
 
 
 %install
-pushd build
-%cmake3_install
+%cmake_install
 %{_bindir}/find %{buildroot} -name '*.la' -delete
-popd
 
 
 %files

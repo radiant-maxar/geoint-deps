@@ -2,7 +2,9 @@ ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-pgdg
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 
+ARG gem_packages
 ARG packages
+ARG python_packages
 
 # Switch to root temporarily for dependency installs.
 USER root
@@ -11,7 +13,9 @@ USER root
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN --mount=type=cache,target=/var/cache/dnf \
     /usr/local/bin/geoint-deps-repo.sh && \
-    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
+    if [ -n "${gem_packages:-}" ] ; then gem install ${gem_packages}; fi && \
+    if [ -n "${python3_packages:-}" ] ; then pip3 install --disable-pip-version-check ${python3_packages}; fi
 
 # Ensure proper permissions on PostgreSQL run directory (again).
 RUN chown -R ${RPMBUILD_USER}:${RPMBUILD_GROUP} /var/run/postgresql

@@ -226,7 +226,7 @@ rpmbuild-libgeotiff: .env proj
 rpmbuild-libkml: .env uriparser
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libkml
 
-rpmbuild-libosmium: .env protozero
+rpmbuild-libosmium: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libosmium
 
 rpmbuild-journald-cloudwatch-logs: .env
