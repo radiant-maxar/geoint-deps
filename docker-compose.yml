@@ -40,7 +40,7 @@ x-rpmbuild:
       name: CGAL-devel
     FileGDBAPI:
       image: rpmbuild-generic
-      version: &FileGDBAPI_version 1.5.2-1
+      version: &FileGDBAPI_version 1.5.1-1
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version 1.4.1-1
@@ -55,7 +55,7 @@ x-rpmbuild:
       version: '1.2.5-1'
     gdal:
       image: rpmbuild-gdal
-      version: &gdal_version '3.2.3-1'
+      version: &gdal_version 3.5.0-1
       defines:
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
