@@ -211,7 +211,7 @@ rpmbuild-generic: .env
 rpmbuild-fonts: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-fonts
 
-rpmbuild-gdal: .env CGAL SFCGAL armadillo arpack geos gpsbabel g2clib libgeotiff libgta libkml proj uriparser
+rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL armadillo arpack geos gpsbabel g2clib libgeotiff libgta libkml proj uriparser
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
 rpmbuild-gpsbabel: .env

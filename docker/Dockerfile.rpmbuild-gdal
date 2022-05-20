@@ -8,6 +8,7 @@ FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG armadillo_version
 ARG arpack_version
 ARG cgal_version
+ARG filegdbapi_version
 ARG geos_version
 ARG gpsbabel_version
 ARG g2clib_version
@@ -24,6 +25,8 @@ USER root
 
 # Copy in dependency RPMs.
 COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -52,6 +55,8 @@ SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y \
     /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \

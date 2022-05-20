@@ -40,7 +40,7 @@ x-rpmbuild:
       name: CGAL-devel
     FileGDBAPI:
       image: rpmbuild-generic
-      version: &FileGDBAPI_version 1.5.1-1
+      version: &FileGDBAPI_version 1.5.2-1
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version 1.4.1-1
@@ -282,6 +282,7 @@ services:
         arpack_version: *arpack_version
         armadillo_version: *armadillo_version
         cgal_version: *CGAL_version
+        filegdbapi_version: *FileGDBAPI_version
         geos_version: *geos_version
         gpsbabel_version: *gpsbabel_version
         g2clib_version: *g2clib_version

@@ -1,3 +1,5 @@
+%global compiler RHEL7-64gcc83
+
 ## ESRI File Geodatabase API Library
 Name:		FileGDBAPI
 Version:	%{rpmbuild_version}
@@ -6,7 +8,7 @@ Summary:	ESRI FileGDB API
 Group:		System Environment/Libraries
 License:	ASL 2.0
 URL:		https://github.com/Esri/file-geodatabase-api
-Source0:	https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_%{version}/FileGDB_API_%(echo %{version} | tr '.' '_')-64gcc51.tar.gz
+Source0:	https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_%{version}/FileGDB_API-%{compiler}.tar.gz
 
 %description
 The FileGDB API provides basic tools that allow the creation of file
@@ -53,7 +55,7 @@ developing applications that use FileGDBAPI.
 
 
 %prep
-%autosetup -n FileGDB_API-64gcc51
+%autosetup -n FileGDB_API-%{compiler}
 
 
 %build
@@ -67,14 +69,13 @@ developing applications that use FileGDBAPI.
 
 # TODO: Version dynamic libs?
 %{__install} -m 0755 -D \
- %{_builddir}/FileGDB_API-64gcc51/lib/libstdc++.so.6.0.21 \
- %{_builddir}/FileGDB_API-64gcc51/lib/libFileGDBAPI.so \
- %{_builddir}/FileGDB_API-64gcc51/lib/libfgdbunixrtl.so \
+ %{_builddir}/FileGDB_API-%{compiler}/lib/libFileGDBAPI.so \
+ %{_builddir}/FileGDB_API-%{compiler}/lib/libfgdbunixrtl.so \
  %{buildroot}%{_libdir}/
 
 # devel
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64gcc51/lib/libfgdbunixrtl.a %{buildroot}%{_libdir}
-%{__install} -m 0644 -D %{_builddir}/FileGDB_API-64gcc51/include/* %{buildroot}%{_includedir}
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API-%{compiler}/lib/libfgdbunixrtl.a %{buildroot}%{_libdir}
+%{__install} -m 0644 -D %{_builddir}/FileGDB_API-%{compiler}/include/* %{buildroot}%{_includedir}
 
 %{__cat} > %{buildroot}%{_libdir}/pkgconfig/%{name}.pc <<EOF
 prefix=%{_prefix}
@@ -90,8 +91,6 @@ EOF
 
 
 %files
-%{_libdir}/libstdc++.so.6.0.21
-%exclude %{_libdir}/libstdc++.so.6
 %{_libdir}/libFileGDBAPI.so
 %{_libdir}/libfgdbunixrtl.so
 

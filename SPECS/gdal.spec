@@ -41,9 +41,7 @@ BuildRequires: cryptopp-devel
 BuildRequires: curl-devel
 BuildRequires: doxygen
 BuildRequires: expat-devel
-# TODO: ESRI's FileGDBAPI uses incompatible ABI with EL9's compiler;
-#       wait for ESRI to address or come up with a patch.
-#BuildRequires: FileGDBAPI-devel
+BuildRequires: FileGDBAPI-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freexl-devel
 BuildRequires: g2clib-static
@@ -196,8 +194,8 @@ touch -r NEWS.md %{buildroot}%{_includedir}/%{name}/cpl_config.h
 # and create a script to call one or the other -- depending on detected architecture
 # TODO: The extra script will direct you to 64 bit libs on
 # 64 bit systems -- whether you like that or not
-mv %{buildroot}%{_bindir}/%{name}-config %{buildroot}%{_bindir}/%{name}-config-%{cpuarch}
-cat > %{buildroot}%{_bindir}/%{name}-config <<EOF
+%{__mv} %{buildroot}%{_bindir}/%{name}-config %{buildroot}%{_bindir}/%{name}-config-%{cpuarch}
+%{_bindir}/cat > %{buildroot}%{_bindir}/%{name}-config <<EOF
 #!/bin/bash
 
 ARCH=\$(uname -m)
@@ -211,7 +209,7 @@ x86_64 | ppc64 | ppc64le | ia64 | s390x | sparc64 | alpha | alphaev6 | aarch64 )
 esac
 EOF
 touch -r NEWS.md %{buildroot}%{_bindir}/%{name}-config
-chmod 0755 %{buildroot}%{_bindir}/%{name}-config
+%{__chmod} 0755 %{buildroot}%{_bindir}/%{name}-config
 
 # Don't duplicate license files
 %{__rm} %{buildroot}%{_datadir}/%{name}/LICENSE.TXT
@@ -231,10 +229,10 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}-config
 %check
 %if %{run_tests}
 export PGDATA="${HOME}/pgdata"
-pg_ctl -s stop || true
+%{_bindir}/pg_ctl -m fast -s stop || true
 %{__rm} -fr ${PGDATA}
 # Create PostgreSQL database.
-initdb --encoding UTF-8 --locale C.UTF-8
+%{_bindir}/initdb --encoding UTF-8 --locale C.UTF-8
 
 # Tune the database.
 echo "fsync = off" >> "${PGDATA}/postgresql.conf"
@@ -243,13 +241,12 @@ echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start and setup to use PostgreSQL *without* PostGIS.
 export PG_USE_POSTGIS=NO
-pg_ctl -s start
-createdb autotest
+%{_bindir}/pg_ctl -s start
+%{_bindir}/createdb autotest
 
 pushd gdalautotest-%{testversion}
-
 # Export test environment variables.
-export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:%{buildroot}%{python3_sitearch}
+export PYTHONPATH=%{buildroot}%{python3_sitearch}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
 export GDAL_DATA=%{buildroot}%{_datadir}/gdal
 export GDAL_DRIVER_PATH=%{buildroot}%{_libdir}/gdalplugins
@@ -259,25 +256,22 @@ export GDAL_RUN_SLOW_TESTS=1
 export PYTEST="pytest -vv -p no:sugar --color=no"
 #export GDAL_DOWNLOAD_TEST_DATA=1
 
-# TODO: ESRI's FileGDBAPI uses incompatible ABI with EL9's compiler
-# Run ogr_fgdb test in isolation due to likely conflict with libxml2;
-# unfortunately, this test suite may also fail randomly due to this.
-# Thanks, ESRI!
-#$PYTEST ogr/ogr_fgdb.py || true
-#rm -f ogr/ogr_fgdb.py
-
 # Run tests with problematic cases deselected.  Some possible explanations:
-#  * ogr/ogr_gpkg: "AttributeError: 'NoneType' object has no attribute 'ExportToWkt'"
+#  * ogr/ogr_fgdb: Known failures disabled on Ubuntu, but not EL.
+#  * ogr/ogr_gpkg: Unknown
 #  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
 $PYTEST \
-    --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_15 \
-    --deselect ogr/ogr_pg.py::test_ogr_pg_14 \
-    --deselect ogr/ogr_pg.py::test_ogr_pg_70
-
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19 \
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19bis \
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_20 \
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_21 \
+--deselect ogr/ogr_gpkg.py::test_ogr_gpkg_15 \
+--deselect ogr/ogr_pg.py::test_ogr_pg_14 \
+--deselect ogr/ogr_pg.py::test_ogr_pg_70
 popd
 
 # Stop PostgreSQL
-pg_ctl -m fast -s stop
+%{_bindir}/pg_ctl -m fast -s stop
 %endif
 
 
