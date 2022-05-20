@@ -57,6 +57,8 @@ BuildRequires: cryptopp-devel
 BuildRequires: curl-devel
 BuildRequires: doxygen
 BuildRequires: expat-devel
+# TODO: ESRI's FileGDBAPI uses incompatible ABI with EL9's compiler;
+#       wait for ESRI to address or come up with a patch.
 #BuildRequires: FileGDBAPI-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freexl-devel
@@ -98,7 +100,6 @@ BuildRequires: python3-pip
 BuildRequires: python3-pytest
 BuildRequires: python3-setuptools
 BuildRequires: python3-wheel
-BuildRequires: shapelib-devel
 BuildRequires: sqlite-devel
 BuildRequires: swig
 BuildRequires: unixODBC-devel
@@ -212,7 +213,6 @@ touch -r NEWS.md %{buildroot}%{_includedir}/%{name}/cpl_config.h
 # TODO: The extra script will direct you to 64 bit libs on
 # 64 bit systems -- whether you like that or not
 mv %{buildroot}%{_bindir}/%{name}-config %{buildroot}%{_bindir}/%{name}-config-%{cpuarch}
-#>>>>>>>>>>>>>
 cat > %{buildroot}%{_bindir}/%{name}-config <<EOF
 #!/bin/bash
 
@@ -226,7 +226,6 @@ x86_64 | ppc64 | ppc64le | ia64 | s390x | sparc64 | alpha | alphaev6 | aarch64 )
 ;;
 esac
 EOF
-#<<<<<<<<<<<<<
 touch -r NEWS.md %{buildroot}%{_bindir}/%{name}-config
 chmod 0755 %{buildroot}%{_bindir}/%{name}-config
 
@@ -240,7 +239,7 @@ export PGDATA="${HOME}/pgdata"
 pg_ctl -s stop || true
 %{__rm} -fr ${PGDATA}
 # Create PostgreSQL database.
-initdb --encoding UTF-8 --locale en_US.UTF-8
+initdb --encoding UTF-8 --locale C.UTF-8
 
 # Tune the database.
 echo "fsync = off" >> "${PGDATA}/postgresql.conf"
@@ -253,71 +252,37 @@ pg_ctl -s start
 createdb autotest
 
 pushd gdalautotest-%{testversion}
-  # Export test environment variables.
-  export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:%{buildroot}%{python3_sitearch}
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
-  export GDAL_DATA=%{buildroot}%{_datadir}/gdal
-  export GDAL_DRIVER_PATH=%{buildroot}%{_libdir}/gdalplugins
 
-  # Enable these tests on demand
-  export GDAL_RUN_SLOW_TESTS=1
-  export PYTEST="pytest -vv -p no:sugar --color=no"
-  #export GDAL_DOWNLOAD_TEST_DATA=1
+# Export test environment variables.
+export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:%{buildroot}%{python3_sitearch}
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
+export GDAL_DATA=%{buildroot}%{_datadir}/gdal
+export GDAL_DRIVER_PATH=%{buildroot}%{_libdir}/gdalplugins
 
-  # Remove test cases that require database access.
-  rm -f \
-     ogr/ogr_mysql.py \
-     ogr/ogr_mongodbv3.py
+# Enable these tests on demand
+export GDAL_RUN_SLOW_TESTS=1
+export PYTEST="pytest -vv -p no:sugar --color=no"
+#export GDAL_DOWNLOAD_TEST_DATA=1
 
-  # Run ogr_fgdb test in isolation due to likely conflict with libxml2;
-  # unfortunately, this test suite may also fail randomly due to this.
-  # Thanks, ESRI!
-  $PYTEST ogr/ogr_fgdb.py || true
-  rm -f ogr/ogr_fgdb.py
+# TODO: ESRI's FileGDBAPI uses incompatible ABI with EL9's compiler
+# Run ogr_fgdb test in isolation due to likely conflict with libxml2;
+# unfortunately, this test suite may also fail randomly due to this.
+# Thanks, ESRI!
+#$PYTEST ogr/ogr_fgdb.py || true
+#rm -f ogr/ogr_fgdb.py
 
-  $PYTEST
+# Run tests with problematic cases deselected.  Some possible explanations:
+#  * ogr/ogr_gpkg: "AttributeError: 'NoneType' object has no attribute 'ExportToWkt'"
+#  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
+$PYTEST \
+    --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_15 \
+    --deselect ogr/ogr_pg.py::test_ogr_pg_14 \
+    --deselect ogr/ogr_pg.py::test_ogr_pg_70
 
-  # Run tests with problematic cases deselected.  Some possible explanations:
-  #  * gcore/tiff_read.py: will eventually pass, but consumes all memory
-  #      forcing host to swap.
-  #  * gdrivers/gdalhttp.py: test_http_4 takes way too long
-  #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms;
-  #      most likely due to old poppler library
-  #  * ogr/ogr_gmlas: FGDB expat conflict with libxml
-  #  * ogr/ogr_gpkg: newer SQLite
-  #  * ogr/ogr_mvt: newer protobuf library
-  #  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
-  #  * ogr/ogr_sqlite: newer SQLite
-  #  * osr/osr_ct: newer PROJ 7
-  # $PYTEST \
-  #   --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks \
-  #   --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate \
-  #   --deselect gcore/tiff_write.py::test_tiff_write_87 \
-  #   --deselect gdrivers/gdalhttp.py::test_http_4 \
-  #   --deselect gdrivers/pdf.py::test_pdf_jp2_auto_compression \
-  #   --deselect gdrivers/pdf.py::test_pdf_jp2openjpeg_compression \
-  #   --deselect gdrivers/pdf.py::test_pdf_jpeg2000_compression \
-  #   --deselect ogr/ogr_geojson.py::test_ogr_geojson_57 \
-  #   --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_basic \
-  #   --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_writer_check_xml_read_back \
-  #   --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_46 \
-  #   --deselect ogr/ogr_gpkg.py::test_ogr_gpkg_unique \
-  #   --deselect ogr/ogr_mvt.py::test_ogr_mvt_point_polygon_clip \
-  #   --deselect ogr/ogr_pg.py::test_ogr_pg_70 \
-  #   --deselect ogr/ogr_sqlite.py::test_ogr_sqlite_unique \
-  #   --deselect ogr/ogr_vrt.py::test_ogr_vrt_33 \
-  #   --deselect osr/osr_ct.py::test_osr_ct_options_area_of_interest \
-  #   --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_6 \
-  #   --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_7 \
-  #   --deselect utilities/test_gdal_create.py::test_gdal_create_pdf_composition \
-  #   --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_6 \
-  #   --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_7 \
-  #   --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_18 \
-  #   --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_41
 popd
 
 # Stop PostgreSQL
-pg_ctl -s stop
+pg_ctl -m fast -s stop
 %endif
 
 
@@ -360,8 +325,8 @@ pg_ctl -s stop
 %files libs
 %license LICENSE.TXT
 %doc NEWS.md PROVENANCE.TXT COMMITTERS
-%{_libdir}/libgdal.so.30
-%{_libdir}/libgdal.so.30.*
+%{_libdir}/libgdal.so.31
+%{_libdir}/libgdal.so.31.*
 %{_datadir}/%{name}
 %dir %{_libdir}/%{name}plugins
 
