@@ -4,17 +4,6 @@
 # * postgres_instdir
 # * proj_min_version
 
-#TODO: msg needs to have PublicDecompWT.zip from EUMETSAT, which is not free;
-#      Building without msg therefore
-#TODO: e00compr bundled?
-#TODO: Java has a directory with test data and a build target called test
-#      It uses %%{JAVA_RUN}; make test seems to work in the build directory
-#TODO: e00compr source is the same in the package and bundled in GDAL
-#TODO: Consider doxy patch from Suse, setting EXTRACT_LOCAL_CLASSES  = NO
-
-# Major digit of the proj so version
-%global proj_somaj 19
-
 # Tests can be of a different version
 %global testversion %{rpmbuild_version}
 %global run_tests 1
@@ -36,15 +25,10 @@ Source2:        gdal.pom
 
 # Fedora uses Alternatives for Java
 Patch2:         gdal-1.9.0-java.patch
-# Use libtool to create libiso8211.a, otherwise broken static lib is created since object files are compiled through libtool
-Patch4:         gdal-iso8211.patch
 # Fix makefiles installing libtool wrappers instead of actual executables
 Patch6:         gdal-installapps.patch
 # Drop -diag-disable compile flag
 Patch9:         gdal-no-diag-disable.patch
-# Increase some testing tolerances for new Proj.
-#Patch10:        gdalautotest-increase-tolerances.patch
-
 
 BuildRequires: automake
 BuildRequires: autoconf
@@ -183,7 +167,7 @@ manipulating GDAL file format library
 
 
 %build
-%cmake
+%cmake -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir}/%{name}
 %cmake_build
 
 
@@ -231,6 +215,17 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}-config
 
 # Don't duplicate license files
 %{__rm} %{buildroot}%{_datadir}/%{name}/LICENSE.TXT
+
+# Fix Java install location.
+%{__install} -d \
+ %{buildroot}%{_jnidir}/%{name} \
+ %{buildroot}%{_javadir}/%{name} \
+ %{buildroot}%{_mavenpomdir}
+%{__rm} -v %{buildroot}%{_javadir}/%{name}-%{version}-{javadoc,sources}.jar
+%{__mv} -v %{buildroot}%{_javadir}/%{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}/gdal.jar
+%{__mv} -v %{buildroot}%{_javadir}/%{name}-%{version}.pom %{buildroot}%{_mavenpomdir}/gdal.pom
+%{__mv} -v %{buildroot}%{_javadir}/libgdalalljni.so %{buildroot}%{_jnidir}/%{name}
+%{_bindir}/chrpath --delete %{buildroot}%{_jnidir}/%{name}/libgdalalljni.so
 
 
 %check
@@ -328,7 +323,8 @@ pg_ctl -m fast -s stop
 %{_libdir}/libgdal.so.31
 %{_libdir}/libgdal.so.31.*
 %{_datadir}/%{name}
-%dir %{_libdir}/%{name}plugins
+%dir %{_libdir}/gdalplugins
+%exclude %{_libdir}/gdalplugins/drivers.ini
 
 %files devel
 %{_bindir}/%{name}-config
@@ -337,7 +333,13 @@ pg_ctl -m fast -s stop
 %dir %{_includedir}/%{name}
 %{_includedir}/%{name}/*.h
 %{_libdir}/*.so
+%{_libdir}/cmake/%{name}
 %{_libdir}/pkgconfig/%{name}.pc
+
+%files java
+%{_javadir}/%{name}
+%{_jnidir}/%{name}
+%{_mavenpomdir}/gdal.pom
 
 %files -n python3-gdal
 %doc swig/python/README.rst
@@ -346,7 +348,7 @@ pg_ctl -m fast -s stop
 %{python3_sitearch}/osgeo_utils/
 
 %files python-tools
-%_bindir/*.py
+%{_bindir}/*.py
 %{_mandir}/man1/pct2rgb.1*
 %{_mandir}/man1/rgb2pct.1*
 %{_mandir}/man1/gdal2tiles.1*

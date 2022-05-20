@@ -282,7 +282,6 @@ services:
         arpack_version: *arpack_version
         armadillo_version: *armadillo_version
         cgal_version: *CGAL_version
-        filegdbapi_version: *FileGDBAPI_version
         geos_version: *geos_version
         gpsbabel_version: *gpsbabel_version
         g2clib_version: *g2clib_version
