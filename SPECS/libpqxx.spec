@@ -24,8 +24,6 @@ Supersedes older libpq++ interface.
 
 %package devel
 Summary:        Development files for %{name}
-Provides:       %{name}-static = %{version}-%{release}
-Provides:       %{name}-static%{?_isa} = %{version}-%{release}
 Requires:       %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       pkgconfig
 %description devel
@@ -37,9 +35,10 @@ Requires:       pkgconfig
 
 
 %build
-# Disable failing test.
-%{__sed} -i -e '/test55\.cxx/d' test/CMakeLists.txt
-%cmake -G Ninja -DPostgreSQL_ROOT:PATH=/usr/pgsql-%{postgres_dotless} -DBUILD_TEST:BOOL=ON
+%cmake \
+    -G Ninja \
+    -DPostgreSQL_ROOT:PATH=/usr/pgsql-%{postgres_dotless} \
+    -DBUILD_TEST:BOOL=ON
 %cmake_build
 
 
@@ -63,7 +62,7 @@ listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 %{_bindir}/pg_ctl start
 
 # Run tests
-createdb -O ${RPMBUILD_USER} ${RPMBUILD_USER}
+%{_bindir}/createdb -O ${RPMBUILD_USER} ${RPMBUILD_USER}
 %{_vpath_builddir}/test/runner
 
 # Stop PostgreSQL
@@ -73,12 +72,13 @@ createdb -O ${RPMBUILD_USER} ${RPMBUILD_USER}
 %files
 %doc AUTHORS NEWS README.md VERSION
 %license COPYING
-%{_libdir}/%{name}.so
+%{_libdir}/%{name}-%{libpqxx_major}.%{libpqxx_minor}.so
 
 %files devel
 %doc %{_docdir}/%{name}/*.md
 %{_includedir}/pqxx
-%{_libdir}/%{name}.a
+%{_libdir}/%{name}.so
+%{_libdir}/pkgconfig/%{name}.pc
 %{_libdir}/cmake/%{name}
 
 

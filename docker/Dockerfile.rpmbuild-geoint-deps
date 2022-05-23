@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     /usr/local/bin/geoint-deps-repo.sh && \
     if [ -n "${packages:-}" ] ; then dnf -q -y install ${packages}; fi && \
     if [ -n "${gem_packages:-}" ] ; then gem install ${gem_packages}; fi && \
-    if [ -n "${python3_packages:-}" ] ; then pip3 install --disable-pip-version-check ${python3_packages}; fi && \
+    if [ -n "${python_packages:-}" ] ; then pip3 install --disable-pip-version-check ${python_packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
     rm -f /usr/local/bin/rpmbuild-user.sh
 

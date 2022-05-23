@@ -89,7 +89,7 @@ x-rpmbuild:
       version: &libgta_version 1.2.1-1
     libpqxx:
       image: rpmbuild-libpqxx
-      version: &libpqxx_version 6.4.8-1
+      version: &libpqxx_version 7.7.3-1
     journald-cloudwatch-logs:
       image: rpmbuild-journald-cloudwatch-logs
       version: &journald-cloudwatch-logs_version '0.2.0-1'
@@ -179,11 +179,11 @@ x-rpmbuild:
         commit: '7da019cf9eb12af8f8aa88b7d75789dfcd1e901b'
     python3-osmium:
       image: rpmbuild-pyosmium
-      version: &pyosmium_version '3.3.0-1'
+      version: &pyosmium_version 3.3.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
-        pybind11_version: '2.7.1'
+        pybind11_version: 2.7.1
     rack:
       image: rpmbuild-rack
       version: &rack_version '2.2.3-1'
@@ -502,7 +502,6 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_PYOSMIUM_PACKAGES}"
-        python3_packages: pytest==7.0.1
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-python-mapnik:
