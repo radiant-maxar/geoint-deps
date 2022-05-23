@@ -51,6 +51,7 @@ BuildRequires: libwebp-devel
 BuildRequires: libxml2-devel
 BuildRequires: make
 BuildRequires: pkgconfig
+BuildRequires: postgresql%{postgres_dotless}-devel
 BuildRequires: postgis >= %{postgis_min_version}
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python3-scons
@@ -148,7 +149,13 @@ spatial visualization library.
 %{__rm} -rf test/data test/data-visual
 %{__mv} test-data-%{version} test/data
 %{__mv} test-data-visual-%{version} test/data-visual
-%{_bindir}/iconv -f iso8859-1 -t utf-8 demo/data/COPYRIGHT.txt > COPYRIGHT.conv && mv -f COPYRIGHT.conv demo/data/COPYRIGHT.txt
+%{__sed} -i \
+ -e 's/+init=epsg/epsg/g' \
+ -e 's/+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over/epsg:3857/g' \
+ -e 's/+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs/epsg:4326/g' \
+ test/data-visual/styles/*.xml
+%{_bindir}/iconv -f iso8859-1 -t utf-8 demo/data/COPYRIGHT.txt > COPYRIGHT.conv
+%{__mv} -f COPYRIGHT.conv demo/data/COPYRIGHT.txt
 %{__rm} -rf deps/mapnik/sparsehash
 
 
@@ -156,7 +163,7 @@ spatial visualization library.
 # configure mapnik
 PROJ_LIB=%{_datadir}/proj \
 GDAL_DATA=$(gdal-config --datadir) \
-scons configure FAST=True \
+%{_bindir}/scons configure FAST=True \
                   DESTDIR=%{buildroot} \
                   PREFIX=%{_prefix} \
                   FULL_LIB_PATH=False \
@@ -171,7 +178,7 @@ scons configure FAST=True \
                   INPUT_PLUGINS=csv,gdal,geojson,ogr,pgraster,postgis,raster,shape,sqlite,topojson
 
 # build mapnik
-scons
+%{_bindir}/scons %{?_smp_build_ncpus:-j%{_smp_build_ncpus}}
 
 # build mapnik viewer app
 pushd demo/viewer
@@ -182,15 +189,15 @@ popd
 
 %install
 # install mapnik
-scons install
+%{_bindir}/scons install
 
 # get rid of fonts use external instead
-rm -rf %{buildroot}%{_libdir}/%{name}/fonts
+%{__rm} -rf %{buildroot}%{_libdir}/%{name}/fonts
 
 # install more utils
-mkdir -p %{buildroot}%{_bindir}
-install -p -m 0755 demo/viewer/viewer %{buildroot}%{_bindir}/
-install -p -m 0644 %{SOURCE3} demo/data/
+%{__mkdir_p} %{buildroot}%{_bindir}
+%{__install} -p -m 0755 demo/viewer/viewer %{buildroot}%{_bindir}/
+%{__install} -p -m 0644 %{SOURCE3} demo/data/
 
 # install pkgconfig file
 cat > %{name}.pc <<EOF
@@ -205,12 +212,12 @@ Libs: -lmapnik
 Cflags: -I\${includedir}/%{name}
 EOF
 
-mkdir -p %{buildroot}%{_datadir}/pkgconfig
-install -p -m 0644 %{name}.pc %{buildroot}%{_datadir}/pkgconfig
+%{__mkdir_p} %{buildroot}%{_datadir}/pkgconfig
+%{__install} -p -m 0644 %{name}.pc %{buildroot}%{_datadir}/pkgconfig
 
 # install desktop file
-cp %{SOURCE4} viewer.desktop
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications viewer.desktop
+%{__cp} %{SOURCE4} viewer.desktop
+%{_bindir}/desktop-file-install --dir=%{buildroot}%{_datadir}/applications viewer.desktop
 
 
 %check
@@ -233,10 +240,10 @@ listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 %{_bindir}/psql -c "CREATE EXTENSION postgis" template_postgis
 
 # run tests
-LANG="C.UTF-8" make test
+LANG="C.UTF-8" %{__make} test
 
 # Stop PostgreSQL
-%{_bindir}/pg_ctl -s stop
+%{_bindir}/pg_ctl -m fast -s stop
 
 
 %files
