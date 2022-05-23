@@ -1,14 +1,2392 @@
-commit 2a0da8ad40250ee9f01155e0c894b2fa4171f26a
-Author: Tom Hughes <tom@compton.nu>
-Date:   Mon Mar 2 13:38:13 2020 +0000
+From 8944e81367d2b3b91a41e24116e1813c01491e5d Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Sun, 7 Mar 2021 16:09:13 +0000
+Subject: [PATCH 5/6] Upgrade to new Proj APIs
 
-    Update projection tests for changes in proj
+https://github.com/mapnik/mapnik/pull/4202
+---
+ SConstruct                                    | 111 +++++++-----
+ benchmark/build.py                            |   1 +
+ benchmark/data/gdal-wgs.xml                   |   4 +-
+ benchmark/data/raster-wgs.xml                 |   4 +-
+ benchmark/test_noop_rendering.cpp             |   4 +-
+ benchmark/test_polygon_clipping.cpp           |   2 +-
+ benchmark/test_proj_transform1.cpp            |  28 +--
+ bootstrap.sh                                  |   6 +-
+ demo/c++/build.py                             |   2 +-
+ demo/viewer/layerlistmodel.cpp                |  15 +-
+ demo/viewer/layerwidget.cpp                   |  13 +-
+ demo/viewer/layerwidget.hpp                   |  28 +--
+ demo/viewer/mainwindow.cpp                    |   8 +-
+ demo/viewer/mapwidget.cpp                     |  51 +++---
+ .../mapnik/feature_style_processor_impl.hpp   |  46 ++---
+ include/mapnik/layer.hpp                      |   4 +-
+ include/mapnik/map.hpp                        |  42 ++++-
+ include/mapnik/proj_transform.hpp             |  24 ++-
+ include/mapnik/projection.hpp                 |  19 +-
+ include/mapnik/well_known_srs.hpp             |   6 +-
+ src/build.py                                  |   3 +-
+ src/map.cpp                                   |  72 ++++++--
+ src/proj_transform.cpp                        | 166 ++++++++----------
+ src/projection.cpp                            | 130 ++++++--------
+ src/text/symbolizer_helpers.cpp               |   5 +-
+ src/well_known_srs.cpp                        |  37 ++--
+ test/cleanup.hpp                              |  12 --
+ test/unit/core/exceptions_test.cpp            |   9 +-
+ test/unit/geometry/geometry_equal.hpp         |  12 +-
+ test/unit/geometry/geometry_reprojection.cpp  |  74 ++++----
+ test/unit/geometry/geometry_strategy_test.cpp |   4 +-
+ test/unit/projection/proj_transform.cpp       | 144 +++++++--------
+ 32 files changed, 572 insertions(+), 514 deletions(-)
 
+diff --git a/SConstruct b/SConstruct
+index 45f8d579f..436e29c43 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -1,6 +1,6 @@
+ # This file is part of Mapnik (c++ mapping toolkit)
+ #
+-# Copyright (C) 2017 Artem Pavlenko
++# Copyright (C) 2021 Artem Pavlenko
+ #
+ # Mapnik is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU Lesser General Public
+@@ -64,7 +64,8 @@ SCONF_TEMP_DIR = '.sconf_temp'
+ BOOST_SEARCH_PREFIXES = ['/usr/local','/opt/local','/sw','/usr',]
+ BOOST_MIN_VERSION = '1.61'
+ #CAIRO_MIN_VERSION = '1.8.0'
+-
++PROJ_MIN_VERSION = (7, 2, 0)
++PROJ_MIN_VERSION_STRING = "%s.%s.%s" % PROJ_MIN_VERSION
+ HARFBUZZ_MIN_VERSION = (0, 9, 34)
+ HARFBUZZ_MIN_VERSION_STRING = "%s.%s.%s" % HARFBUZZ_MIN_VERSION
+ 
+@@ -77,7 +78,8 @@ pretty_dep_names = {
+     'gdal':'GDAL C++ library | configured using gdal-config program | try setting GDAL_CONFIG SCons option | more info: https://github.com/mapnik/mapnik/wiki/GDAL',
+     'ogr':'OGR-enabled GDAL C++ Library | configured using gdal-config program | try setting GDAL_CONFIG SCons option | more info: https://github.com/mapnik/mapnik/wiki/OGR',
+     'cairo':'Cairo C library | configured using pkg-config | try setting PKG_CONFIG_PATH SCons option',
+-    'proj':'Proj.4 C Projections library | configure with PROJ_LIBS & PROJ_INCLUDES | more info: http://trac.osgeo.org/proj/',
++    'proj':'Proj C Projections library | configure with PROJ_LIBS & PROJ_INCLUDES | more info: http://trac.osgeo.org/proj/',
++    'proj-min-version':'libproj >=%s required' % PROJ_MIN_VERSION_STRING,
+     'pg':'Postgres C Library required for PostGIS plugin | configure with pg_config program or configure with PG_LIBS & PG_INCLUDES | more info: https://github.com/mapnik/mapnik/wiki/PostGIS',
+     'sqlite3':'SQLite3 C Library | configure with SQLITE_LIBS & SQLITE_INCLUDES | more info: https://github.com/mapnik/mapnik/wiki/SQLite',
+     'jpeg':'JPEG C library | configure with JPEG_LIBS & JPEG_INCLUDES',
+@@ -101,7 +103,7 @@ pretty_dep_names = {
+     'boost_regex_icu':'libboost_regex built with optional ICU unicode support is needed for unicode regex support in mapnik.',
+     'sqlite_rtree':'The SQLite plugin requires libsqlite3 built with RTREE support (-DSQLITE_ENABLE_RTREE=1)',
+     'pgsql2sqlite_rtree':'The pgsql2sqlite program requires libsqlite3 built with RTREE support (-DSQLITE_ENABLE_RTREE=1)',
+-    'PROJ_LIB':'The directory where proj4 stores its data files. Must exist for proj4 to work correctly',
++    'PROJ_LIB':'The directory where proj stores its data files. Must exist for proj to work correctly',
+     'GDAL_DATA':'The directory where GDAL stores its data files. Must exist for GDAL to work correctly',
+     'ICU_DATA':'The directory where icu stores its data files. If ICU reports a path, it must exist. ICU can also be built without .dat files and in that case this path is empty'
+     }
+@@ -357,7 +359,7 @@ opts.AddVariables(
+     BoolVariable('WEBP', 'Build Mapnik with WEBP read', 'True'),
+     PathVariable('WEBP_INCLUDES', 'Search path for libwebp include files', '/usr/include', PathVariable.PathAccept),
+     PathVariable('WEBP_LIBS','Search path for libwebp library files','/usr/' + LIBDIR_SCHEMA_DEFAULT, PathVariable.PathAccept),
+-    BoolVariable('PROJ', 'Build Mapnik with proj4 support to enable transformations between many different projections', 'True'),
++    BoolVariable('PROJ', 'Build Mapnik with proj support to enable transformations between many different projections', 'True'),
+     PathVariable('PROJ_INCLUDES', 'Search path for PROJ.4 include files', '/usr/include', PathVariable.PathAccept),
+     PathVariable('PROJ_LIBS', 'Search path for PROJ.4 library files', '/usr/' + LIBDIR_SCHEMA_DEFAULT, PathVariable.PathAccept),
+     ('PG_INCLUDES', 'Search path for libpq (postgres client) include files', ''),
+@@ -867,64 +869,79 @@ int main() {
+         context.Result('Failed to detect (mapnik-config will have null value)')
+     return ret[1].strip()
+ 
++def proj_version(context):
++    context.Message('Checking for Proj version >=%s...' % PROJ_MIN_VERSION_STRING)
++    ret, out = context.TryRun("""
++#include "proj.h"
++#include <stdio.h>
++#define PROJ_VERSION_ATLEAST(major,minor,micro) \
++        ((major)*10000+(minor)*100+(micro) <= \
++         PROJ_VERSION_MAJOR*10000+PROJ_VERSION_MINOR*100+PROJ_VERSION_PATCH)
++int main()
++{
++    printf("%d;%d.%d.%d", PROJ_VERSION_ATLEAST{min-version}, PROJ_VERSION_MAJOR, PROJ_VERSION_MINOR, PROJ_VERSION_PATCH);
++    return 0;
++}
++""".replace("{min-version}", str(PROJ_MIN_VERSION)),'.c')
++    if not ret:
++        context.Result('error (could not get version from proj.h)')
++    else:
++        ok_str, found_version_str = out.strip().split(';', 1)
++        major,minor,patch = found_version_str.split('.')
++        ret = int(ok_str), int(major)*10000+int(minor)*100+int(patch)
++        if ret:
++            context.Result('yes (found Proj %s)' % found_version_str)
++        else:
++            context.Result('no (found Proj %s)' % found_version_str)
++    return ret
++
+ def CheckProjData(context, silent=False):
+ 
+     if not silent:
+         context.Message('Checking for PROJ_LIB directory...')
+     ret = context.TryRun("""
+ 
+-// This is narly, could eventually be replaced using https://github.com/OSGeo/proj.4/pull/551]
+-#include <proj_api.h>
++#include <proj.h>
+ #include <iostream>
+-#include <cstring>
++#include <sstream>
++#include <vector>
++#include <string>
++#include <fstream>
+ 
+-static void my_proj4_logger(void * user_data, int /*level*/, const char * msg)
++std::vector<std::string> split_searchpath(std::string const& paths)
+ {
+-    std::string* posMsg = static_cast<std::string*>(user_data);
+-    *posMsg += msg;
+-}
++    std::vector<std::string> output;
++    std::stringstream ss(paths);
++    std::string path;
+ 
+-// https://github.com/OSGeo/gdal/blob/ddbf6d39aa4b005a77ca4f27c2d61a3214f336f8/gdal/alg/gdalapplyverticalshiftgrid.cpp#L616-L633
+-
+-std::string find_proj_path(const char * pszFilename) {
+-    std::string osMsg;
+-    std::string osFilename;
+-    projCtx ctx = pj_ctx_alloc();
+-    pj_ctx_set_app_data(ctx, &osMsg);
+-    pj_ctx_set_debug(ctx, PJ_LOG_DEBUG_MAJOR);
+-    pj_ctx_set_logger(ctx, my_proj4_logger);
+-    PAFile f = pj_open_lib(ctx, pszFilename, "rb");
+-    if( f )
++    for( std::string path;std::getline(ss, path, ':');)
+     {
+-        pj_ctx_fclose(ctx, f);
++        output.push_back(path);
+     }
+-    size_t nPos = osMsg.find("fopen(");
+-    if( nPos != std::string::npos )
+-    {
+-        osFilename = osMsg.substr(nPos + strlen("fopen("));
+-        nPos = osFilename.find(")");
+-        if( nPos != std::string::npos )
+-            osFilename = osFilename.substr(0, nPos);
+-    }
+-    pj_ctx_free(ctx);
+-    return osFilename;
++    return output;
+ }
+ 
+-
+-int main() {
+-    std::string result = find_proj_path(" ");
+-    std::cout << result;
+-    if (result.empty()) {
+-        return -1;
++int main()
++{
++    PJ_INFO info = proj_info();
++    std::string result = info.searchpath;
++    for (auto path : split_searchpath(result))
++    {
++        std::ifstream file(path + "/proj.db");
++        if (file)
++        {
++            std::cout << path;
++            return 0;
++        }
+     }
+-    return 0;
++    return -1;
+ }
+ 
+ """, '.cpp')
+     if silent:
+         context.did_show_result=1
+     if ret[0]:
+-        context.Result('pj_open_lib returned %s' % ret[1])
++        context.Result('proj_info.searchpath returned %s' % ret[1])
+     else:
+         context.Result('Failed to detect (mapnik-config will have null value)')
+     return ret[1].strip()
+@@ -1199,6 +1216,7 @@ conf_tests = { 'prioritize_paths'      : prioritize_paths,
+                'FindBoost'             : FindBoost,
+                'CheckBoost'            : CheckBoost,
+                'CheckIcuData'          : CheckIcuData,
++               'proj_version'          : proj_version,
+                'CheckProjData'         : CheckProjData,
+                'CheckGdalData'         : CheckGdalData,
+                'CheckCairoHasFreetype' : CheckCairoHasFreetype,
+@@ -1465,7 +1483,7 @@ if not preconfigured:
+         env['SKIPPED_DEPS'].append('jpeg')
+ 
+     if env['PROJ']:
+-        OPTIONAL_LIBSHEADERS.append(['proj', 'proj_api.h', False,'C','-DMAPNIK_USE_PROJ4'])
++        OPTIONAL_LIBSHEADERS.append(['proj', 'proj.h', False,'C','-DMAPNIK_USE_PROJ'])
+         inc_path = env['%s_INCLUDES' % 'PROJ']
+         lib_path = env['%s_LIBS' % 'PROJ']
+         env.AppendUnique(CPPPATH = fix_path(inc_path))
+@@ -1616,6 +1634,13 @@ if not preconfigured:
+                     else:
+                         color_print(4, 'Could not find optional header or shared library for %s' % libname)
+                         env['SKIPPED_DEPS'].append(libname)
++                elif libname == 'proj':
++                    result, version = conf.proj_version()
++                    if not result:
++                        env['SKIPPED_DEPS'].append('proj-min-version')
++                    else:
++                        env.Append(CPPDEFINES = define)
++                        env.Append(CPPDEFINES = "-DPROJ_VERSION=%d" % version)
+                 else:
+                     env.Append(CPPDEFINES = define)
+             else:
+diff --git a/benchmark/build.py b/benchmark/build.py
+index 37ba86707..6c906a497 100644
+--- a/benchmark/build.py
++++ b/benchmark/build.py
+@@ -9,6 +9,7 @@ test_env = env.Clone()
+ test_env['LIBS'] = [env['MAPNIK_NAME']]
+ test_env.AppendUnique(LIBS=copy(env['LIBMAPNIK_LIBS']))
+ test_env.AppendUnique(LIBS='mapnik-wkt')
++test_env.AppendUnique(LIBS='sqlite3')
+ if env['PLATFORM'] == 'Linux':
+     test_env.AppendUnique(LIBS='dl')
+     test_env.AppendUnique(LIBS='rt')
+diff --git a/benchmark/data/gdal-wgs.xml b/benchmark/data/gdal-wgs.xml
+index aa5866532..7a0ca6012 100644
+--- a/benchmark/data/gdal-wgs.xml
++++ b/benchmark/data/gdal-wgs.xml
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE Map[]>
+ <Map
+-  srs="+init=epsg:4326"
++  srs="epsg:4326"
+   background-color="#dfd8c9">
+ 
+ <Style name="style">
+@@ -10,7 +10,7 @@
+   </Rule>
+ </Style>
+ <Layer name="layer"
+-  srs="+init=epsg:4326">
++  srs="epsg:4326">
+     <StyleName>style</StyleName>
+     <Datasource>
+        <Parameter name="file">./valid.geotiff.tif</Parameter>
+diff --git a/benchmark/data/raster-wgs.xml b/benchmark/data/raster-wgs.xml
+index 3ee054d2d..d879f4fc8 100644
+--- a/benchmark/data/raster-wgs.xml
++++ b/benchmark/data/raster-wgs.xml
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <!DOCTYPE Map[]>
+ <Map
+-  srs="+init=epsg:4326"
++  srs="epsg:4326"
+   background-color="#dfd8c9">
+ 
+ <Style name="style">
+@@ -10,7 +10,7 @@
+   </Rule>
+ </Style>
+ <Layer name="layer"
+-  srs="+init=epsg:4326">
++  srs="epsg:4326">
+     <StyleName>style</StyleName>
+     <Datasource>
+        <Parameter name="file">./valid.geotiff.tif</Parameter>
+diff --git a/benchmark/test_noop_rendering.cpp b/benchmark/test_noop_rendering.cpp
+index 03d2e675c..55c09e34c 100644
+--- a/benchmark/test_noop_rendering.cpp
++++ b/benchmark/test_noop_rendering.cpp
+@@ -11,7 +11,7 @@
+ #include <mapnik/feature_type_style.hpp>
+ 
+ #include <memory>
+-    
++
+ class test : public benchmark::test_case
+ {
+ public:
+@@ -24,7 +24,7 @@ public:
+     }
+     bool operator()() const
+     {
+-        mapnik::Map m(256,256,"+init=epsg:3857");
++        mapnik::Map m(256,256,"epsg:3857");
+ 
+         mapnik::parameters params;
+         params["type"]="memory";
+diff --git a/benchmark/test_polygon_clipping.cpp b/benchmark/test_polygon_clipping.cpp
+index b189a0443..0c28dd5bf 100644
+--- a/benchmark/test_polygon_clipping.cpp
++++ b/benchmark/test_polygon_clipping.cpp
+@@ -51,7 +51,7 @@ void render(mapnik::geometry::multi_polygon<double> const& geom,
+     agg::pixfmt_rgba32_plain pixf(buf);
+     ren_base renb(pixf);
+     renderer ren(renb);
+-    mapnik::proj_transform prj_trans(mapnik::projection("+init=epsg:4326"),mapnik::projection("+init=epsg:4326"));
++    mapnik::proj_transform prj_trans(mapnik::projection("epsg:4326"),mapnik::projection("epsg:4326"));
+     ren.color(agg::rgba8(127,127,127,255));
+     agg::rasterizer_scanline_aa<> ras;
+     for (auto const& poly : geom)
+diff --git a/benchmark/test_proj_transform1.cpp b/benchmark/test_proj_transform1.cpp
+index 37f4b0c4c..121c8b620 100644
+--- a/benchmark/test_proj_transform1.cpp
++++ b/benchmark/test_proj_transform1.cpp
+@@ -9,7 +9,7 @@ class test : public benchmark::test_case
+     std::string dest_;
+     mapnik::box2d<double> from_;
+     mapnik::box2d<double> to_;
+-    bool defer_proj4_init_;
++    bool defer_proj_init_;
+ public:
+     test(mapnik::parameters const& params,
+          std::string const& src,
+@@ -22,11 +22,11 @@ public:
+        dest_(dest),
+        from_(from),
+        to_(to),
+-       defer_proj4_init_(defer_proj) {}
++       defer_proj_init_(defer_proj) {}
+     bool validate() const
+     {
+-        mapnik::projection src(src_,defer_proj4_init_);
+-        mapnik::projection dest(dest_,defer_proj4_init_);
++        mapnik::projection src(src_,defer_proj_init_);
++        mapnik::projection dest(dest_,defer_proj_init_);
+         mapnik::proj_transform tr(src,dest);
+         mapnik::box2d<double> bbox = from_;
+         if (!tr.forward(bbox)) return false;
+@@ -38,15 +38,15 @@ public:
+     }
+     bool operator()() const
+     {
++        mapnik::projection src(src_,defer_proj_init_);
++        mapnik::projection dest(dest_,defer_proj_init_);
++        mapnik::proj_transform tr(src,dest);
+         for (std::size_t i=0;i<iterations_;++i)
+         {
+             for (int j=-180;j<180;j=j+5)
+             {
+                 for (int k=-85;k<85;k=k+5)
+                 {
+-                    mapnik::projection src(src_,defer_proj4_init_);
+-                    mapnik::projection dest(dest_,defer_proj4_init_);
+-                    mapnik::proj_transform tr(src,dest);
+                     mapnik::box2d<double> box(j,k,j,k);
+                     if (!tr.forward(box)) throw std::runtime_error("could not transform coords");
+                 }
+@@ -56,19 +56,19 @@ public:
+     }
+ };
+ 
+-// echo -180 -60 | cs2cs -f "%.10f" +init=epsg:4326 +to +init=epsg:3857
++// echo -180 -60 | cs2cs -f "%.10f" epsg:4326 +to epsg:3857
+ int main(int argc, char** argv)
+ {
+     mapnik::box2d<double> from(-180,-80,180,80);
+     mapnik::box2d<double> to(-20037508.3427892476,-15538711.0963092316,20037508.3427892476,15538711.0963092316);
+-    std::string from_str("+init=epsg:4326");
+-    std::string to_str("+init=epsg:3857");
++    std::string from_str("epsg:4326");
++    std::string to_str("epsg:3857");
+     std::string from_str2("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs");
+     std::string to_str2("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over");
+     return benchmark::sequencer(argc, argv)
+-        .run<test>("lonlat->merc epsg", from_str, to_str, from, to, true)
+-        .run<test>("lonlat->merc literal", from_str2, to_str2, from, to, true)
+-        .run<test>("merc->lonlat epsg", to_str, from_str, to, from, true)
+-        .run<test>("merc->lonlat literal", to_str2, from_str2, to, from, true)
++        .run<test>("lonlat->merc epsg (internal)", from_str, to_str, from, to, true)
++        .run<test>("lonlat->merc literal (libproj)", from_str2, to_str2, from, to, true)
++        .run<test>("merc->lonlat epsg (internal)", to_str, from_str, to, from, true)
++        .run<test>("merc->lonlat literal (libproj)", to_str2, from_str2, to, from, true)
+         .done();
+ }
+diff --git a/bootstrap.sh b/bootstrap.sh
+index 5071d7e74..b13c02660 100755
+--- a/bootstrap.sh
++++ b/bootstrap.sh
+@@ -8,7 +8,7 @@ todo
+ - shrink icu data
+ '
+ 
+-MASON_VERSION="fde1d9f5"
++MASON_VERSION="485514d8"
+ 
+ function setup_mason() {
+     if [[ ! -d ./.mason ]]; then
+@@ -53,10 +53,10 @@ function install_mason_deps() {
+     install libpng 1.6.28 libpng
+     install libtiff 4.0.7 libtiff
+     install libpq 9.6.2
+-    install sqlite 3.17.0 libsqlite3
++    install sqlite 3.34.0 libsqlite3
+     install expat 2.2.0 libexpat
+     install icu ${ICU_VERSION}
+-    install proj 4.9.3 libproj
++    install proj 7.2.1 libproj
+     install pixman 0.34.0 libpixman-1
+     install cairo 1.14.8 libcairo
+     install webp 0.6.0 libwebp
+diff --git a/demo/c++/build.py b/demo/c++/build.py
+index c059b05da..d2d2bc5fa 100644
+--- a/demo/c++/build.py
++++ b/demo/c++/build.py
+@@ -41,7 +41,7 @@ if env['HAS_CAIRO']:
+     demo_env.Append(CPPDEFINES = '-DHAVE_CAIRO')
+ 
+ libraries = [env['MAPNIK_NAME']]
+-libraries.extend(copy(env['LIBMAPNIK_LIBS']))
++libraries.extend([copy(env['LIBMAPNIK_LIBS']), 'sqlite3', 'pthread'])
+ rundemo = demo_env.Program('rundemo', source, LIBS=libraries)
+ 
+ Depends(rundemo, env.subst('../../src/%s' % env['MAPNIK_LIB_NAME']))
+diff --git a/demo/viewer/layerlistmodel.cpp b/demo/viewer/layerlistmodel.cpp
+index 55af8e76e..ec0eaac26 100644
+--- a/demo/viewer/layerlistmodel.cpp
++++ b/demo/viewer/layerlistmodel.cpp
+@@ -21,13 +21,12 @@
+ 
+ #include "layerlistmodel.hpp"
+ #include <QIcon>
+-
+-#include <iostream>
++#include <QBrush>
+ #include <mapnik/layer.hpp>
+ 
+ using mapnik::Map;
+ 
+-LayerListModel::LayerListModel(std::shared_ptr<Map> map,QObject *parent)
++LayerListModel::LayerListModel(std::shared_ptr<Map> map, QObject *parent)
+     : QAbstractListModel(parent),
+       map_(map) {}
+ 
+@@ -37,7 +36,7 @@ int LayerListModel::rowCount(QModelIndex const&) const
+    return 0;
+ }
+ 
+-QVariant LayerListModel::data(QModelIndex const& index,int role) const
++QVariant LayerListModel::data(QModelIndex const& index, int role) const
+ {
+     if (!index.isValid() || !map_)
+         return QVariant();
+@@ -64,6 +63,13 @@ QVariant LayerListModel::data(QModelIndex const& index,int role) const
+         else
+            return QVariant(Qt::Unchecked);
+     }
++    else if (role == Qt::ForegroundRole)
++    {
++        if (map_->layers().at(index.row()).active())
++            return QBrush(QColor("black"));
++        else
++            return QBrush(QColor("lightgrey"));
++    }
+     else
+     {
+         return QVariant();
+@@ -101,7 +107,6 @@ bool LayerListModel::setData(const QModelIndex &index,
+ Qt::ItemFlags LayerListModel::flags(QModelIndex const& index) const
+ {
+     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+-
+     if (index.isValid())
+        flags |= Qt::ItemIsUserCheckable;
+     return flags;
+diff --git a/demo/viewer/layerwidget.cpp b/demo/viewer/layerwidget.cpp
+index a6ab6b8f4..5733f1e63 100644
+--- a/demo/viewer/layerwidget.cpp
++++ b/demo/viewer/layerwidget.cpp
+@@ -29,12 +29,9 @@
+ #include <qscrollbar.h>
+ #include <qrubberband.h>
+ #include <qdebug.h>
+-#include <iostream>
+ #include "layerlistmodel.hpp"
+ #include "layer_info_dialog.hpp"
+ 
+-using namespace std;
+-
+ LayerTab::LayerTab(QWidget* parent)
+     : QListView(parent) {}
+ 
+@@ -45,11 +42,11 @@ void LayerTab::paintEvent(QPaintEvent *e)
+ }
+ 
+ void LayerTab::dataChanged(const QModelIndex &topLeft,
+-                           const QModelIndex &bottomRight)
++                           const QModelIndex &bottomRight,
++                           const QVector<int> &roles)
+ {
+-   QListView::dataChanged(topLeft, bottomRight);
+-   qDebug("FIXME : update map view!");
+-   emit update_mapwidget();
++    emit update_mapwidget();
++    QListView::dataChanged(topLeft, bottomRight, roles);
+ }
+ 
+ void LayerTab::selectionChanged(const QItemSelection & selected, const QItemSelection &)
+@@ -57,7 +54,7 @@ void LayerTab::selectionChanged(const QItemSelection & selected, const QItemSele
+    QModelIndexList list = selected.indexes();
+    if (list.size() != 0)
+    {
+-      std::cout << "SELECTED LAYER ->" << list[0].row() << "\n";
++      qDebug("SELECTED LAYER -> %d",list[0].row());
+       emit layerSelected(list[0].row());
+    }
+ }
+diff --git a/demo/viewer/layerwidget.hpp b/demo/viewer/layerwidget.hpp
+index f59196de7..6761d79a4 100644
+--- a/demo/viewer/layerwidget.hpp
++++ b/demo/viewer/layerwidget.hpp
+@@ -27,19 +27,19 @@
+ 
+ class LayerTab : public QListView
+ {
+-   Q_OBJECT
+-   public:
+-      LayerTab(QWidget* parent=0);
+-      void paintEvent(QPaintEvent *e);
+-   signals:
+-      void update_mapwidget();
+-      void layerSelected(int) const;
+-   public slots:
+-      void layerInfo();
+-      void layerInfo2(QModelIndex const&);
+-   protected slots:
+-      void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+-      void selectionChanged(const QItemSelection & selected, const QItemSelection &);
++    Q_OBJECT
++public:
++    LayerTab(QWidget* parent=0);
++    void paintEvent(QPaintEvent *e);
++signals:
++    void update_mapwidget();
++    void layerSelected(int) const;
++public slots:
++    void layerInfo();
++    void layerInfo2(QModelIndex const&);
++protected slots:
++    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
++    void selectionChanged(const QItemSelection & selected, const QItemSelection &);
+ };
+ 
+ class StyleTab : public QTreeView
+@@ -48,7 +48,7 @@ class StyleTab : public QTreeView
+ public:
+     StyleTab(QWidget* parent=0);
+ protected:
+-      void contextMenuEvent(QContextMenuEvent * event );
++    void contextMenuEvent(QContextMenuEvent * event );
+ };
+ 
+ #endif
+diff --git a/demo/viewer/mainwindow.cpp b/demo/viewer/mainwindow.cpp
+index cdfd43471..338180f66 100644
+--- a/demo/viewer/mainwindow.cpp
++++ b/demo/viewer/mainwindow.cpp
+@@ -421,11 +421,11 @@ void MainWindow::set_default_extent(double x0,double y0, double x1, double y1)
+         if (map_ptr)
+         {
+             mapnik::projection prj(map_ptr->srs());
+-            prj.forward(x0,y0);
+-            prj.forward(x1,y1);
+-            default_extent_=mapnik::box2d<double>(x0,y0,x1,y1);
++            prj.forward(x0, y0);
++            prj.forward(x1, y1);
++            default_extent_=mapnik::box2d<double>(x0, y0, x1, y1);
+             mapWidget_->zoomToBox(default_extent_);
+-            std::cout << "SET DEFAULT EXT\n";
++            std::cout << "SET DEFAULT EXT:" << default_extent_ << std::endl;
+         }
+     }
+     catch (...) {}
+diff --git a/demo/viewer/mapwidget.cpp b/demo/viewer/mapwidget.cpp
+index de4523059..b1ea939b0 100644
+--- a/demo/viewer/mapwidget.cpp
++++ b/demo/viewer/mapwidget.cpp
+@@ -23,7 +23,7 @@
+ #include <boost/bind.hpp>
+ #include <mapnik/agg_renderer.hpp>
+ #include <mapnik/layer.hpp>
+-#include <mapnik/projection.hpp>
++#include <mapnik/proj_transform.hpp>
+ #include <mapnik/scale_denominator.hpp>
+ #include <mapnik/view_transform.hpp>
+ #include <mapnik/transform_path_adapter.hpp>
+@@ -156,7 +156,7 @@ void MapWidget::mousePressEvent(QMouseEvent* e)
+          {
+             QVector<QPair<QString,QString> > info;
+ 
+-            projection map_proj(map_->srs()); // map projection
++            projection map_proj(map_->srs(), true); // map projection
+             double scale_denom = scale_denominator(map_->scale(),map_proj.is_geographic());
+             view_transform t(map_->width(),map_->height(),map_->get_current_extent());
+ 
+@@ -170,7 +170,7 @@ void MapWidget::mousePressEvent(QMouseEvent* e)
+                double x = e->x();
+                double y = e->y();
+                std::cout << "query at " << x << "," << y << "\n";
+-               projection layer_proj(layer.srs());
++               projection layer_proj(layer.srs(), true);
+                mapnik::proj_transform prj_trans(map_proj,layer_proj);
+                //std::auto_ptr<mapnik::memory_datasource> data(new mapnik::memory_datasource);
+                mapnik::featureset_ptr fs = map_->query_map_point(index,x,y);
+@@ -586,38 +586,43 @@ void MapWidget::updateMap()
+ 
+        try
+        {
+-          projection prj(map_->srs()); // map projection
+-          box2d<double> ext = map_->get_current_extent();
+-          double x0 = ext.minx();
+-          double y0 = ext.miny();
+-          double x1 = ext.maxx();
+-          double y1 = ext.maxy();
+-          prj.inverse(x0,y0);
+-          prj.inverse(x1,y1);
+-          std::cout << "BBOX (WGS84): " << x0 << "," << y0 << "," << x1 << "," << y1 << "\n";
+-          update();
+-          // emit signal to interested widgets
+-          emit mapViewChanged();
+-      }
+-      catch (...)
+-      {
+-          std::cerr << "Unknown exception caught!\n";
+-      }
++           projection prj(map_->srs(), true); // map projection
++           box2d<double> ext = map_->get_current_extent();
++           double x0 = ext.minx();
++           double y0 = ext.miny();
++           double x1 = ext.maxx();
++           double y1 = ext.maxy();
++           double z = 0;
++           std::string dest_srs = {"epsg:4326"};
++           mapnik::proj_transform proj_tr(map_->srs(), dest_srs);
++
++           proj_tr.forward(x0, y0, z);
++           proj_tr.forward(x1, y1, z);
++           std::cout << "MAP SIZE:" << map_->width() << "," << map_->height() << std::endl;
++           std::cout << "BBOX (WGS84): " << x0 << "," << y0 << "," << x1 << "," << y1 << "\n";
++           update();
++           // emit signal to interested widgets
++           emit mapViewChanged();
++       }
++       catch (...)
++       {
++           std::cerr << "Unknown exception caught!\n";
++       }
+    }
+ }
+ 
+ std::shared_ptr<Map> MapWidget::getMap()
+ {
+-   return map_;
++    return map_;
+ }
+ 
+ void MapWidget::setMap(std::shared_ptr<Map> map)
+ {
+-   map_ = map;
++    map_ = map;
+ }
+ 
+ 
+ void MapWidget::layerSelected(int index)
+ {
+-   selectedLayer_ = index;
++    selectedLayer_ = index;
+ }
+diff --git a/include/mapnik/feature_style_processor_impl.hpp b/include/mapnik/feature_style_processor_impl.hpp
+index bddeec91c..645c6e030 100644
+--- a/include/mapnik/feature_style_processor_impl.hpp
++++ b/include/mapnik/feature_style_processor_impl.hpp
+@@ -65,10 +65,9 @@ struct layer_rendering_material
+     std::vector<rule_cache> rule_caches_;
+ 
+     layer_rendering_material(layer const& lay, projection const& dest)
+-        :
+-        lay_(lay),
+-        proj0_(dest),
+-        proj1_(lay.srs(),true) {}
++        : lay_(lay),
++          proj0_(dest),
++          proj1_(lay.srs(), true) {}
+ 
+     layer_rendering_material(layer_rendering_material && rhs) = default;
+ };
+@@ -240,8 +239,7 @@ void feature_style_processor<Processor>::prepare_layer(layer_rendering_material
+     }
+ 
+     processor_context_ptr current_ctx = ds->get_context(ctx_map);
+-    proj_transform prj_trans(mat.proj0_,mat.proj1_);
+-
++    proj_transform * proj_trans_ptr = m_.get_proj_transform(mat.proj0_.params(), mat.proj1_.params());
+     box2d<double> query_ext = extent; // unbuffered
+     box2d<double> buffered_query_ext(query_ext);  // buffered
+ 
+@@ -271,22 +269,22 @@ void feature_style_processor<Processor>::prepare_layer(layer_rendering_material
+     bool early_return = false;
+ 
+     // first, try intersection of map extent forward projected into layer srs
+-    if (prj_trans.forward(buffered_query_ext, PROJ_ENVELOPE_POINTS) && buffered_query_ext.intersects(layer_ext))
++    if (proj_trans_ptr->forward(buffered_query_ext, PROJ_ENVELOPE_POINTS) && buffered_query_ext.intersects(layer_ext))
+     {
+         fw_success = true;
+         layer_ext.clip(buffered_query_ext);
+     }
+     // if no intersection and projections are also equal, early return
+-    else if (prj_trans.equal())
++    else if (proj_trans_ptr->equal())
+     {
+         early_return = true;
+     }
+     // next try intersection of layer extent back projected into map srs
+-    else if (prj_trans.backward(layer_ext, PROJ_ENVELOPE_POINTS) && buffered_query_ext_map_srs.intersects(layer_ext))
++    else if (proj_trans_ptr->backward(layer_ext, PROJ_ENVELOPE_POINTS) && buffered_query_ext_map_srs.intersects(layer_ext))
+     {
+         layer_ext.clip(buffered_query_ext_map_srs);
+         // forward project layer extent back into native projection
+-        if (! prj_trans.forward(layer_ext, PROJ_ENVELOPE_POINTS))
++        if (! proj_trans_ptr->forward(layer_ext, PROJ_ENVELOPE_POINTS))
+         {
+             MAPNIK_LOG_ERROR(feature_style_processor)
+                 << "feature_style_processor: Layer=" << lay.name()
+@@ -338,17 +336,17 @@ void feature_style_processor<Processor>::prepare_layer(layer_rendering_material
+     layer_ext2 = lay.envelope();
+     if (fw_success)
+     {
+-        if (prj_trans.forward(query_ext, PROJ_ENVELOPE_POINTS))
++        if (proj_trans_ptr->forward(query_ext, PROJ_ENVELOPE_POINTS))
+         {
+             layer_ext2.clip(query_ext);
+         }
+     }
+     else
+     {
+-        if (prj_trans.backward(layer_ext2, PROJ_ENVELOPE_POINTS))
++        if (proj_trans_ptr->backward(layer_ext2, PROJ_ENVELOPE_POINTS))
+         {
+             layer_ext2.clip(query_ext);
+-            prj_trans.forward(layer_ext2, PROJ_ENVELOPE_POINTS);
++            proj_trans_ptr->forward(layer_ext2, PROJ_ENVELOPE_POINTS);
+         }
+     }
+ 
+@@ -465,9 +463,7 @@ void feature_style_processor<Processor>::render_material(layer_rendering_materia
+     layer const& lay = mat.lay_;
+ 
+     std::vector<rule_cache> const & rule_caches = mat.rule_caches_;
+-
+-    proj_transform prj_trans(mat.proj0_,mat.proj1_);
+-
++    proj_transform * proj_trans_ptr = m_.get_proj_transform(mat.proj0_.params(), mat.proj1_.params());
+     bool cache_features = lay.cache_features() && active_styles.size() > 1;
+ 
+     datasource_ptr ds = lay.datasource();
+@@ -495,10 +491,9 @@ void feature_style_processor<Processor>::render_material(layer_rendering_materia
+ 
+                         cache->prepare();
+                         render_style(p, style,
+-                                     rule_caches[i],
++                                     rule_caches[i++],
+                                      cache,
+-                                     prj_trans);
+-                        ++i;
++                                     *proj_trans_ptr);
+                     }
+                     cache->clear();
+                 }
+@@ -510,8 +505,7 @@ void feature_style_processor<Processor>::render_material(layer_rendering_materia
+             for (feature_type_style const* style : active_styles)
+             {
+                 cache->prepare();
+-                render_style(p, style, rule_caches[i], cache, prj_trans);
+-                ++i;
++                render_style(p, style, rule_caches[i++], cache, *proj_trans_ptr);
+             }
+             cache->clear();
+         }
+@@ -535,9 +529,8 @@ void feature_style_processor<Processor>::render_material(layer_rendering_materia
+         {
+             cache->prepare();
+             render_style(p, style,
+-                         rule_caches[i],
+-                         cache, prj_trans);
+-            ++i;
++                         rule_caches[i++],
++                         cache, *proj_trans_ptr);
+         }
+     }
+     // We only have a single style and no grouping.
+@@ -549,10 +542,9 @@ void feature_style_processor<Processor>::render_material(layer_rendering_materia
+         {
+             featureset_ptr features = *featuresets++;
+             render_style(p, style,
+-                         rule_caches[i],
++                         rule_caches[i++],
+                          features,
+-                         prj_trans);
+-            ++i;
++                         *proj_trans_ptr);
+         }
+     }
+     p.end_layer_processing(mat.lay_);
+diff --git a/include/mapnik/layer.hpp b/include/mapnik/layer.hpp
+index 064ee8a15..ce69152d5 100644
+--- a/include/mapnik/layer.hpp
++++ b/include/mapnik/layer.hpp
+@@ -41,7 +41,7 @@ using datasource_ptr = std::shared_ptr<datasource>;
+  * @brief A Mapnik map layer.
+  *
+  * Create a layer with a named string and, optionally, an srs string either
+- * with a Proj.4 epsg code ('+init=epsg:<code>') or with a Proj.4 literal
++ * with a Proj.4 epsg code ('epsg:<code>') or with a Proj.4 literal
+  * ('+proj=<literal>'). If no srs is specified it will default to
+  * '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+  */
+@@ -49,7 +49,7 @@ class MAPNIK_DECL layer
+ {
+ public:
+     layer(std::string const& name,
+-          std::string const& srs=MAPNIK_LONGLAT_PROJ);
++          std::string const& srs = MAPNIK_GEOGRAPHIC_PROJ);
+     // copy
+     layer(layer const& l);
+     // move
+diff --git a/include/mapnik/map.hpp b/include/mapnik/map.hpp
+index 19b0cb8d3..5bea9c125 100644
+--- a/include/mapnik/map.hpp
++++ b/include/mapnik/map.hpp
+@@ -33,14 +33,16 @@
+ #include <mapnik/well_known_srs.hpp>
+ #include <mapnik/image_compositing.hpp>
+ #include <mapnik/font_engine_freetype.hpp>
+-
++#include <mapnik/proj_transform.hpp>
+ #pragma GCC diagnostic push
+ #include <mapnik/warning_ignore.hpp>
+ #include <boost/optional.hpp>
++#include <boost/functional/hash.hpp>
++#include <boost/unordered_map.hpp>
++#include <boost/utility/string_view.hpp>
+ #pragma GCC diagnostic pop
+ 
+ // stl
+-#include <map>
+ #include <memory>
+ #include <vector>
+ #include <string>
+@@ -57,6 +59,31 @@ class layer;
+ class MAPNIK_DECL Map : boost::equality_comparable<Map>
+ {
+ public:
++    using key_type = std::pair<std::string, std::string>;
++    using compatible_key_type = std::pair<boost::string_view, boost::string_view>;
++
++    struct compatible_hash
++    {
++        template <typename KeyType>
++        std::size_t operator() (KeyType const& key) const
++        {
++            using hash_type = boost::hash<typename KeyType::first_type>;
++            std::size_t seed = hash_type{}(key.first);
++            seed ^= hash_type{}(key.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
++            return seed;
++        }
++    };
++
++    struct compatible_predicate
++    {
++        bool operator()(compatible_key_type const& k1,
++                        compatible_key_type const& k2) const
++        {
++            return k1 == k2;
++        }
++    };
++
++    using proj_cache_type = boost::unordered_map<key_type, std::unique_ptr<proj_transform>, compatible_hash>;
+ 
+     enum aspect_fix_mode
+     {
+@@ -82,8 +109,8 @@ public:
+     };
+ 
+ private:
+-    static const unsigned MIN_MAPSIZE=16;
+-    static const unsigned MAX_MAPSIZE=MIN_MAPSIZE<<10;
++    static const unsigned MIN_MAPSIZE = 16;
++    static const unsigned MAX_MAPSIZE = MIN_MAPSIZE << 10;
+     unsigned width_;
+     unsigned height_;
+     std::string srs_;
+@@ -103,7 +130,7 @@ private:
+     boost::optional<std::string> font_directory_;
+     freetype_engine::font_file_mapping_type font_file_mapping_;
+     freetype_engine::font_memory_cache_type font_memory_cache_;
+-
++    thread_local static proj_cache_type proj_cache_;
+ public:
+ 
+     using const_style_iterator = std::map<std::string,feature_type_style>::const_iterator;
+@@ -125,7 +152,7 @@ public:
+      *  @param height Initial map height.
+      *  @param srs Initial map projection.
+      */
+-    Map(int width, int height, std::string const& srs = MAPNIK_LONGLAT_PROJ);
++    Map(int width, int height, std::string const& srs = MAPNIK_GEOGRAPHIC_PROJ);
+ 
+     /*! \brief Copy Constructor.
+      *
+@@ -502,9 +529,12 @@ public:
+         return font_memory_cache_;
+     }
+ 
++    proj_transform * get_proj_transform(std::string const& source, std::string const& dest) const;
+ private:
+     friend void swap(Map & rhs, Map & lhs);
+     void fixAspectRatio();
++    void init_proj_transform(std::string const& source, std::string const& dest);
++    void init_proj_transforms();
+ };
+ 
+ DEFINE_ENUM(aspect_fix_mode_e,Map::aspect_fix_mode);
+diff --git a/include/mapnik/proj_transform.hpp b/include/mapnik/proj_transform.hpp
+index 2cdc1e2bd..502e61ee6 100644
+--- a/include/mapnik/proj_transform.hpp
++++ b/include/mapnik/proj_transform.hpp
+@@ -26,6 +26,7 @@
+ // mapnik
+ #include <mapnik/config.hpp>
+ #include <mapnik/util/noncopyable.hpp>
++#include <mapnik/projection.hpp>
+ 
+ namespace mapnik {
+ 
+@@ -33,35 +34,32 @@ namespace geometry {
+ template <typename T> struct point;
+ template <typename T> struct line_string;
+ }
+-class projection;
++
+ template <typename T> class box2d;
+ 
+ class MAPNIK_DECL proj_transform : private util::noncopyable
+ {
+ public:
+-    proj_transform(projection const& source,
+-                   projection const& dest);
+-
++    proj_transform(projection const& source, projection const& dest);
++    ~proj_transform();
+     bool equal() const;
+     bool is_known() const;
+     bool forward (double& x, double& y , double& z) const;
+     bool backward (double& x, double& y , double& z) const;
+-    bool forward (double *x, double *y , double *z, int point_count, int offset = 1) const;
+-    bool backward (double *x, double *y , double *z, int point_count, int offset = 1) const;
++    bool forward (double *x, double *y , double *z, std::size_t point_count, std::size_t offset = 1) const;
++    bool backward (double *x, double *y , double *z, std::size_t point_count, std::size_t offset = 1) const;
+     bool forward (geometry::point<double> & p) const;
+     bool backward (geometry::point<double> & p) const;
+     unsigned int forward (geometry::line_string<double> & ls) const;
+     unsigned int backward (geometry::line_string<double> & ls) const;
+     bool forward (box2d<double> & box) const;
+     bool backward (box2d<double> & box) const;
+-    bool forward (box2d<double> & box, int points) const;
+-    bool backward (box2d<double> & box, int points) const;
+-    mapnik::projection const& source() const;
+-    mapnik::projection const& dest() const;
+-
++    bool forward (box2d<double> & box, std::size_t points) const;
++    bool backward (box2d<double> & box, std::size_t points) const;
++    std::string definition() const;
+ private:
+-    projection const& source_;
+-    projection const& dest_;
++    PJ_CONTEXT* ctx_ = nullptr;
++    PJ* transform_ = nullptr;
+     bool is_source_longlat_;
+     bool is_dest_longlat_;
+     bool is_source_equal_dest_;
+diff --git a/include/mapnik/projection.hpp b/include/mapnik/projection.hpp
+index 7552eef58..73b196270 100644
+--- a/include/mapnik/projection.hpp
++++ b/include/mapnik/projection.hpp
+@@ -36,6 +36,17 @@
+ #include <string>
+ #include <stdexcept>
+ 
++
++// fwd decl
++#if PROJ_VERSION >= 80000
++struct pj_ctx;
++using PJ_CONTEXT = struct pj_ctx;
++#else
++struct projCtx_t;
++using PJ_CONTEXT = struct projCtx_t;
++#endif
++using PJ = struct PJconsts;
++
+ namespace mapnik {
+ 
+ class proj_init_error : public std::runtime_error
+@@ -51,7 +62,7 @@ class MAPNIK_DECL projection
+ public:
+ 
+     projection(std::string const& params,
+-                        bool defer_proj_init = false);
++               bool defer_proj_init = false);
+     projection(projection const& rhs);
+     ~projection();
+ 
+@@ -65,7 +76,7 @@ public:
+     void forward(double & x, double & y) const;
+     void inverse(double & x,double & y) const;
+     std::string expanded() const;
+-    void init_proj4() const;
++    void init_proj() const;
+ 
+ private:
+     void swap (projection& rhs);
+@@ -74,8 +85,8 @@ private:
+     std::string params_;
+     bool defer_proj_init_;
+     mutable bool is_geographic_;
+-    mutable void * proj_;
+-    mutable void * proj_ctx_;
++    mutable PJ * proj_;
++    mutable PJ_CONTEXT * proj_ctx_;
+ };
+ 
+ template <typename charT, typename traits>
+diff --git a/include/mapnik/well_known_srs.hpp b/include/mapnik/well_known_srs.hpp
+index 59e8cc4c3..c5df3a182 100644
+--- a/include/mapnik/well_known_srs.hpp
++++ b/include/mapnik/well_known_srs.hpp
+@@ -40,7 +40,7 @@ namespace mapnik {
+ 
+ enum well_known_srs_enum : std::uint8_t {
+     WGS_84,
+-    G_MERC,
++    WEB_MERC,
+     well_known_srs_enum_MAX
+ };
+ 
+@@ -59,9 +59,11 @@ static const double MAX_LATITUDE = R2D * (2 * std::atan(std::exp(180 * D2R)) - M
+ static const std::string MAPNIK_LONGLAT_PROJ = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+ static const std::string MAPNIK_GMERC_PROJ = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over";
+ 
+-boost::optional<well_known_srs_e> is_well_known_srs(std::string const& srs);
++extern MAPNIK_DECL std::string const MAPNIK_GEOGRAPHIC_PROJ;
++extern MAPNIK_DECL std::string const MAPNIK_WEBMERCATOR_PROJ;
+ 
+ boost::optional<bool> is_known_geographic(std::string const& srs);
++boost::optional<well_known_srs_e> is_well_known_srs(std::string const& srs);
+ 
+ static inline bool lonlat2merc(double * x, double * y , int point_count)
+ {
+diff --git a/src/build.py b/src/build.py
+index 1833d051c..247bf5492 100644
+--- a/src/build.py
++++ b/src/build.py
+@@ -77,8 +77,9 @@ if '-DHAVE_PNG' in env['CPPDEFINES']:
+    lib_env['LIBS'].append('png')
+    enabled_imaging_libraries.append('png_reader.cpp')
+ 
+-if '-DMAPNIK_USE_PROJ4' in env['CPPDEFINES']:
++if '-DMAPNIK_USE_PROJ' in env['CPPDEFINES']:
+    lib_env['LIBS'].append('proj')
++   lib_env['LIBS'].append('sqlite3')
+ 
+ if '-DHAVE_TIFF' in env['CPPDEFINES']:
+    lib_env['LIBS'].append('tiff')
+diff --git a/src/map.cpp b/src/map.cpp
+index 7496bd2f4..8e7825285 100644
+--- a/src/map.cpp
++++ b/src/map.cpp
+@@ -66,7 +66,7 @@ IMPLEMENT_ENUM( aspect_fix_mode_e, aspect_fix_mode_strings )
+ Map::Map()
+ : width_(400),
+     height_(400),
+-    srs_(MAPNIK_LONGLAT_PROJ),
++    srs_(MAPNIK_GEOGRAPHIC_PROJ),
+     buffer_size_(0),
+     background_image_comp_op_(src_over),
+     background_image_opacity_(1.0),
+@@ -110,8 +110,11 @@ Map::Map(Map const& rhs)
+       extra_params_(rhs.extra_params_),
+       font_directory_(rhs.font_directory_),
+       font_file_mapping_(rhs.font_file_mapping_),
+-      // on copy discard memory cache
+-      font_memory_cache_() {}
++      // on copy discard memory caches
++      font_memory_cache_()
++{
++    init_proj_transforms();
++}
+ 
+ 
+ Map::Map(Map && rhs)
+@@ -137,9 +140,12 @@ Map::Map(Map && rhs)
+ 
+ Map::~Map() {}
+ 
++thread_local Map::proj_cache_type Map::proj_cache_ = proj_cache_type();
++
+ Map& Map::operator=(Map rhs)
+ {
+     swap(*this, rhs);
++    init_proj_transforms();
+     return *this;
+ }
+ 
+@@ -164,7 +170,7 @@ void swap (Map & lhs, Map & rhs)
+     std::swap(lhs.extra_params_, rhs.extra_params_);
+     std::swap(lhs.font_directory_,rhs.font_directory_);
+     std::swap(lhs.font_file_mapping_,rhs.font_file_mapping_);
+-    // on assignment discard memory cache
++    // on assignment discard memory caches
+     //std::swap(lhs.font_memory_cache_,rhs.font_memory_cache_);
+ }
+ 
+@@ -321,13 +327,30 @@ size_t Map::layer_count() const
+     return layers_.size();
+ }
+ 
++proj_transform * Map::get_proj_transform(std::string const& source, std::string const& dest) const
++{
++
++    compatible_key_type key = std::make_pair<boost::string_view, boost::string_view>(source, dest);
++    auto itr = proj_cache_.find(key, compatible_hash{}, compatible_predicate{});
++    if (itr == proj_cache_.end())
++    {
++        mapnik::projection srs1(source, true);
++        mapnik::projection srs2(dest, true);
++        return proj_cache_.emplace(std::make_pair(source, dest),
++                                   std::make_unique<proj_transform>(srs1, srs2)).first->second.get();
++    }
++    return itr->second.get();
++}
++
+ void Map::add_layer(layer const& l)
+ {
++    init_proj_transform(srs_, l.srs());
+     layers_.emplace_back(l);
+ }
+ 
+ void Map::add_layer(layer && l)
+ {
++    init_proj_transform(srs_, l.srs());
+     layers_.push_back(std::move(l));
+ }
+ 
+@@ -343,6 +366,7 @@ void Map::remove_all()
+     fontsets_.clear();
+     font_file_mapping_.clear();
+     font_memory_cache_.clear();
++    proj_cache_.clear();
+ }
+ 
+ layer const& Map::get_layer(size_t index) const
+@@ -419,7 +443,9 @@ std::string const&  Map::srs() const
+ 
+ void Map::set_srs(std::string const& srs)
+ {
++    if (srs_ != srs) init_proj_transforms();
+     srs_ = srs;
++
+ }
+ 
+ void Map::set_buffer_size( int buffer_size)
+@@ -517,7 +543,6 @@ void Map::zoom_all()
+         {
+             return;
+         }
+-        projection proj0(srs_);
+         box2d<double> ext;
+         bool success = false;
+         bool first = true;
+@@ -526,10 +551,9 @@ void Map::zoom_all()
+             if (layer.active())
+             {
+                 std::string const& layer_srs = layer.srs();
+-                projection proj1(layer_srs);
+-                proj_transform prj_trans(proj0,proj1);
++                proj_transform * proj_trans_ptr = get_proj_transform(srs_, layer_srs);;
+                 box2d<double> layer_ext = layer.envelope();
+-                if (prj_trans.backward(layer_ext, PROJ_ENVELOPE_POINTS))
++                if (proj_trans_ptr->backward(layer_ext, PROJ_ENVELOPE_POINTS))
+                 {
+                     success = true;
+                     MAPNIK_LOG_DEBUG(map) << "map: Layer " << layer.name() << " original ext=" << layer.envelope();
+@@ -707,11 +731,9 @@ featureset_ptr Map::query_point(unsigned index, double x, double y) const
+         mapnik::datasource_ptr ds = layer.datasource();
+         if (ds)
+         {
+-            mapnik::projection dest(srs_);
+-            mapnik::projection source(layer.srs());
+-            proj_transform prj_trans(source,dest);
++            proj_transform * proj_trans_ptr = get_proj_transform(layer.srs(), srs_);
+             double z = 0;
+-            if (!prj_trans.equal() && !prj_trans.backward(x,y,z))
++            if (!proj_trans_ptr->equal() && !proj_trans_ptr->backward(x,y,z))
+             {
+                 throw std::runtime_error("query_point: could not project x,y into layer srs");
+             }
+@@ -721,7 +743,7 @@ featureset_ptr Map::query_point(unsigned index, double x, double y) const
+             {
+                 map_ex.clip(*maximum_extent_);
+             }
+-            if (!prj_trans.backward(map_ex,PROJ_ENVELOPE_POINTS))
++            if (!proj_trans_ptr->backward(map_ex,PROJ_ENVELOPE_POINTS))
+             {
+                 std::ostringstream s;
+                 s << "query_point: could not project map extent '" << map_ex
+@@ -772,4 +794,28 @@ void Map::set_extra_parameters(parameters& params)
+     extra_params_ = params;
+ }
+ 
++
++void Map::init_proj_transform(std::string const& source, std::string const& dest)
++{
++    compatible_key_type key = std::make_pair<boost::string_view, boost::string_view>(source, dest);
++    auto itr = proj_cache_.find(key, compatible_hash{}, compatible_predicate{});
++    if (itr == proj_cache_.end())
++    {
++        mapnik::projection p0(source, true);
++        mapnik::projection p1(dest, true);
++        proj_cache_.emplace(std::make_pair(source, dest),
++                            std::make_unique<proj_transform>(p0, p1));
++    }
++}
++
++void Map::init_proj_transforms()
++{
++    std::for_each(layers_.begin(),
++                  layers_.end(),
++                  [this] (auto const& l)
++                  {
++                      init_proj_transform(srs_, l.srs());
++                  });
++}
++
+ }
+diff --git a/src/proj_transform.cpp b/src/proj_transform.cpp
+index 0c5e6cd96..b1ce3dab8 100644
+--- a/src/proj_transform.cpp
++++ b/src/proj_transform.cpp
+@@ -28,13 +28,13 @@
+ #include <mapnik/proj_transform.hpp>
+ #include <mapnik/coord.hpp>
+ #include <mapnik/util/is_clockwise.hpp>
+-
++#include <mapnik/util/trim.hpp>
+ // boost
+ #include <boost/geometry/algorithms/envelope.hpp>
+ 
+-#ifdef MAPNIK_USE_PROJ4
+-// proj4
+-#include <proj_api.h>
++#ifdef MAPNIK_USE_PROJ
++// proj
++#include <proj.h>
+ #endif
+ 
+ // stl
+@@ -95,30 +95,28 @@ auto envelope_points(box2d<T> const& env, std::size_t num_points)
+ 
+ proj_transform::proj_transform(projection const& source,
+                                projection const& dest)
+-    : source_(source),
+-      dest_(dest),
+-      is_source_longlat_(false),
++    : is_source_longlat_(false),
+       is_dest_longlat_(false),
+       is_source_equal_dest_(false),
+       wgs84_to_merc_(false),
+       merc_to_wgs84_(false)
+ {
+-    is_source_equal_dest_ = (source_ == dest_);
++    is_source_equal_dest_ = (source == dest);
+     if (!is_source_equal_dest_)
+     {
+-        is_source_longlat_ = source_.is_geographic();
+-        is_dest_longlat_ = dest_.is_geographic();
++        is_source_longlat_ = source.is_geographic();
++        is_dest_longlat_ = dest.is_geographic();
+         boost::optional<well_known_srs_e> src_k = source.well_known();
+         boost::optional<well_known_srs_e> dest_k = dest.well_known();
+         bool known_trans = false;
+         if (src_k && dest_k)
+         {
+-            if (*src_k == WGS_84 && *dest_k == G_MERC)
++            if (*src_k == WGS_84 && *dest_k == WEB_MERC)
+             {
+                 wgs84_to_merc_ = true;
+                 known_trans = true;
+             }
+-            else if (*src_k == G_MERC && *dest_k == WGS_84)
++            else if (*src_k == WEB_MERC && *dest_k == WGS_84)
+             {
+                 merc_to_wgs84_ = true;
+                 known_trans = true;
+@@ -126,16 +124,45 @@ proj_transform::proj_transform(projection const& source,
+         }
+         if (!known_trans)
+         {
+-#ifdef MAPNIK_USE_PROJ4
+-            source_.init_proj4();
+-            dest_.init_proj4();
++#ifdef MAPNIK_USE_PROJ
++            ctx_ = proj_context_create();
++            transform_ = proj_create_crs_to_crs(ctx_,
++                                                source.params().c_str(),
++                                                dest.params().c_str(), nullptr);
++            if (transform_ == nullptr)
++            {
++                throw std::runtime_error(std::string("Cannot initialize proj_transform for given projections: '") + source.params() + "'->'" + dest.params() + "'");
++            }
++            PJ* transform_gis = proj_normalize_for_visualization(ctx_, transform_);
++            if (transform_gis == nullptr)
++            {
++                throw std::runtime_error(std::string("Cannot initialize proj_transform for given projections: '") + source.params() + "'->'" + dest.params() + "'");
++            }
++            proj_destroy(transform_);
++            transform_ = transform_gis;
+ #else
+-            throw std::runtime_error(std::string("Cannot initialize proj_transform for given projections without proj4 support (-DMAPNIK_USE_PROJ4): '") + source_.params() + "'->'" + dest_.params() + "'");
++            throw std::runtime_error(std::string("Cannot initialize proj_transform for given projections without proj support (-DMAPNIK_USE_PROJ): '") + source.params() + "'->'" + dest.params() + "'");
+ #endif
+         }
+     }
+ }
+ 
++proj_transform::~proj_transform()
++{
++#ifdef MAPNIK_USE_PROJ
++    if (transform_)
++    {
++        proj_destroy(transform_);
++        transform_ = nullptr;
++    }
++    if (ctx_)
++    {
++        proj_context_destroy(ctx_);
++        ctx_ = nullptr;
++    }
++#endif
++}
++
+ bool proj_transform::equal() const
+ {
+     return is_source_equal_dest_;
+@@ -187,9 +214,8 @@ unsigned int proj_transform::forward (geometry::line_string<double> & ls) const
+     return 0;
+ }
+ 
+-bool proj_transform::forward (double * x, double * y , double * z, int point_count, int offset) const
++bool proj_transform::forward (double * x, double * y , double * z, std::size_t point_count, std::size_t offset) const
+ {
+-
+     if (is_source_equal_dest_)
+         return true;
+ 
+@@ -202,42 +228,19 @@ bool proj_transform::forward (double * x, double * y , double * z, int point_cou
+         return merc2lonlat(x,y,point_count);
+     }
+ 
+-#ifdef MAPNIK_USE_PROJ4
+-    if (is_source_longlat_)
+-    {
+-        int i;
+-        for(i=0; i<point_count; i++) {
+-            x[i*offset] *= DEG_TO_RAD;
+-            y[i*offset] *= DEG_TO_RAD;
+-        }
+-    }
+-
+-    if (pj_transform( source_.proj_, dest_.proj_, point_count,
+-                      offset, x,y,z) != 0)
+-    {
++#ifdef MAPNIK_USE_PROJ
++    if (proj_trans_generic(transform_, PJ_FWD,
++                           x, offset * sizeof(double), point_count,
++                           y, offset * sizeof(double), point_count,
++                           z, offset * sizeof(double), point_count,
++                           0, 0, 0) != point_count)
+         return false;
+-    }
+-
+-    for(int j=0; j<point_count; j++) {
+-        if (x[j] == HUGE_VAL || y[j] == HUGE_VAL)
+-        {
+-            return false;
+-        }
+-    }
+ 
+-    if (is_dest_longlat_)
+-    {
+-        int i;
+-        for(i=0; i<point_count; i++) {
+-            x[i*offset] *= RAD_TO_DEG;
+-            y[i*offset] *= RAD_TO_DEG;
+-        }
+-    }
+ #endif
+     return true;
+ }
+ 
+-bool proj_transform::backward (double * x, double * y , double * z, int point_count, int offset) const
++bool proj_transform::backward (double * x, double * y , double * z, std::size_t point_count, std::size_t offset) const
+ {
+     if (is_source_equal_dest_)
+         return true;
+@@ -251,38 +254,13 @@ bool proj_transform::backward (double * x, double * y , double * z, int point_co
+         return lonlat2merc(x,y,point_count);
+     }
+ 
+-#ifdef MAPNIK_USE_PROJ4
+-    if (is_dest_longlat_)
+-    {
+-        for (int i = 0; i < point_count; ++i)
+-        {
+-            x[i * offset] *= DEG_TO_RAD;
+-            y[i * offset] *= DEG_TO_RAD;
+-        }
+-    }
+-
+-    if (pj_transform(dest_.proj_, source_.proj_, point_count,
+-                     offset, x, y, z) != 0)
+-    {
++#ifdef MAPNIK_USE_PROJ
++    if (proj_trans_generic(transform_, PJ_INV,
++                           x, offset * sizeof(double), point_count,
++                           y, offset * sizeof(double), point_count,
++                           z, offset * sizeof(double), point_count,
++                           0, 0, 0) != point_count)
+         return false;
+-    }
+-
+-    for (int j = 0; j < point_count; ++j)
+-    {
+-        if (x[j] == HUGE_VAL || y[j] == HUGE_VAL)
+-        {
+-            return false;
+-        }
+-    }
+-
+-    if (is_source_longlat_)
+-    {
+-        for (int i = 0; i < point_count; ++i)
+-        {
+-            x[i * offset] *= RAD_TO_DEG;
+-            y[i * offset] *= RAD_TO_DEG;
+-        }
+-    }
+ #endif
+     return true;
+ }
+@@ -394,7 +372,7 @@ bool proj_transform::backward (box2d<double> & box) const
+ // Alternative is to provide proper clipping box
+ // in the target srs by setting map 'maximum-extent'
+ 
+-bool proj_transform::backward(box2d<double>& env, int points) const
++bool proj_transform::backward(box2d<double>& env, std::size_t points) const
+ {
+     if (is_source_equal_dest_)
+         return true;
+@@ -433,7 +411,7 @@ bool proj_transform::backward(box2d<double>& env, int points) const
+     return true;
+ }
+ 
+-bool proj_transform::forward(box2d<double>& env, int points) const
++bool proj_transform::forward(box2d<double>& env, std::size_t points) const
+ {
+     if (is_source_equal_dest_)
+         return true;
+@@ -473,13 +451,25 @@ bool proj_transform::forward(box2d<double>& env, int points) const
+     return true;
+ }
+ 
+-mapnik::projection const& proj_transform::source() const
++std::string proj_transform::definition() const
+ {
+-    return source_;
+-}
+-mapnik::projection const& proj_transform::dest() const
+-{
+-    return dest_;
+-}
++#ifdef MAPNIK_USE_PROJ
++    if (transform_)
++    {
++        PJ_PROJ_INFO info = proj_pj_info(transform_);
++        return mapnik::util::trim_copy(info.definition);
++    }
++    else
++#endif
++        if (wgs84_to_merc_)
++        {
++            return "wgs84 => merc";
++        }
++        else if (merc_to_wgs84_)
++        {
++            return "merc => wgs84";
++        }
++    return "unknown";
++ }
+ 
+ }
+diff --git a/src/projection.cpp b/src/projection.cpp
+index b8c2f5b71..302ff418e 100644
+--- a/src/projection.cpp
++++ b/src/projection.cpp
+@@ -28,23 +28,14 @@
+ // stl
+ #include <stdexcept>
+ 
+-#ifdef MAPNIK_USE_PROJ4
+-// proj4
+-#include <proj_api.h>
+- #if defined(MAPNIK_THREADSAFE) && PJ_VERSION < 480
+-    #include <mutex>
+-    static std::mutex mutex_;
+-    #ifdef _MSC_VER
+-     #pragma NOTE(mapnik is building against < proj 4.8, reprojection will be faster if you use >= 4.8)
+-    #else
+-     #warning mapnik is building against < proj 4.8, reprojection will be faster if you use >= 4.8
+-    #endif
+- #endif
++#ifdef MAPNIK_USE_PROJ
++// proj
++#include <proj.h>
++#include <cmath> // HUGE_VAL
+ #endif
+ 
+ namespace mapnik {
+ 
+-
+ projection::projection(std::string const& params, bool defer_proj_init)
+     : params_(params),
+       defer_proj_init_(defer_proj_init),
+@@ -58,13 +49,13 @@ projection::projection(std::string const& params, bool defer_proj_init)
+     }
+     else
+     {
+-#ifdef MAPNIK_USE_PROJ4
+-        init_proj4();
++#ifdef MAPNIK_USE_PROJ
++        init_proj();
+ #else
+-        throw std::runtime_error(std::string("Cannot initialize projection '") + params_ + " ' without proj4 support (-DMAPNIK_USE_PROJ4)");
++        throw std::runtime_error(std::string("Cannot initialize projection '") + params_ + " ' without proj support (-DMAPNIK_USE_PROJ)");
+ #endif
+     }
+-    if (!defer_proj_init_) init_proj4();
++    if (!defer_proj_init_) init_proj();
+ }
+ 
+ projection::projection(projection const& rhs)
+@@ -74,7 +65,7 @@ projection::projection(projection const& rhs)
+       proj_(nullptr),
+       proj_ctx_(nullptr)
+ {
+-    if (!defer_proj_init_) init_proj4();
++    if (!defer_proj_init_) init_proj();
+ }
+ 
+ projection& projection::operator=(projection const& rhs)
+@@ -83,7 +74,7 @@ projection& projection::operator=(projection const& rhs)
+     swap(tmp);
+     proj_ctx_ = nullptr;
+     proj_ = nullptr;
+-    if (!defer_proj_init_) init_proj4();
++    if (!defer_proj_init_) init_proj();
+     return *this;
+ }
+ 
+@@ -97,34 +88,29 @@ bool projection::operator!=(const projection& other) const
+     return !(*this == other);
+ }
+ 
+-void projection::init_proj4() const
++void projection::init_proj() const
+ {
+-#ifdef MAPNIK_USE_PROJ4
++#ifdef MAPNIK_USE_PROJ
+     if (!proj_)
+     {
+-#if PJ_VERSION >= 480
+-        proj_ctx_ = pj_ctx_alloc();
+-        proj_ = pj_init_plus_ctx(proj_ctx_, params_.c_str());
++        proj_ctx_ = proj_context_create();
++        proj_ = proj_create(proj_ctx_, params_.c_str());
+         if (!proj_ || !proj_ctx_)
+         {
+             if (proj_ctx_) {
+-                pj_ctx_free(proj_ctx_);
++                proj_context_destroy(proj_ctx_);
+                 proj_ctx_ = nullptr;
+             }
+             if (proj_) {
+-                pj_free(proj_);
++                proj_destroy(proj_);
+                 proj_ = nullptr;
+             }
+             throw proj_init_error(params_);
+         }
+-#else
+-        #if defined(MAPNIK_THREADSAFE)
+-        std::lock_guard<std::mutex> lock(mutex_);
+-        #endif
+-        proj_ = pj_init_plus(params_.c_str());
+-        if (!proj_) throw proj_init_error(params_);
+-#endif
+-        is_geographic_ = pj_is_latlong(proj_) ? true : false;
++        PJ_TYPE type = proj_get_type(proj_);
++        is_geographic_ = (type == PJ_TYPE_GEOGRAPHIC_2D_CRS
++                          ||
++                          type == PJ_TYPE_GEOGRAPHIC_3D_CRS) ? true : false;
+     }
+ #endif
+ }
+@@ -151,82 +137,68 @@ std::string const& projection::params() const
+ 
+ void projection::forward(double & x, double &y ) const
+ {
+-#ifdef MAPNIK_USE_PROJ4
++#ifdef MAPNIK_USE_PROJ
+     if (!proj_)
+     {
+-        throw std::runtime_error("projection::forward not supported unless proj4 is initialized");
+-    }
+-    #if defined(MAPNIK_THREADSAFE) && PJ_VERSION < 480
+-    std::lock_guard<std::mutex> lock(mutex_);
+-    #endif
+-    projUV p;
+-    p.u = x * DEG_TO_RAD;
+-    p.v = y * DEG_TO_RAD;
+-    p = pj_fwd(p,proj_);
+-    x = p.u;
+-    y = p.v;
+-    if (is_geographic_)
+-    {
+-        x *=RAD_TO_DEG;
+-        y *=RAD_TO_DEG;
++        throw std::runtime_error("projection::forward not supported unless proj is initialized");
+     }
++    PJ_COORD coord;
++    coord.lpzt.z = 0.0;
++    coord.lpzt.t = HUGE_VAL;
++    coord.lpzt.lam = x;
++    coord.lpzt.phi = y;
++    PJ_COORD coord_out = proj_trans(proj_, PJ_FWD, coord);
++    x = coord_out.xy.x;
++    y = coord_out.xy.y;
+ #else
+-    throw std::runtime_error("projection::forward not supported without proj4 support (-DMAPNIK_USE_PROJ4)");
++    throw std::runtime_error("projection::forward not supported without proj support (-DMAPNIK_USE_PROJ)");
+ #endif
+ }
+ 
+ void projection::inverse(double & x,double & y) const
+ {
+-#ifdef MAPNIK_USE_PROJ4
++#ifdef MAPNIK_USE_PROJ
+     if (!proj_)
+     {
+-        throw std::runtime_error("projection::inverse not supported unless proj4 is initialized");
++        throw std::runtime_error("projection::forward not supported unless proj is initialized");
+     }
+-
+-    #if defined(MAPNIK_THREADSAFE) && PJ_VERSION < 480
+-    std::lock_guard<std::mutex> lock(mutex_);
+-    #endif
+-    if (is_geographic_)
+-    {
+-        x *=DEG_TO_RAD;
+-        y *=DEG_TO_RAD;
+-    }
+-    projUV p;
+-    p.u = x;
+-    p.v = y;
+-    p = pj_inv(p,proj_);
+-    x = RAD_TO_DEG * p.u;
+-    y = RAD_TO_DEG * p.v;
++    PJ_COORD coord;
++    coord.xyzt.z = 0.0;
++    coord.xyzt.t = HUGE_VAL;
++    coord.xyzt.x = x;
++    coord.xyzt.y = y;
++    PJ_COORD coord_out = proj_trans(proj_, PJ_INV, coord);
++    x = coord_out.xy.x;
++    y = coord_out.xy.y;
+ #else
+-    throw std::runtime_error("projection::inverse not supported without proj4 support (-DMAPNIK_USE_PROJ4)");
++    throw std::runtime_error("projection::inverse not supported without proj support (-DMAPNIK_USE_PROJ)");
+ #endif
+ }
+ 
+ projection::~projection()
+ {
+-#ifdef MAPNIK_USE_PROJ4
+- #if defined(MAPNIK_THREADSAFE) && PJ_VERSION < 480
+-    std::lock_guard<std::mutex> lock(mutex_);
+- #endif
++#ifdef MAPNIK_USE_PROJ
+     if (proj_)
+     {
+-        pj_free(proj_);
++        proj_destroy(proj_);
+         proj_ = nullptr;
+     }
+- #if PJ_VERSION >= 480
+     if (proj_ctx_)
+     {
+-        pj_ctx_free(proj_ctx_);
++        proj_context_destroy(proj_ctx_);
+         proj_ctx_ = nullptr;
+     }
+- #endif
+ #endif
+ }
+ 
+ std::string projection::expanded() const
+ {
+-#ifdef MAPNIK_USE_PROJ4
+-    if (proj_) return mapnik::util::trim_copy(pj_get_def( proj_, 0 ));
++#ifdef MAPNIK_USE_PROJ
++    if (proj_)
++    {
++        PJ_PROJ_INFO info = proj_pj_info(proj_);
++        return mapnik::util::trim_copy(info.definition);
++    }
+ #endif
+     return params_;
+ }
+diff --git a/src/text/symbolizer_helpers.cpp b/src/text/symbolizer_helpers.cpp
+index ee9efb164..69b2ec9ff 100644
+--- a/src/text/symbolizer_helpers.cpp
++++ b/src/text/symbolizer_helpers.cpp
+@@ -325,10 +325,9 @@ void base_symbolizer_helper::initialize_points() const
+             else if (how_placed == INTERIOR_PLACEMENT && type == geometry::geometry_types::Polygon)
+             {
+                 auto const& poly = util::get<geometry::polygon<double>>(geom);
+-                proj_transform backwart_transform(prj_trans_.dest(), prj_trans_.source());
+                 view_strategy vs(t_);
+-                proj_strategy ps(backwart_transform);
+-                using transform_group_type = geometry::strategy_group<proj_strategy, view_strategy>;
++                proj_backward_strategy ps(prj_trans_);
++                using transform_group_type = geometry::strategy_group<proj_backward_strategy, view_strategy>;
+                 transform_group_type transform_group(ps, vs);
+                 geometry::polygon<double> tranformed_poly(geometry::transform<double>(poly, transform_group));
+                 geometry::point<double> pt;
+diff --git a/src/well_known_srs.cpp b/src/well_known_srs.cpp
+index e9e2a8948..fdfa2cafa 100644
+--- a/src/well_known_srs.cpp
++++ b/src/well_known_srs.cpp
+@@ -32,21 +32,27 @@
+ 
+ namespace mapnik {
+ 
++extern std::string const MAPNIK_GEOGRAPHIC_PROJ =
++    "epsg:4326";  //wgs84
++
++extern std::string const MAPNIK_WEBMERCATOR_PROJ =
++    "epsg:3857"; // webmercator
++
+ static const char * well_known_srs_strings[] = {
+-    "mapnik-longlat",
+-    "mapnik-gmerc",
++    MAPNIK_GEOGRAPHIC_PROJ.c_str(),
++    MAPNIK_WEBMERCATOR_PROJ.c_str(),
+     ""
+ };
+ 
+ boost::optional<well_known_srs_e> is_well_known_srs(std::string const& srs)
+ {
+-    if (srs == "+init=epsg:4326" || srs == MAPNIK_LONGLAT_PROJ)
++    if (srs == MAPNIK_GEOGRAPHIC_PROJ)
+     {
+         return boost::optional<well_known_srs_e>(mapnik::WGS_84);
+     }
+-    else if (srs == "+init=epsg:3857" || srs == MAPNIK_GMERC_PROJ)
++    else if (srs == MAPNIK_WEBMERCATOR_PROJ)
+     {
+-        return boost::optional<well_known_srs_e>(mapnik::G_MERC);
++        return boost::optional<well_known_srs_e>(mapnik::WEB_MERC);
+     }
+     return boost::optional<well_known_srs_e>();
+ }
+@@ -54,28 +60,13 @@ boost::optional<well_known_srs_e> is_well_known_srs(std::string const& srs)
+ boost::optional<bool> is_known_geographic(std::string const& srs)
+ {
+     std::string trimmed = util::trim_copy(srs);
+-    if (trimmed == "+init=epsg:3857")
+-    {
+-        return boost::optional<bool>(false);
+-    }
+-    else if (trimmed == "+init=epsg:4326")
++    if (trimmed == MAPNIK_GEOGRAPHIC_PROJ)
+     {
+         return boost::optional<bool>(true);
+     }
+-    else if (srs.find("+proj=") != std::string::npos)
++    else if (trimmed ==  MAPNIK_WEBMERCATOR_PROJ)
+     {
+-        if ((srs.find("+proj=longlat") != std::string::npos) ||
+-                          (srs.find("+proj=latlong") != std::string::npos) ||
+-                          (srs.find("+proj=lonlat") != std::string::npos) ||
+-                          (srs.find("+proj=latlon") != std::string::npos)
+-                         )
+-        {
+-            return boost::optional<bool>(true);
+-        }
+-        else
+-        {
+-            return boost::optional<bool>(false);
+-        }
++        return boost::optional<bool>(false);
+     }
+     return boost::optional<bool>();
+ }
+diff --git a/test/cleanup.hpp b/test/cleanup.hpp
+index c775915b5..096d773ac 100644
+--- a/test/cleanup.hpp
++++ b/test/cleanup.hpp
+@@ -15,9 +15,6 @@
+ #endif
+ 
+ #include <unicode/uclean.h>
+-#ifdef MAPNIK_USE_PROJ4
+-#include <proj_api.h>
+-#endif
+ 
+ #pragma GCC diagnostic pop
+ 
+@@ -46,15 +43,6 @@ inline void run_cleanup()
+ 
+     // http://icu-project.org/apiref/icu4c/uclean_8h.html#a93f27d0ddc7c196a1da864763f2d8920
+     u_cleanup();
+-
+-#ifdef MAPNIK_USE_PROJ4
+-    // http://trac.osgeo.org/proj/ticket/149
+- #if PJ_VERSION >= 480
+-    pj_clear_initcache();
+- #endif
+-    // https://trac.osgeo.org/proj/wiki/ProjAPI#EnvironmentFunctions
+-    pj_deallocate_grids();
+-#endif
+ }
+ 
+ }
+diff --git a/test/unit/core/exceptions_test.cpp b/test/unit/core/exceptions_test.cpp
+index 16ed51974..2c6f14999 100644
+--- a/test/unit/core/exceptions_test.cpp
++++ b/test/unit/core/exceptions_test.cpp
+@@ -1,4 +1,3 @@
+-
+ #include "catch.hpp"
+ 
+ #include <iostream>
+@@ -25,7 +24,7 @@ TEST_CASE("exceptions") {
+ 
+ SECTION("handling") {
+     try {
+-        mapnik::projection srs("foo");
++        mapnik::projection srs("FAIL");
+         // to avoid unused variable warning
+         srs.params();
+         REQUIRE(false);
+@@ -35,11 +34,11 @@ SECTION("handling") {
+ 
+     // https://github.com/mapnik/mapnik/issues/2170
+     try {
+-        mapnik::projection srs("+proj=longlat foo",true);
++        mapnik::projection srs("epsg:4326 foo",true);
+         REQUIRE(srs.is_geographic());
+         REQUIRE(true);
+-        srs.init_proj4();
+-        // oddly init_proj4 does not throw with old proj/ubuntu precise
++        srs.init_proj();
++        // oddly init_proj does not throw with old proj/ubuntu precise
+         //REQUIRE(false);
+     } catch (...) {
+         REQUIRE(true);
+diff --git a/test/unit/geometry/geometry_equal.hpp b/test/unit/geometry/geometry_equal.hpp
+index 4ff80abab..53f7d72df 100644
+--- a/test/unit/geometry/geometry_equal.hpp
++++ b/test/unit/geometry/geometry_equal.hpp
+@@ -126,7 +126,7 @@ struct geometry_equal_visitor
+             REQUIRE(false);
+         }
+ 
+-        for(auto const& p : zip_crange(ls1, ls2))
++        for (auto const p : zip_crange(ls1, ls2))
+         {
+             REQUIRE(p.template get<0>().x == Approx(p.template get<1>().x));
+             REQUIRE(p.template get<0>().y == Approx(p.template get<1>().y));
+@@ -143,7 +143,7 @@ struct geometry_equal_visitor
+             REQUIRE(false);
+         }
+ 
+-        for (auto const& p : zip_crange(p1.interior_rings, p2.interior_rings))
++        for (auto const p : zip_crange(p1.interior_rings, p2.interior_rings))
+         {
+             (*this)(static_cast<line_string<T> const&>(p.template get<0>()),static_cast<line_string<T> const&>(p.template get<1>()));
+         }
+@@ -163,7 +163,7 @@ struct geometry_equal_visitor
+             REQUIRE(false);
+         }
+ 
+-        for (auto const& ls : zip_crange(mls1, mls2))
++        for (auto const ls : zip_crange(mls1, mls2))
+         {
+             (*this)(ls.template get<0>(),ls.template get<1>());
+         }
+@@ -177,7 +177,7 @@ struct geometry_equal_visitor
+             REQUIRE(false);
+         }
+ 
+-        for (auto const& poly : zip_crange(mpoly1, mpoly2))
++        for (auto const poly : zip_crange(mpoly1, mpoly2))
+         {
+             (*this)(poly.template get<0>(),poly.template get<1>());
+         }
+@@ -193,7 +193,7 @@ struct geometry_equal_visitor
+             REQUIRE(false);
+         }
+ 
+-        for (auto const& g : zip_crange(c1, c2))
++        for (auto const g : zip_crange(c1, c2))
+         {
+             assert_g_equal(g.template get<0>(),g.template get<1>());
+         }
+@@ -207,7 +207,7 @@ struct geometry_equal_visitor
+             REQUIRE(false);
+         }
+ 
+-        for (auto const& g : zip_crange(c1, c2))
++        for (auto const g : zip_crange(c1, c2))
+         {
+             assert_g_equal(g.template get<0>(),g.template get<1>());
+         }
+diff --git a/test/unit/geometry/geometry_reprojection.cpp b/test/unit/geometry/geometry_reprojection.cpp
+index c8ec36243..3b7abd742 100644
+--- a/test/unit/geometry/geometry_reprojection.cpp
++++ b/test/unit/geometry/geometry_reprojection.cpp
+@@ -12,8 +12,8 @@ TEST_CASE("geometry reprojection") {
+ 
+ SECTION("test_projection_4326_3857 - Empty Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans(source, dest);
+     {
+         geometry_empty geom;
+@@ -38,8 +38,8 @@ SECTION("test_projection_4326_3857 - Empty Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Empty Geometry in Geometry Variant") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans(source, dest);
+     {
+         geometry<double> geom = geometry_empty();
+@@ -67,8 +67,8 @@ SECTION("test_projection_4326_3857 - Empty Geometry in Geometry Variant") {
+ 
+ SECTION("test_projection_4326_3857 - Point Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     point<double> geom1(-97.552175, 35.522895);
+@@ -120,8 +120,8 @@ SECTION("test_projection_4326_3857 - Point Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Point Geometry Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     double x1 = -97.552175;
+@@ -177,8 +177,8 @@ SECTION("test_projection_4326_3857 - Point Geometry Variant Object") {
+ 
+ SECTION("test_projection_4326_3857 - Line_String Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     line_string<double> geom1;
+@@ -242,8 +242,8 @@ SECTION("test_projection_4326_3857 - Line_String Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Line_String Geometry Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     line_string<double> geom1_;
+@@ -317,8 +317,8 @@ SECTION("test_projection_4326_3857 - Line_String Geometry Variant Object") {
+ 
+ SECTION("test_projection_4326_3857 - Polygon Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     polygon<double> geom1;
+@@ -406,8 +406,8 @@ SECTION("test_projection_4326_3857 - Polygon Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Polygon Geometry Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     polygon<double> geom1_;
+@@ -491,8 +491,8 @@ SECTION("test_projection_4326_3857 - Polygon Geometry Variant Object") {
+ 
+ SECTION("test_projection_4326_3857 - Multi_Point Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     multi_point<double> geom1;
+@@ -556,8 +556,8 @@ SECTION("test_projection_4326_3857 - Multi_Point Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Multi_Point Geometry Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     multi_point<double> geom1_;
+@@ -631,8 +631,8 @@ SECTION("test_projection_4326_3857 - Multi_Point Geometry Variant Object") {
+ 
+ SECTION("test_projection_4326_3857 - Multi_Line_String Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     line_string<double> geom1a;
+@@ -708,8 +708,8 @@ SECTION("test_projection_4326_3857 - Multi_Line_String Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Multi_Line_String Geometry Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     line_string<double> geom1a_;
+@@ -787,8 +787,8 @@ SECTION("test_projection_4326_3857 - Multi_Line_String Geometry Variant Object")
+ 
+ SECTION("test_projection_4326_3857 - Multi_Polygon Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     polygon<double> geom1a;
+@@ -880,8 +880,8 @@ SECTION("test_projection_4326_3857 - Multi_Polygon Geometry Object") {
+ 
+ SECTION("test_projection_4326_3857 - Multi_Polygon Geometry Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     polygon<double> geom1a_;
+@@ -969,8 +969,8 @@ SECTION("test_projection_4326_3857 - Multi_Polygon Geometry Variant Object") {
+ 
+ SECTION("test_projection_4326_3857 - Geometry Collection Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     polygon<double> geom1a;
+@@ -1062,8 +1062,8 @@ SECTION("test_projection_4326_3857 - Geometry Collection Object") {
+ 
+ SECTION("test_projection_4326_3857 - Geometry Collection Variant Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     polygon<double> geom1a_;
+@@ -1149,10 +1149,11 @@ SECTION("test_projection_4326_3857 - Geometry Collection Variant Object") {
+     }
+ } // END SECTION
+ 
++#ifdef MAPNIK_USE_PROJ
+ SECTION("test_projection_4269_3857 - Line_String Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4269");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4269");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     line_string<double> geom1;
+@@ -1216,8 +1217,8 @@ SECTION("test_projection_4269_3857 - Line_String Geometry Object") {
+ 
+ SECTION("test_projection_4269_3857 - Point Geometry Object") {
+     using namespace mapnik::geometry;
+-    mapnik::projection source("+init=epsg:4269");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4269");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans1(source, dest);
+     mapnik::proj_transform proj_trans2(dest, source);
+     point<double> geom1(-97.552175, 35.522895);
+@@ -1267,5 +1268,6 @@ SECTION("test_projection_4269_3857 - Point Geometry Object") {
+     }
+ } // End Section
+ 
++#endif  // MAPNIK_USE_PROJ
+ 
+ } // End Testcase
+diff --git a/test/unit/geometry/geometry_strategy_test.cpp b/test/unit/geometry/geometry_strategy_test.cpp
+index c08e828cb..857bdd04a 100644
+--- a/test/unit/geometry/geometry_strategy_test.cpp
++++ b/test/unit/geometry/geometry_strategy_test.cpp
+@@ -19,8 +19,8 @@ SECTION("proj and view strategy") {
+     mapnik::view_transform vt(256, 256, e);
+     mapnik::view_strategy vs(vt);
+     mapnik::unview_strategy uvs(vt);
+-    mapnik::projection source("+init=epsg:4326");
+-    mapnik::projection dest("+init=epsg:3857");
++    mapnik::projection source("epsg:4326");
++    mapnik::projection dest("epsg:3857");
+     mapnik::proj_transform proj_trans(source, dest);
+     mapnik::proj_transform proj_trans_rev(dest, source);
+     mapnik::proj_strategy ps(proj_trans);
 diff --git a/test/unit/projection/proj_transform.cpp b/test/unit/projection/proj_transform.cpp
-index cbaa4e13d..84419c00a 100644
+index cbaa4e13d..cda0e1c9f 100644
 --- a/test/unit/projection/proj_transform.cpp
 +++ b/test/unit/projection/proj_transform.cpp
-@@ -172,8 +172,8 @@ SECTION("Test proj antimeridian bbox")
+@@ -4,20 +4,20 @@
+ #include <mapnik/projection.hpp>
+ #include <mapnik/proj_transform.hpp>
+ #include <mapnik/box2d.hpp>
+-
+-#ifdef MAPNIK_USE_PROJ4
+-// proj4
+-#include <proj_api.h>
+-#endif
+-
++#include <cmath>
++#include <tuple>
+ 
+ TEST_CASE("projection transform")
+ {
+ 
+ SECTION("Test bounding box transforms - 4326 to 3857")
+ {
+-    mapnik::projection proj_4326("+init=epsg:4326");
+-    mapnik::projection proj_3857("+init=epsg:3857");
++    mapnik::projection proj_4326("epsg:4326");
++    mapnik::projection proj_3857("epsg:3857");
++
++    CHECK(proj_4326.is_geographic());
++    CHECK(!proj_3857.is_geographic());
++
+     mapnik::proj_transform prj_trans(proj_4326, proj_3857);
+ 
+     double minx = -45.0;
+@@ -43,36 +43,15 @@ SECTION("Test bounding box transforms - 4326 to 3857")
+ }
+ 
+ 
+-#if defined(MAPNIK_USE_PROJ4) && PJ_VERSION >= 480
+-SECTION("test pj_transform failure behavior")
++#if defined(MAPNIK_USE_PROJ)
++SECTION("test proj_transform failure behavior")
+ {
+-    mapnik::projection proj_4269("+init=epsg:4269");
+-    mapnik::projection proj_3857("+init=epsg:3857");
++    mapnik::projection proj_4269("epsg:4269");
++    mapnik::projection proj_3857("epsg:3857");
+     mapnik::proj_transform prj_trans(proj_4269, proj_3857);
+     mapnik::proj_transform prj_trans2(proj_3857, proj_4269);
+ 
+-    auto proj_ctx0 = pj_ctx_alloc();
+-    REQUIRE( proj_ctx0 != nullptr );
+-    auto proj0 = pj_init_plus_ctx(proj_ctx0, proj_4269.params().c_str());
+-    REQUIRE( proj0 != nullptr );
+-
+-    auto proj_ctx1 = pj_ctx_alloc();
+-    REQUIRE( proj_ctx1 != nullptr );
+-    auto proj1 = pj_init_plus_ctx(proj_ctx1, proj_3857.params().c_str());
+-    REQUIRE( proj1 != nullptr );
+-
+-    // first test valid values directly against proj
+-    double x = -180.0;
+-    double y = -60.0;
+-    x *= DEG_TO_RAD;
+-    y *= DEG_TO_RAD;
+-    CHECK( x == Approx(-3.1415926536) );
+-    CHECK( y == Approx(-1.0471975512) );
+-    CHECK( 0 == pj_transform(proj0, proj1, 1, 0, &x, &y, nullptr) );
+-    CHECK( x == Approx(-20037508.3427892439) );
+-    CHECK( y == Approx(-8399737.8896366451) );
+-
+-    // now test mapnik class
++    // test valid coordinate
+     double x0 = -180.0;
+     double y0 = -60.0;
+     CHECK( prj_trans.forward(&x0,&y0,nullptr,1,1) );
+@@ -84,47 +63,69 @@ SECTION("test pj_transform failure behavior")
+     CHECK( x1 == Approx(-20037508.3427892439) );
+     CHECK( y1 == Approx(-8399737.8896366451) );
+ 
+-    // longitude value outside the value range for mercator
+-    x = -181.0;
+-    y = -91.0;
+-    x *= DEG_TO_RAD;
+-    y *= DEG_TO_RAD;
+-    CHECK( x == Approx(-3.1590459461) );
+-    CHECK( y == Approx(-1.5882496193) );
+-    CHECK( 0 == pj_transform(proj0, proj1, 1, 0, &x, &y, nullptr) );
+-    CHECK( std::isinf(x) );
+-    CHECK( std::isinf(y) );
+-
+-    // now test mapnik class
++    // now test invalid coordinate
+     double x2 = -181.0;
+     double y2 = -91.0;
+-    CHECK( false == prj_trans.forward(&x2,&y2,nullptr,1,1) );
++    prj_trans.forward(&x2,&y2,nullptr,1,1);
+     CHECK( std::isinf(x2) );
+     CHECK( std::isinf(y2) );
+     double x3 = -181.0;
+     double y3 = -91.0;
+-    CHECK( false == prj_trans2.backward(&x3,&y3,nullptr,1,1) );
++    prj_trans2.backward(&x3,&y3,nullptr,1,1);
+     CHECK( std::isinf(x3) );
+     CHECK( std::isinf(y3) );
+-
+-    // cleanup
+-    pj_ctx_free(proj_ctx0);
+-    proj_ctx0 = nullptr;
+-    pj_free(proj0);
+-    proj0 = nullptr;
+-    pj_ctx_free(proj_ctx1);
+-    proj_ctx1 = nullptr;
+-    pj_free(proj1);
+-    proj1 = nullptr;
+ }
+ 
+-#endif
++SECTION("test forward/backward transformations")
++{
++    //WGS 84 - World Geodetic System 1984, used in GPS
++    mapnik::projection proj_4236("epsg:4236");
++    //OSGB 1936 / British National Grid -- United Kingdom Ordnance Survey
++    mapnik::projection proj_27700("epsg:27700");
++    //WGS 84 / Equal Earth Greenwich
++    mapnik::projection proj_8857("epsg:8857");
++    //European Terrestrial Reference System 1989 (ETRS89)
++    mapnik::projection proj_4937("epsg:4937");
++    //"Webmercator" WGS 84 / Pseudo-Mercator -- Spherical Mercator, Google Maps, OpenStreetMap, Bing, ArcGIS, ESRI
++    mapnik::projection proj_3857("epsg:3857");
++
++    mapnik::proj_transform tr1(proj_4236, proj_27700);
++    mapnik::proj_transform tr2(proj_4236, proj_8857);
++    mapnik::proj_transform tr3(proj_4236, proj_4236);
++    mapnik::proj_transform tr4(proj_4236, proj_4937);
++    mapnik::proj_transform tr5(proj_4236, proj_3857);
++    std::initializer_list<std::reference_wrapper<mapnik::proj_transform>> transforms = {
++        tr1, tr2, tr3, tr4, tr5
++    };
++
++    std::initializer_list<std::tuple<double, double>> coords = {
++        {-4.0278869, 57.8796955}, // Dórnach, Highland
++        {-4.2488787, 55.8609825}, // Glaschú, Alba
++        {-1.4823897, 51.8726941}, // Charlbury, England
++        {-3.9732612, 51.7077400}  // Felindre, Cymru
++    };
++
++    for (auto const& c : coords)
++    {
++        double x0, y0;
++        std::tie(x0, y0) = c;
++        for (mapnik::proj_transform const& tr : transforms)
++        {
++            double x1 = x0;
++            double y1 = y0;
++            tr.forward (&x1, &y1, nullptr, 1, 1);
++            tr.backward(&x1, &y1, nullptr, 1, 1);
++            CHECK (x0 == Approx(x1));
++            CHECK (y0 == Approx(y1));
++        }
++    }
++}
+ 
+ // Github Issue https://github.com/mapnik/mapnik/issues/2648
+ SECTION("Test proj antimeridian bbox")
+ {
+-    mapnik::projection prj_geog("+init=epsg:4326");
+-    mapnik::projection prj_proj("+init=epsg:2193");
++    mapnik::projection prj_geog("epsg:4326");
++    mapnik::projection prj_proj("epsg:2193");
+ 
+     mapnik::proj_transform prj_trans_fwd(prj_proj, prj_geog);
+     mapnik::proj_transform prj_trans_rev(prj_geog, prj_proj);
+@@ -132,7 +133,7 @@ SECTION("Test proj antimeridian bbox")
+     // reference values taken from proj4 command line tool:
+     // (non-corner points assume PROJ_ENVELOPE_POINTS == 20)
+     //
+-    //  cs2cs -Ef %.10f +init=epsg:2193 +to +init=epsg:4326 <<END
++    //  cs2cs -Ef %.10f epsg:2193 +to epsg:4326 <<END
+     //        2105800 3087000 # left-most
+     //        1495200 3087000 # bottom-most
+     //        2105800 7173000 # right-most
+@@ -165,15 +166,15 @@ SECTION("Test proj antimeridian bbox")
+ 
+     // reference values taken from proj4 command line tool:
+     //
+-    //  cs2cs -Ef %.10f +init=epsg:2193 +to +init=epsg:4326 <<END
++    //  cs2cs -Ef %.10f epsg:2193 +to epsg:4326 <<END
+     //        274000 3087000 # left-most
+     //        276000 3087000 # bottom-most
+     //        276000 7173000 # right-most
      //        274000 7173000 # top-most
      //  END
      //
@@ -19,3 +2397,27 @@ index cbaa4e13d..84419c00a 100644
  
      {
          // checks for not being snapped (ie. not antimeridian)
+@@ -188,12 +189,15 @@ SECTION("Test proj antimeridian bbox")
+     {
+         // check the same logic works for .backward()
+         mapnik::box2d<double> ext(274000, 3087000, 276000, 7173000);
+-        prj_trans_rev.backward(ext, PROJ_ENVELOPE_POINTS);
+-        CHECK(ext.minx() == Approx(normal.minx()));
+-        CHECK(ext.miny() == Approx(normal.miny()));
+-        CHECK(ext.maxx() == Approx(normal.maxx()));
+-        CHECK(ext.maxy() == Approx(normal.maxy()));
++        CHECKED_IF(prj_trans_rev.backward(ext, PROJ_ENVELOPE_POINTS))
++        {
++            CHECK(ext.minx() == Approx(normal.minx()));
++            CHECK(ext.miny() == Approx(normal.miny()));
++            CHECK(ext.maxx() == Approx(normal.maxx()));
++            CHECK(ext.maxy() == Approx(normal.maxy()));
++        }
+     }
+ }
++#endif
+ 
+ }
+-- 
+2.30.2
+

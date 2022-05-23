@@ -1,14 +1,17 @@
-commit fbbe37d3c9c956a39f3733744a805a37b5b19c3d
-Author: Tom Hughes <tom@compton.nu>
-Date:   Tue Jan 26 09:43:05 2016 +0000
+From 7aee1785850e566bf1096e6cb01687989fb2baa7 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Tue, 26 Jan 2016 09:43:05 +0000
+Subject: [PATCH 4/7] Don't set rpath
 
-    Don't set rpath
+---
+ src/build.py | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/src/build.py b/src/build.py
-index bdc3438..cc93386 100644
+index 8fb358008..1833d051c 100644
 --- a/src/build.py
 +++ b/src/build.py
-@@ -141,10 +141,6 @@ else: # unix, non-macos
+@@ -145,10 +145,6 @@ else: # unix, non-macos
          mapnik_lib_link_flag += ' -Wl,-rpath-link,.'
          if env['ENABLE_SONAME']:
              mapnik_lib_link_flag += ' -Wl,-soname,%s' % mapnik_libname
@@ -19,3 +22,6 @@ index bdc3438..cc93386 100644
  
  source = Split(
      """
+-- 
+2.29.2
+

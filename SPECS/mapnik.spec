@@ -22,6 +22,10 @@ Patch1:    mapnik-system-sparsehash.patch
 Patch2:    mapnik-visual-compare.patch
 # Patch out attempt to set rpath
 Patch3:    mapnik-rpath.patch
+# https://github.com/mapnik/mapnik/pull/4202
+Patch4:    mapnik-proj.patch
+# https://github.com/mapnik/mapnik/pull/4159
+Patch5:    mapnik-scons4.patch
 
 Requires: dejavu-lgc-serif-fonts
 Requires: dejavu-lgc-sans-fonts
@@ -141,22 +145,14 @@ spatial visualization library.
 %prep
 %setup -q -n mapnik-v%{version} -a 1 -a 2
 %autopatch -p1
-rm -rf test/data test/data-visual
-mv test-data-%{version} test/data
-mv test-data-visual-%{version} test/data-visual
-iconv -f iso8859-1 -t utf-8 demo/data/COPYRIGHT.txt > COPYRIGHT.conv && mv -f COPYRIGHT.conv demo/data/COPYRIGHT.txt
-sed -i -e 's|#!/usr/bin/env python|#!/usr/bin/python3|' demo/python/rundemo.py
-sed -i -e 's|#!/usr/bin/env python|#!/usr/bin/python3|' demo/simple-renderer/render.py
-rm -rf deps/mapnik/sparsehash
+%{__rm} -rf test/data test/data-visual
+%{__mv} test-data-%{version} test/data
+%{__mv} test-data-visual-%{version} test/data-visual
+%{_bindir}/iconv -f iso8859-1 -t utf-8 demo/data/COPYRIGHT.txt > COPYRIGHT.conv && mv -f COPYRIGHT.conv demo/data/COPYRIGHT.txt
+%{__rm} -rf deps/mapnik/sparsehash
 
 
 %build
-# start with default compiler flags
-local_optflags="%{optflags}"
-
-# enable deprecated legacy proj api
-local_optflags="${local_optflags} -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
-
 # configure mapnik
 PROJ_LIB=%{_datadir}/proj \
 GDAL_DATA=$(gdal-config --datadir) \
@@ -166,8 +162,8 @@ scons configure FAST=True \
                   FULL_LIB_PATH=False \
                   SYSTEM_FONTS=%{_datadir}/fonts \
                   LIBDIR_SCHEMA=%{_lib} \
-                  CUSTOM_CFLAGS="${local_optflags}" \
-                  CUSTOM_CXXFLAGS="${local_optflags}" \
+                  CUSTOM_CFLAGS="%{optflags}" \
+                  CUSTOM_CXXFLAGS="%{optflags}" \
                   OPTIMIZATION=2 \
                   SVG2PNG=True \
                   DEMO=False \

@@ -1,11 +1,14 @@
-commit c1cea9e10ffec54d0f675478e541ee4a6e87f653
-Author: Tom Hughes <tom@compton.nu>
-Date:   Wed Jun 5 18:45:57 2013 +0100
+From a499e19d72c635be258d57a8675594fee4b43155 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Wed, 5 Jun 2013 18:45:57 +0100
+Subject: [PATCH 2/7] Use system sparsehash
 
-    Use system sparsehash
+---
+ include/mapnik/palette.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/mapnik/palette.hpp b/include/mapnik/palette.hpp
-index 5f96272..44d06aa 100644
+index 5a725ae02..f3d8319d5 100644
 --- a/include/mapnik/palette.hpp
 +++ b/include/mapnik/palette.hpp
 @@ -33,7 +33,7 @@
@@ -17,3 +20,6 @@ index 5f96272..44d06aa 100644
  using rgba_hash_table = google::dense_hash_map<unsigned int, unsigned char>;
  #else
  #include <unordered_map>
+-- 
+2.29.2
+

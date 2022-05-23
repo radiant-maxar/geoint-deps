@@ -1,11 +1,15 @@
-commit ad9632560ca69bf8293460aa3481afe9cfa3ed00
-Author: Tom Hughes <tom@compton.nu>
-Date:   Sun Nov 22 14:00:57 2015 +0000
+From f12604ff0aadba1d31bc8471fcc4dd5c8f8a50c4 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Sun, 22 Nov 2015 14:00:57 +0000
+Subject: [PATCH 3/7] Allow some minor differences in images
 
-    Allow some minor differences in images
+---
+ test/unit/datasource/ogr.cpp | 2 +-
+ test/visual/renderer.hpp     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/test/unit/datasource/ogr.cpp b/test/unit/datasource/ogr.cpp
-index 5b785f9..ff4c3b8 100644
+index 5b785f9b2..ff4c3b8bf 100644
 --- a/test/unit/datasource/ogr.cpp
 +++ b/test/unit/datasource/ogr.cpp
 @@ -52,7 +52,7 @@ TEST_CASE("ogr") {
@@ -18,7 +22,7 @@ index 5b785f9..ff4c3b8 100644
  
      }
 diff --git a/test/visual/renderer.hpp b/test/visual/renderer.hpp
-index 7ea9198..6a8bec1 100644
+index 7ea9198df..6a8bec181 100644
 --- a/test/visual/renderer.hpp
 +++ b/test/visual/renderer.hpp
 @@ -82,7 +82,7 @@ struct raster_renderer_base
@@ -30,3 +34,6 @@ index 7ea9198..6a8bec1 100644
      }
  
      void save(image_type const & image, boost::filesystem::path const& path) const
+-- 
+2.29.2
+
