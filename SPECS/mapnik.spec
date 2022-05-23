@@ -22,42 +22,38 @@ Patch1:    mapnik-system-sparsehash.patch
 Patch2:    mapnik-visual-compare.patch
 # Patch out attempt to set rpath
 Patch3:    mapnik-rpath.patch
-# Update projection tests for changes in proj
-Patch4:    mapnik-proj.patch
-# Fix issue in include/mapnik/json/properties_generator_grammar_impl.hpp:71:27:
-#   error: ‘boost::phoenix::at_c’ has not been declared
-Patch5:    mapnik-build-json-fix.patch
 
-Requires: dejavu-serif-fonts
-Requires: dejavu-sans-fonts
-Requires: dejavu-sans-mono-fonts
+Requires: dejavu-lgc-serif-fonts
+Requires: dejavu-lgc-sans-fonts
+Requires: dejavu-lgc-sans-mono-fonts
 Requires: google-noto-serif-fonts
 Requires: google-noto-sans-fonts
 Requires: proj >= %{proj_min_version}
 
-BuildRequires: libpqxx-devel
-BuildRequires: pkgconfig
-BuildRequires: gdal-devel >= %{gdal_min_version}
-BuildRequires: proj-devel >= %{proj_min_version}
-BuildRequires: python2-scons
-BuildRequires: desktop-file-utils
-BuildRequires: gcc-c++
-BuildRequires: qt-devel
-BuildRequires: libxml2-devel
 BuildRequires: boost-devel
+BuildRequires: cairo-devel
+BuildRequires: dejavu-lgc-sans-fonts
+BuildRequires: desktop-file-utils
+BuildRequires: freetype-devel
+BuildRequires: gcc-c++
+BuildRequires: gdal-devel >= %{gdal_min_version}
+BuildRequires: harfbuzz-devel
 BuildRequires: libicu-devel
 BuildRequires: libtiff-devel
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
+BuildRequires: libpqxx-devel
 BuildRequires: libwebp-devel
-BuildRequires: cairo-devel
-BuildRequires: freetype-devel
-BuildRequires: harfbuzz-devel
+BuildRequires: libxml2-devel
+BuildRequires: make
+BuildRequires: pkgconfig
+BuildRequires: postgis >= %{postgis_min_version}
+BuildRequires: proj-devel >= %{proj_min_version}
+BuildRequires: python3-scons
+BuildRequires: qt5-qtbase-devel
 BuildRequires: sqlite-devel
 BuildRequires: sparsehash-devel
 BuildRequires: zlib-devel
-BuildRequires: dejavu-sans-fonts
-BuildRequires: postgis >= %{postgis_min_version}
 
 # Bundled version has many local patches and upstream is essentially dead
 Provides: bundled(agg) = 2.4
@@ -179,11 +175,11 @@ scons configure FAST=True \
                   INPUT_PLUGINS=csv,gdal,geojson,ogr,pgraster,postgis,raster,shape,sqlite,topojson
 
 # build mapnik
-scons %{?_smp_mflags}
+scons
 
 # build mapnik viewer app
 pushd demo/viewer
-  %qmake_qt4 viewer.pro
+  %qmake_qt5 viewer.pro
   %make_build %{?_smp_mflags}
 popd
 
@@ -197,8 +193,8 @@ rm -rf %{buildroot}%{_libdir}/%{name}/fonts
 
 # install more utils
 mkdir -p %{buildroot}%{_bindir}
-install -p -m 755 demo/viewer/viewer %{buildroot}%{_bindir}/
-install -p -m 644 %{SOURCE3} demo/data/
+install -p -m 0755 demo/viewer/viewer %{buildroot}%{_bindir}/
+install -p -m 0644 %{SOURCE3} demo/data/
 
 # install pkgconfig file
 cat > %{name}.pc <<EOF
@@ -214,7 +210,7 @@ Cflags: -I\${includedir}/%{name}
 EOF
 
 mkdir -p %{buildroot}%{_datadir}/pkgconfig
-install -p -m 644 %{name}.pc %{buildroot}%{_datadir}/pkgconfig
+install -p -m 0644 %{name}.pc %{buildroot}%{_datadir}/pkgconfig
 
 # install desktop file
 cp %{SOURCE4} viewer.desktop
@@ -224,27 +220,27 @@ desktop-file-install --dir=%{buildroot}%{_datadir}/applications viewer.desktop
 %check
 # Create PostgreSQL database.
 export PGDATA="${HOME}/pgdata"
-pg_ctl -s stop || true
-rm -fr ${PGDATA}
-initdb --encoding UTF-8 --locale en_US.UTF-8
+%{_bindir}/pg_ctl -m fast -s stop || true
+%{__rm} -fr ${PGDATA}
+%{_bindir}/initdb --encoding UTF-8 --locale C.UTF-8
 
 # Tune the database.
-echo "fsync = off" >> "${PGDATA}/postgresql.conf"
-echo "shared_buffers = 1GB" >> "${PGDATA}/postgresql.conf"
-echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
+echo "fsync = off
+shared_buffers = 1GB
+listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start PostgreSQL
-pg_ctl -s start
+%{_bindir}/pg_ctl -s start
 
 # Create testing tablespace required by the Mapnik tests.
-createdb template_postgis
-psql -c "CREATE EXTENSION postgis" template_postgis
+%{_bindir}/createdb template_postgis
+%{_bindir}/psql -c "CREATE EXTENSION postgis" template_postgis
 
 # run tests
 LANG="C.UTF-8" make test
 
 # Stop PostgreSQL
-pg_ctl -s stop
+%{_bindir}/pg_ctl -s stop
 
 
 %files

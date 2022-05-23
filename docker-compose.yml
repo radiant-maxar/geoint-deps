@@ -105,7 +105,7 @@ x-rpmbuild:
         protozero_min_version: *protozero_min_version
     mapnik:
       image: rpmbuild-mapnik
-      version: &mapnik_version '3.0.24-1'
+      version: &mapnik_version 3.1.0-1
       defines:
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
@@ -380,23 +380,13 @@ services:
   rpmbuild-mapnik:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-postgis
+      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
-        cgal_version: *CGAL_version
-        filegdbapi_version: *FileGDBAPI_version
-        gdal_version: *gdal_version
-        geos_version: *geos_version
-        gpsbabel_version: *gpsbabel_version
-        libgeotiff_version: *libgeotiff_version
-        libkml_version: *libkml_version
         packages: "${RPMBUILD_MAPNIK_PACKAGES}"
-        postgis_version: *postgis_version
-        proj_version: *proj_version
         rpmbuild_channel: *rpmbuild_channel
-        sfcgal_version: *SFCGAL_version
-      dockerfile: docker/Dockerfile.rpmbuild-postgis-generic
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-mod_tile:
     <<: *service_defaults
     depends_on:
@@ -511,13 +501,6 @@ services:
     build:
       <<: *build_defaults
       args:
-        cgal_version: *CGAL_version
-        filegdbapi_version: *FileGDBAPI_version
-        gdal_version: *gdal_version
-        geos_version: *geos_version
-        gpsbabel_version: *gpsbabel_version
-        libgeotiff_version: *libgeotiff_version
-        libkml_version: *libkml_version
         mapnik_version: *mapnik_version
         packages: "${RPMBUILD_PYTHON_MAPNIK_PACKAGES}"
         postgis_version: *postgis_version

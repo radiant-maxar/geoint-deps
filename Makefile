@@ -239,7 +239,7 @@ rpmbuild-libosmium: .env
 rpmbuild-journald-cloudwatch-logs: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-journald-cloudwatch-logs
 
-rpmbuild-mapnik: .env gdal postgis
+rpmbuild-mapnik: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-mapnik
 
 rpmbuild-mod_tile: .env
