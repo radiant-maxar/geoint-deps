@@ -4,7 +4,6 @@ Subject: Various Test Fixes
 * Patch had to be formatted assuming CRLF endings like in gem source.
 * Add `rt` mode to `IO.read` to adjust for CRLF test case sources.
 * Don't assume a Windows-style path for test file source.
-* Fix differences for EL7's `libxml2` library.
 
 diff --git a/test/test_canonicalize.rb b/test/test_canonicalize.rb
 index 6aec5a8..ee6a3ee 100644
@@ -69,16 +68,3 @@ index 6aec5a8..ee6a3ee 100644
      mode = LibXML::XML::Document::XML_C14N_1_1
      assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
    end
-diff --git a/test/test_parser.rb b/test/test_parser.rb
-index f46481f..4302ff8 100644
---- a/test/test_parser.rb
-+++ b/test/test_parser.rb
-@@ -293,7 +293,7 @@ class TestParser < Minitest::Test
-     assert_nil(error.str2)
-     assert_nil(error.str3)
-     assert_equal(0, error.int1)
--    assert_equal(34, error.int2)
-+    assert_equal(20, error.int2)
-     assert_nil(error.node)
-   end
- 
