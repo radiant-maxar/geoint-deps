@@ -1,4 +1,5 @@
 # The following macros are also required:
+# * commit
 # * libosmium_min_version
 # * postgres_dotless
 # * postgres_instdir
@@ -14,21 +15,15 @@ URL:            https://github.com/openstreetmap/%{name}
 # The `commit` variable must be defined because the project doesn't use tags.
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
 
-Patch1:         osmdbt-boost-version.patch
-Patch2:         osmdbt-boost-directory-iterator.patch
-Patch3:         osmdbt-tests.patch
+Patch1:         osmdbt-tests.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
-BuildRequires:  cmake3
-# A newer C++ toolchain is required to compile.
-BuildRequires:  devtoolset-9-gcc
-BuildRequires:  devtoolset-9-gcc-c++
+BuildRequires:  cmake
 BuildRequires:  expat-devel
 BuildRequires:  gettext-devel
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  libpqxx-devel
-BuildRequires:  pandoc
 BuildRequires:  postgresql%{postgres_dotless}-devel
 BuildRequires:  yaml-cpp-devel
 BuildRequires:  zlib-devel
@@ -58,35 +53,23 @@ PostgreSQL plugin to support logical replication of OpenStreetMap API databases.
 
 %prep
 %autosetup -p1 -n %{name}-%{commit}
-%{__mkdir_p} build
 
 
 %build
-# Enable the updated compiler toolchain prior to building.
-. /opt/rh/devtoolset-9/enable
-pushd build
-%cmake3 \
-    -DBOOST_INCLUDEDIR=/usr/include/boost \
-    -DPROJECT_VERSION=%{version} \
-    ..
-%cmake3_build
-popd
+%cmake -DBOOST_INCLUDEDIR=/usr/include/boost -DPROJECT_VERSION=%{version}
+%cmake_build
 
 
 %check
 %if %{with db_tests}
-pushd build
 # Run all tests, using a single process.
 %global _smp_mflags -j1
-%ctest3 -V
-popd
+%ctest
 %endif
 
 
 %install
-pushd build
-%cmake3_install
-popd
+%cmake_install
 %{__install} -d %{buildroot}%{_sysconfdir}
 %{__install} -m 0644 osmdbt-config.yaml %{buildroot}%{_sysconfdir}
 
@@ -96,7 +79,6 @@ popd
 %license LICENSE.txt
 %config(noreplace) %{_sysconfdir}/osmdbt-config.yaml
 %{_bindir}/%{name}-*
-%{_mandir}/man1/*
 
 %files -n postgresql%{postgres_dotless}-osm-logical
 %doc postgresql-plugin/README.md

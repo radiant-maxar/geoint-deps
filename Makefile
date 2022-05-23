@@ -45,6 +45,7 @@ JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBGTA_RPM := $(call rpm_file,libgta)
 LIBKML_RPM := $(call rpm_file,libkml)
+LIBPQXX_RPM := $(call rpm_file,libpqxx)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 MOD_TILE_RPM := $(call rpm_file,mod_tile)
@@ -83,6 +84,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libgeotiff \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
+	rpmbuild-libpqxx \
 	rpmbuild-openstreetmap-carto \
 	rpmbuild-osmctools \
 	rpmbuild-osmdbt \
@@ -115,6 +117,7 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	libgta \
 	libkml \
+	libpqxx \
 	libosmium \
 	openstreetmap-carto \
 	osmctools \
@@ -169,6 +172,7 @@ distclean: .env
 	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/journald-cloudwatch-logs.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
+	echo RPMBUILD_LIBPQXX_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libpqxx.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
 	echo RPMBUILD_MOD_TILE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mod_tile.spec) >> .env
@@ -226,6 +230,9 @@ rpmbuild-libgeotiff: .env proj
 rpmbuild-libkml: .env uriparser
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libkml
 
+rpmbuild-libpqxx: .env
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libpqxx
+
 rpmbuild-libosmium: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libosmium
 
@@ -244,13 +251,13 @@ rpmbuild-openstreetmap-carto: .env
 rpmbuild-osmctools: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osmctools
 
-rpmbuild-osmdbt: .env libosmium
+rpmbuild-osmdbt: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osmdbt
 
-rpmbuild-osmium-tool: .env libosmium
+rpmbuild-osmium-tool: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
 
-rpmbuild-osm2pgsql: .env libosmium postgis
+rpmbuild-osm2pgsql: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
 
 rpmbuild-passenger: .env
@@ -268,7 +275,7 @@ rpmbuild-proj: .env
 rpmbuild-protozero: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-protozero
 
-rpmbuild-pyosmium: .env libosmium
+rpmbuild-pyosmium: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
 
 rpmbuild-python-mapnik: .env mapnik
@@ -310,6 +317,7 @@ journald-cloudwatch-logs: rpmbuild-journald-cloudwatch-logs $(JOURNALD_CLOUDWATC
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libgta: rpmbuild-generic $(LIBGTA_RPM)
 libkml: rpmbuild-libkml $(LIBKML_RPM)
+libpqxx: rpmbuild-libpqxx $(LIBPQXX_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
 mod_tile: rpmbuild-mod_tile $(MOD_TILE_RPM)
