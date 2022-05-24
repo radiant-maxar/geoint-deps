@@ -60,13 +60,12 @@ POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
 PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
-PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
+PYTHON_MAPNIK_RPM := $(call rpm_file,python3-mapnik)
 RACK_RPM := $(call rpm_file,rubygem-rack)
 RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
-TBB_RPM := $(call rpm_file,tbb)
 URIPARSER_RPM := $(call rpm_file,uriparser)
 
 # Build containers and RPMs.
@@ -98,7 +97,6 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-rack \
 	rpmbuild-rubygem-libxml-ruby \
 	rpmbuild-sfcgal \
-	rpmbuild-tbb \
 	rpmbuild-uriparser
 RPMBUILD_RPMS := \
 	CGAL \
@@ -134,7 +132,6 @@ RPMBUILD_RPMS := \
 	rubygem-libxml-ruby \
 	sbt \
 	sqlite-pcre \
-	tbb \
 	uriparser
 
 ## General targets
@@ -186,12 +183,11 @@ distclean: .env
 	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
-	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
+	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-mapnik.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
 	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-libxml-ruby.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite-pcre.spec) >> .env
-	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/tbb.spec) >> .env
 	echo RPMBUILD_URIPARSER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/uriparser.spec) >> .env
 
 ## Container targets
@@ -278,8 +274,8 @@ rpmbuild-protozero: .env
 rpmbuild-pyosmium: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
 
-rpmbuild-python-mapnik: .env mapnik
-	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-python-mapnik
+rpmbuild-python3-mapnik: .env mapnik
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-python3-mapnik
 
 rpmbuild-rack: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-rack
@@ -292,9 +288,6 @@ rpmbuild-sfcgal: .env $(CGAL_RPM)
 
 rpmbuild-sqlite-pcre: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-sqlite-pcre
-
-rpmbuild-tbb: .env
-	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-tbb
 
 rpmbuild-uriparser: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-uriparser
@@ -332,12 +325,11 @@ postgis: rpmbuild-postgis $(POSTGIS_RPM)
 proj: rpmbuild-proj $(PROJ_RPM)
 protozero: rpmbuild-protozero $(PROTOZERO_RPM)
 pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
-python-mapnik: rpmbuild-python-mapnik $(PYTHON_MAPNIK_RPM)
+python3-mapnik: rpmbuild-python3-mapnik $(PYTHON_MAPNIK_RPM)
 rack: rpmbuild-rack $(RACK_RPM)
 rubygem-libxml-ruby: rpmbuild-rubygem-libxml-ruby $(RUBYGEM_LIBXML_RUBY_RPM)
 sbt: rpmbuild-generic $(SBT_RPM)
 sqlite-pcre: rpmbuild-sqlite-pcre $(SQLITE_PCRE_RPM)
-tbb: rpmbuild-tbb $(TBB_RPM)
 uriparser: rpmbuild-uriparser $(URIPARSER_RPM)
 
 ## Build patterns

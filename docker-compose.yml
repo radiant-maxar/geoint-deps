@@ -121,7 +121,7 @@ x-rpmbuild:
         data_natural_earth_version: '5.0.1'
     osmctools:
       image: rpmbuild-osmctools
-      version: &osmctools_version '0.9-1'
+      version: &osmctools_version 0.9-1
     osmdbt:
       image: rpmbuild-osmdbt
       version: &osmdbt_version 0.6-1
@@ -140,9 +140,9 @@ x-rpmbuild:
         protozero_min_version: *protozero_min_version
     osm2pgsql:
       image: rpmbuild-osm2pgsql
-      version: &osm2pgsql_version '1.6.0-1'
+      version: &osm2pgsql_version 1.6.0-1
       defines:
-        libosmium_min_version: '2.17.3'
+        libosmium_min_version: *libosmium_min_version
         proj_min_version: *proj_min_version
         postgis_min_version: *postgis_min_version
         protobuf_c_min_version: *protobuf_c_min_version
@@ -171,12 +171,14 @@ x-rpmbuild:
       name: protozero-devel
       defines:
         protobuf_min_version: *protobuf_min_version
-    python-mapnik:
-      image: rpmbuild-python-mapnik
-      version: &python-mapnik_version '3.0.23-1'
+    python3-mapnik:
+      image: rpmbuild-python3-mapnik
+      version: &python-mapnik_version 3.0.23-1
       defines:
         # Have to specify git commit, project doesn't consistently use tags.
-        commit: '7da019cf9eb12af8f8aa88b7d75789dfcd1e901b'
+        commit: 7da019cf9eb12af8f8aa88b7d75789dfcd1e901b
+        testcommit: dd0c41c3f9f5dc98291a727af00bb42734d2a8c0
+        visualcommit: 1f20cf257f35224d3c139a6015b1cf70814b0d24
     python3-osmium:
       image: rpmbuild-pyosmium
       version: &pyosmium_version 3.3.0-1
@@ -192,7 +194,7 @@ x-rpmbuild:
       spec_file: SPECS/rubygem-rack.spec
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
-      version: &rubygem_libxml_ruby_version '3.2.2-1'
+      version: &rubygem_libxml_ruby_version 3.2.2-1
     sbt:
       image: rpmbuild-generic
       version: &sbt_version 1.6.1-1
@@ -200,9 +202,6 @@ x-rpmbuild:
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version 2007.1.20-1
-    tbb:
-      image: rpmbuild-tbb
-      version: &tbb_version 2020.3-1
     uriparser:
       image: rpmbuild-uriparser
       version: &uriparser_version 0.9.6-1
@@ -494,20 +493,19 @@ services:
         packages: "${RPMBUILD_PYOSMIUM_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
-  rpmbuild-python-mapnik:
+  rpmbuild-python3-mapnik:
     <<: *service_defaults
     depends_on:
       - rpmbuild-mapnik
     build:
       <<: *build_defaults
       args:
-        mapnik_version: *mapnik_version
         packages: "${RPMBUILD_PYTHON_MAPNIK_PACKAGES}"
-        postgis_version: *postgis_version
-        proj_version: *proj_version
+        python_packages: >-
+          nose
+          PyPDF2
         rpmbuild_channel: *rpmbuild_channel
-        sfcgal_version: *SFCGAL_version
-      dockerfile: docker/Dockerfile.rpmbuild-mapnik-generic
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-rack:
     <<: *service_defaults
     depends_on:
@@ -556,15 +554,6 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_SQLITE_PCRE_PACKAGES}"
-        rpmbuild_channel: *rpmbuild_channel
-  rpmbuild-tbb:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
-    build:
-      <<: *build_defaults
-      args:
-        packages: "${RPMBUILD_TBB_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-uriparser:
     <<: *service_defaults
