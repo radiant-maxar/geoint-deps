@@ -1,12 +1,12 @@
 ---
-version: '3.7'
+version: "3.7"
 
 x-rpmbuild:
   dist: &rpmbuild_dist .el9
   channel_name: &rpmbuild_channel stable-el9
   email: &rpmbuild_email foundationgeoint-packaging@maxar.com
   packager_name: &rpmbuild_name FoundationGEOINT Packaging
-  postgres_version: &postgres_version '14'
+  postgres_version: &postgres_version "14"
   vendor: &rpmbuild_vendor Maxar Technologies
   base_args: &rpmbuild_base_args
     rpmbuild_dist: *rpmbuild_dist
@@ -52,7 +52,7 @@ x-rpmbuild:
       version: &arpack_version 3.8.0-1
     dumb-init:
       image: rpmbuild-generic
-      version: '1.2.5-1'
+      version: 1.2.5-1
     gdal:
       image: rpmbuild-gdal
       version: &gdal_version 3.5.0-1
@@ -67,9 +67,9 @@ x-rpmbuild:
       version: &gpsbabel_version 1.8.0-1
     google-noto-fonts-extra:
       image: rpmbuild-fonts
-      version: &google-noto-fonts-extra_version '20210210-1'
+      version: &google-noto-fonts-extra_version 20210210-1
       defines:
-        commit: '0c0b4f8660099c9cda5db230f9ce38733089a2a9'
+        commit: 0c0b4f8660099c9cda5db230f9ce38733089a2a9
       arch: noarch
     g2clib:
       image: rpmbuild-g2clib
@@ -77,14 +77,14 @@ x-rpmbuild:
       version: &g2clib_version 1.6.4-1
     hanazono-fonts:
       image: rpmbuild-fonts
-      version: &hanazono-fonts_version '20170904-1'
+      version: &hanazono-fonts_version 20170904-1
       arch: noarch
     iniparser:
       image: rpmbuild-generic
       version: &iniparser_version 4.1-1
     journald-cloudwatch-logs:
       image: rpmbuild-journald-cloudwatch-logs
-      version: &journald-cloudwatch-logs_version '0.2.0-1'
+      version: &journald-cloudwatch-logs_version 0.2.0-1
     libgeotiff:
       image: rpmbuild-libgeotiff
       version: &libgeotiff_version 1.7.1-1
@@ -118,10 +118,10 @@ x-rpmbuild:
       version: &mod_tile_version 0.6.1-1
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
-      version: &openstreetmap_carto_version '5.4.0-2'
+      version: &openstreetmap_carto_version 5.4.0-1
       arch: noarch
       defines:
-        data_natural_earth_version: '5.0.1'
+        data_natural_earth_version: 5.1.0
     osmctools:
       image: rpmbuild-osmctools
       version: &osmctools_version 0.9-1
@@ -165,7 +165,7 @@ x-rpmbuild:
       image: rpmbuild-proj
       version: &proj_version 9.0.0-1
       defines:
-        data_version: '1.9'
+        data_version: "1.9"
         googletest_version: 1.11.0
     protozero:
       image: rpmbuild-protozero
@@ -214,7 +214,7 @@ x-rpmbuild:
     - "./SPECS:/rpmbuild/SPECS:ro"
     - "./scripts:/rpmbuild/scripts:ro"
   service_defaults: &service_defaults
-    command: 'tail -f /dev/null'
+    command: tail -f /dev/null
     init: true
     volumes: *service_volumes
 
@@ -228,7 +228,7 @@ services:
       labels:
         maintainer: *rpmbuild_email
         vendor: *rpmbuild_vendor
-    command: 'tail -f /dev/null'
+    command: tail -f /dev/null
     init: true
     user: nobody
   rpmbuild-generic:
@@ -275,7 +275,11 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: 'fontpackages-devel git python3 python3-pip'
+        packages: >-
+          fontpackages-devel
+          git
+          python3
+          python3-pip
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-gdal:
     <<: *service_defaults

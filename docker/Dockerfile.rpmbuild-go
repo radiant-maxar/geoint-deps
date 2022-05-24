@@ -1,8 +1,8 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-generic
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
-ARG go_version=1.18.1
-ARG go_checksum=b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334
+ARG go_version=1.18.2
+ARG go_checksum=e54bec97a1a5d230fc2f9ad0880fcbabb5888f30ed9666eca4a91c5a32e86cbc
 ARG packages
 
 ENV GOPATH=${RPMBUILD_HOME}/go
@@ -19,8 +19,8 @@ RUN curl -sSL -O https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz && 
     rm -f go${go_version}.linux-amd64.tar.gz
 
 # Install any other extra packages.
-RUN if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
-    yum -q -y clean all
+RUN if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
+    dnf -q -y clean all
 
 # Switch back to default RPM building user.
 USER ${RPMBUILD_USER}
