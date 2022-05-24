@@ -41,6 +41,7 @@ GOOGLE_NOTO_RPM := $(call rpm_file,google-noto-fonts-extra)
 GPSBABEL_RPM := $(call rpm_file,gpsbabel)
 G2CLIB_RPM := $(call rpm_file,g2clib)
 HANAZONO_RPM := $(call rpm_file,hanazono-fonts)
+INIPARSER_RPM := $(call rpm_file,iniparser)
 JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBGTA_RPM := $(call rpm_file,libgta)
@@ -111,6 +112,7 @@ RPMBUILD_RPMS := \
 	gpsbabel \
 	g2clib \
 	hanazono-fonts \
+	iniparser \
 	journald-cloudwatch-logs \
 	libgeotiff \
 	libgta \
@@ -306,6 +308,7 @@ google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
 gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
 g2clib: rpmbuild-g2clib $(G2CLIB_RPM)
 hanazono-fonts: rpmbuild-fonts $(HANAZONO_RPM)
+iniparser: rpmbuild-generic $(INIPARSER_RPM)
 journald-cloudwatch-logs: rpmbuild-journald-cloudwatch-logs $(JOURNALD_CLOUDWATCH_LOGS_RPM)
 libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
 libgta: rpmbuild-generic $(LIBGTA_RPM)

@@ -1,3 +1,23 @@
+diff --git a/configure.ac b/configure.ac
+index 7d173c2..2bf2471 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1,9 +1,14 @@
+ #                                               -*- Autoconf -*-
+ # Process this file with autoconf to produce a configure script.
+ 
++# Define mod_tile version number
++m4_define([mod_tile_version], [0.6.1])
++
+ AC_PREREQ([2.61])
+ AX_CONFIG_NICE
+-AC_INIT(mod_tile, 0.1, http://trac.openstreetmap.org)
++AC_INIT([mod_tile],
++        [mod_tile_version],
++        [http://trac.openstreetmap.org])
+ AM_INIT_AUTOMAKE([subdir-objects])
+ LT_INIT
+ AC_CONFIG_SRCDIR([src/convert_meta.c])
 diff --git a/includes/protocol.h b/includes/protocol.h
 index 1444a80..a528d3b 100644
 --- a/includes/protocol.h
@@ -12,10 +32,18 @@ index 1444a80..a528d3b 100644
  
  enum protoCmd { cmdIgnore, cmdRender, cmdDirty, cmdDone, cmdNotDone, cmdRenderPrio, cmdRenderBulk, cmdRenderLow };
 diff --git a/src/daemon.c b/src/daemon.c
-index 8858f3f..2b8785c 100644
+index 8858f3f..49d7a14 100644
 --- a/src/daemon.c
 +++ b/src/daemon.c
-@@ -43,7 +43,11 @@
+@@ -34,6 +34,7 @@
+ #include <strings.h>
+ #include <getopt.h>
+ 
++#include "config.h"
+ #include "render_config.h"
+ #include "daemon.h"
+ #include "gen_tile.h"
+@@ -43,7 +44,11 @@
  #include "g_logger.h"
  
  // extern "C" {
@@ -27,7 +55,63 @@ index 8858f3f..2b8785c 100644
  // }
  
  #define PIDFILE "/run/renderd/renderd.pid"
-@@ -917,7 +921,7 @@ int main(int argc, char **argv)
+@@ -739,14 +744,16 @@ int main(int argc, char **argv)
+ 	while (1) {
+ 		int option_index = 0;
+ 		static struct option long_options[] = {
+-			{"config", required_argument, 0, 'c'},
+-			{"foreground", no_argument, 0, 'f'},
+-			{"slave", required_argument, 0, 's'},
+-			{"help", no_argument, 0, 'h'},
++			{"config",     required_argument, 0, 'c'},
++			{"foreground", no_argument,       0, 'f'},
++			{"slave",      required_argument, 0, 's'},
++
++			{"help",       no_argument,       0, 'h'},
++			{"version",    no_argument,       0, 'V'},
+ 			{0, 0, 0, 0}
+ 		};
+ 
+-		c = getopt_long(argc, argv, "hfc:", long_options, &option_index);
++		c = getopt_long(argc, argv, "c:fs:hV", long_options, &option_index);
+ 
+ 		if (c == -1) {
+ 			break;
+@@ -767,16 +774,21 @@ int main(int argc, char **argv)
+ 					fprintf(stderr, "--slave needs to be numeric (%s)\n", optarg);
+ 					active_slave = 0;
+ 				}
+-
+ 				break;
+ 
+ 			case 'h':
+ 				fprintf(stderr, "Usage: renderd [OPTION] ...\n");
+ 				fprintf(stderr, "Mapnik rendering daemon\n");
+-				fprintf(stderr, "  -f, --foreground      run in foreground\n");
+-				fprintf(stderr, "  -h, --help            display this help and exit\n");
+ 				fprintf(stderr, "  -c, --config=CONFIG   set location of config file (default %s)\n", RENDERD_CONFIG);
++				fprintf(stderr, "  -f, --foreground      run in foreground\n");
+ 				fprintf(stderr, "  -s, --slave=CONFIG_NR set which render slave this is (default 0)\n");
++				fprintf(stderr, "\n");
++				fprintf(stderr, "  -h, --help            display this help and exit\n");
++				fprintf(stderr, "  -V, --version         display the version number and exit\n");
++				exit(0);
++
++			case 'V':
++				fprintf(stdout, "%s\n", VERSION);
+ 				exit(0);
+ 
+ 			default:
+@@ -790,7 +802,7 @@ int main(int argc, char **argv)
+ 		exit(1);
+ 	}
+ 
+-	g_logger(G_LOG_LEVEL_INFO, "Rendering daemon started");
++	g_logger(G_LOG_LEVEL_INFO, "Rendering daemon started (version %s)", VERSION);
+ 
+ 	render_request_queue = request_queue_init();
+ 
+@@ -917,7 +929,7 @@ int main(int argc, char **argv)
  			maps[iconf].max_zoom = atoi(ini_maxzoom);
  
  			if (maps[iconf].max_zoom > MAX_ZOOM) {
@@ -36,7 +120,7 @@ index 8858f3f..2b8785c 100644
  				exit(7);
  			}
  
-@@ -926,7 +930,7 @@ int main(int argc, char **argv)
+@@ -926,7 +938,7 @@ int main(int argc, char **argv)
  			maps[iconf].min_zoom = atoi(ini_minzoom);
  
  			if (maps[iconf].min_zoom < 0) {
@@ -103,10 +187,53 @@ index b0976fa..0bb4dc7 100644
  	} else {
  		g_logger(G_LOG_LEVEL_WARNING, "unknown parameterization function for %s", function_name);
 diff --git a/src/render_expired.c b/src/render_expired.c
-index a606229..6e9043c 100644
+index a606229..83f6b89 100644
 --- a/src/render_expired.c
 +++ b/src/render_expired.c
-@@ -217,14 +217,14 @@ int main(int argc, char **argv)
+@@ -34,6 +34,7 @@
+ #include <pthread.h>
+ 
+ #include "protocol.h"
++#include "config.h"
+ #include "render_config.h"
+ #include "store.h"
+ #include "render_submit_queue.h"
+@@ -124,21 +125,23 @@ int main(int argc, char **argv)
+ 	while (1) {
+ 		int option_index = 0;
+ 		static struct option long_options[] = {
+-			{"min-zoom", required_argument, 0, 'z'},
+-			{"max-zoom", required_argument, 0, 'Z'},
+-			{"socket", required_argument, 0, 's'},
+-			{"num-threads", required_argument, 0, 'n'},
+ 			{"delete-from", required_argument, 0, 'd'},
+-			{"touch-from", required_argument, 0, 'T'},
+-			{"tile-dir", required_argument, 0, 't'},
+-			{"max-load", required_argument, 0, 'l'},
+-			{"map", required_argument, 0, 'm'},
+-			{"verbose", no_argument, 0, 'v'},
+-			{"help", no_argument, 0, 'h'},
++			{"map",         required_argument, 0, 'm'},
++			{"max-load",    required_argument, 0, 'l'},
++			{"max-zoom",    required_argument, 0, 'Z'},
++			{"min-zoom",    required_argument, 0, 'z'},
++			{"num-threads", required_argument, 0, 'n'},
++			{"socket",      required_argument, 0, 's'},
++			{"tile-dir",    required_argument, 0, 't'},
++			{"touch-from",  required_argument, 0, 'T'},
++			{"verbose",     no_argument,       0, 'v'},
++
++			{"help",        no_argument,       0, 'h'},
++			{"version",     no_argument,       0, 'V'},
+ 			{0, 0, 0, 0}
+ 		};
+ 
+-		c = getopt_long(argc, argv, "hvz:Z:s:m:t:n:l:T:d:", long_options, &option_index);
++		c = getopt_long(argc, argv, "d:m:l:Z:z:n:s:t:T:vhV", long_options, &option_index);
+ 
+ 		if (c == -1) {
+ 			break;
+@@ -217,14 +220,18 @@ int main(int argc, char **argv)
  
  			case 'h':   /* -h, --help */
  				fprintf(stderr, "Usage: render_expired [OPTION] ...\n");
@@ -118,22 +245,88 @@ index a606229..6e9043c 100644
 -				fprintf(stderr, "  -Z, --max-zoom=ZOOM  filter input to only render tiles less than or equal to this zoom level (default is %d)\n", 18);
 -				fprintf(stderr, "  -d, --delete-from=ZOOM  when expiring tiles of ZOOM or higher, delete them instead of re-rendering (default is off)\n");
 -				fprintf(stderr, "  -T, --touch-from=ZOOM   when expiring tiles of ZOOM or higher, touch them instead of re-rendering (default is off)\n");
-+				fprintf(stderr, "  -m, --map=MAP                     render tiles in this map (defaults to '" XMLCONFIG_DEFAULT "')\n");
-+				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
-+				fprintf(stderr, "  -n, --num-threads=N               the number of parallel request threads (default 1)\n");
-+				fprintf(stderr, "  -t, --tile-dir                    tile cache directory (defaults to '" HASH_PATH "')\n");
-+				fprintf(stderr, "  -z, --min-zoom=ZOOM               filter input to only render tiles greater or equal to this zoom level (default is 0)\n");
-+				fprintf(stderr, "  -Z, --max-zoom=ZOOM               filter input to only render tiles less than or equal to this zoom level (default is %d)\n", 18);
 +				fprintf(stderr, "  -d, --delete-from=ZOOM            when expiring tiles of ZOOM or higher, delete them instead of re-rendering (default is off)\n");
++				fprintf(stderr, "  -m, --map=MAP                     render tiles in this map (defaults to '" XMLCONFIG_DEFAULT "')\n");
++				fprintf(stderr, "  -n, --num-threads=N               the number of parallel request threads (default 1)\n");
++				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
++				fprintf(stderr, "  -t, --tile-dir                    tile cache directory (defaults to '" HASH_PATH "')\n");
 +				fprintf(stderr, "  -T, --touch-from=ZOOM             when expiring tiles of ZOOM or higher, touch them instead of re-rendering (default is off)\n");
++				fprintf(stderr, "  -Z, --max-zoom=ZOOM               filter input to only render tiles less than or equal to this zoom level (default is %d)\n", 18);
++				fprintf(stderr, "  -z, --min-zoom=ZOOM               filter input to only render tiles greater or equal to this zoom level (default is 0)\n");
++				fprintf(stderr, "\n");
++				fprintf(stderr, "  -h, --help                        display this help and exit\n");
++				fprintf(stderr, "  -V, --version                     display the version number and exit\n");
++				fprintf(stderr, "\n");
  				fprintf(stderr, "Send a list of tiles to be rendered from STDIN in the format:\n");
  				fprintf(stderr, "  z/x/y\n");
  				fprintf(stderr, "e.g.\n");
+@@ -235,6 +242,10 @@ int main(int argc, char **argv)
+ 				fprintf(stderr, "The above would cause all 4 tiles at zoom 1 to be rendered\n");
+ 				return -1;
+ 
++			case 'V':
++				fprintf(stdout, "%s\n", VERSION);
++				exit(0);
++
+ 			default:
+ 				fprintf(stderr, "unhandled char '%c'\n", c);
+ 				break;
 diff --git a/src/render_list.c b/src/render_list.c
-index cb75e7b..bf1ce95 100644
+index cb75e7b..f2c83b2 100644
 --- a/src/render_list.c
 +++ b/src/render_list.c
-@@ -197,20 +197,20 @@ int main(int argc, char **argv)
+@@ -36,6 +36,7 @@
+ 
+ #include "gen_tile.h"
+ #include "protocol.h"
++#include "config.h"
+ #include "render_config.h"
+ #include "store.h"
+ #include "sys_utils.h"
+@@ -95,25 +96,27 @@ int main(int argc, char **argv)
+ 	while (1) {
+ 		int option_index = 0;
+ 		static struct option long_options[] = {
+-			{"min-zoom", required_argument, 0, 'z'},
+-			{"max-zoom", required_argument, 0, 'Z'},
+-			{"min-x", required_argument, 0, 'x'},
+-			{"max-x", required_argument, 0, 'X'},
+-			{"min-y", required_argument, 0, 'y'},
+-			{"max-y", required_argument, 0, 'Y'},
+-			{"socket", required_argument, 0, 's'},
++			{"all",         no_argument,       0, 'a'},
++			{"force",       no_argument,       0, 'f'},
++			{"map",         required_argument, 0, 'm'},
++			{"max-load",    required_argument, 0, 'l'},
++			{"max-x",       required_argument, 0, 'X'},
++			{"max-y",       required_argument, 0, 'Y'},
++			{"max-zoom",    required_argument, 0, 'Z'},
++			{"min-x",       required_argument, 0, 'x'},
++			{"min-y",       required_argument, 0, 'y'},
++			{"min-zoom",    required_argument, 0, 'z'},
+ 			{"num-threads", required_argument, 0, 'n'},
+-			{"max-load", required_argument, 0, 'l'},
+-			{"tile-dir", required_argument, 0, 't'},
+-			{"map", required_argument, 0, 'm'},
+-			{"verbose", no_argument, 0, 'v'},
+-			{"force", no_argument, 0, 'f'},
+-			{"all", no_argument, 0, 'a'},
+-			{"help", no_argument, 0, 'h'},
++			{"socket",      required_argument, 0, 's'},
++			{"tile-dir",    required_argument, 0, 't'},
++			{"verbose",     no_argument,       0, 'v'},
++
++			{"help",        no_argument,       0, 'h'},
++			{"version",     no_argument,       0, 'V'},
+ 			{0, 0, 0, 0}
+ 		};
+ 
+-		c = getopt_long(argc, argv, "hvaz:Z:x:X:y:Y:s:m:t:n:l:f", long_options, &option_index);
++		c = getopt_long(argc, argv, "afm:l:X:Y:Z:x:y:z:n:s:t:vhV", long_options, &option_index);
+ 
+ 		if (c == -1) {
+ 			break;
+@@ -197,20 +200,25 @@ int main(int argc, char **argv)
  
  			case 'h':   /* -h, --help */
  				fprintf(stderr, "Usage: render_list [OPTION] ...\n");
@@ -148,30 +341,89 @@ index cb75e7b..bf1ce95 100644
 -				fprintf(stderr, "  -Z, --max-zoom=ZOOM  filter input to only render tiles less than or equal to this zoom level (default is %d)\n", MAX_ZOOM);
 +				fprintf(stderr, "  -a, --all                         render all tiles in given zoom level range instead of reading from STDIN\n");
 +				fprintf(stderr, "  -f, --force                       render tiles even if they seem current\n");
-+				fprintf(stderr, "  -m, --map=MAP                     render tiles in this map (defaults to '" XMLCONFIG_DEFAULT "')\n");
 +				fprintf(stderr, "  -l, --max-load=LOAD               sleep if load is this high (defaults to %d)\n", MAX_LOAD_OLD);
-+				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
++				fprintf(stderr, "  -m, --map=MAP                     render tiles in this map (defaults to '" XMLCONFIG_DEFAULT "')\n");
 +				fprintf(stderr, "  -n, --num-threads=N               the number of parallel request threads (default 1)\n");
++				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
 +				fprintf(stderr, "  -t, --tile-dir                    tile cache directory (defaults to '" HASH_PATH "')\n");
-+				fprintf(stderr, "  -z, --min-zoom=ZOOM               filter input to only render tiles greater or equal to this zoom level (default is 0)\n");
 +				fprintf(stderr, "  -Z, --max-zoom=ZOOM               filter input to only render tiles less than or equal to this zoom level (default is %d)\n", MAX_ZOOM);
++				fprintf(stderr, "  -z, --min-zoom=ZOOM               filter input to only render tiles greater or equal to this zoom level (default is 0)\n");
++				fprintf(stderr, "\n");
  				fprintf(stderr, "If you are using --all, you can restrict the tile range by adding these options:\n");
 -				fprintf(stderr, "  -x, --min-x=X        minimum X tile coordinate\n");
 -				fprintf(stderr, "  -X, --max-x=X        maximum X tile coordinate\n");
 -				fprintf(stderr, "  -y, --min-y=Y        minimum Y tile coordinate\n");
 -				fprintf(stderr, "  -Y, --max-y=Y        maximum Y tile coordinate\n");
-+				fprintf(stderr, "  -x, --min-x=X                     minimum X tile coordinate\n");
 +				fprintf(stderr, "  -X, --max-x=X                     maximum X tile coordinate\n");
-+				fprintf(stderr, "  -y, --min-y=Y                     minimum Y tile coordinate\n");
++				fprintf(stderr, "  -x, --min-x=X                     minimum X tile coordinate\n");
 +				fprintf(stderr, "  -Y, --max-y=Y                     maximum Y tile coordinate\n");
++				fprintf(stderr, "  -y, --min-y=Y                     minimum Y tile coordinate\n");
++				fprintf(stderr, "\n");
++				fprintf(stderr, "  -h, --help                        display this help and exit\n");
++				fprintf(stderr, "  -V, --version                     display the version number and exit\n");
++				fprintf(stderr, "\n");
  				fprintf(stderr, "Without --all, send a list of tiles to be rendered from STDIN in the format:\n");
  				fprintf(stderr, "  X Y Z\n");
  				fprintf(stderr, "e.g.\n");
+@@ -221,6 +229,10 @@ int main(int argc, char **argv)
+ 				fprintf(stderr, "The above would cause all 4 tiles at zoom 1 to be rendered\n");
+ 				return -1;
+ 
++			case 'V':
++				fprintf(stdout, "%s\n", VERSION);
++				exit(0);
++
+ 			default:
+ 				fprintf(stderr, "unhandled char '%c'\n", c);
+ 				break;
 diff --git a/src/render_old.c b/src/render_old.c
-index 900a5a3..cd520ea 100644
+index 900a5a3..de9962c 100644
 --- a/src/render_old.c
 +++ b/src/render_old.c
-@@ -312,15 +312,15 @@ int main(int argc, char **argv)
+@@ -38,6 +38,7 @@
+ 
+ #include "gen_tile.h"
+ #include "protocol.h"
++#include "config.h"
+ #include "render_config.h"
+ #include "store_file_utils.h"
+ #include "render_submit_queue.h"
+@@ -202,21 +203,23 @@ int main(int argc, char **argv)
+ 	while (1) {
+ 		int option_index = 0;
+ 		static struct option long_options[] = {
+-			{"config", required_argument, 0, 'c'},
+-			{"min-zoom", required_argument, 0, 'z'},
+-			{"max-zoom", required_argument, 0, 'Z'},
+-			{"max-load", required_argument, 0, 'l'},
+-			{"socket", required_argument, 0, 's'},
++			{"config",      required_argument, 0, 'c'},
++			{"map",         required_argument, 0, 'm'},
++			{"max-load",    required_argument, 0, 'l'},
++			{"max-zoom",    required_argument, 0, 'Z'},
++			{"min-zoom",    required_argument, 0, 'z'},
+ 			{"num-threads", required_argument, 0, 'n'},
+-			{"tile-dir", required_argument, 0, 't'},
+-			{"timestamp", required_argument, 0, 'T'},
+-			{"map", required_argument, 0, 'm'},
+-			{"verbose", no_argument, 0, 'v'},
+-			{"help", no_argument, 0, 'h'},
++			{"socket",      required_argument, 0, 's'},
++			{"tile-dir",    required_argument, 0, 't'},
++			{"timestamp",   required_argument, 0, 'T'},
++			{"verbose",     no_argument,       0, 'v'},
++
++			{"help",        no_argument,       0, 'h'},
++			{"version",     no_argument,       0, 'V'},
+ 			{0, 0, 0, 0}
+ 		};
+ 
+-		c = getopt_long(argc, argv, "hvz:Z:s:t:n:c:l:T:m:", long_options, &option_index);
++		c = getopt_long(argc, argv, "c:m:l:Z:z:n:s:t:T:vhV", long_options, &option_index);
+ 
+ 		if (c == -1) {
+ 			break;
+@@ -312,17 +315,24 @@ int main(int argc, char **argv)
  			case 'h':   /* -h, --help */
  				fprintf(stderr, "Usage: render_old [OPTION] ...\n");
  				fprintf(stderr, "Search the rendered tiles and re-render tiles which are older then the last planet import\n");
@@ -185,17 +437,26 @@ index 900a5a3..cd520ea 100644
 -				fprintf(stderr, "  -T, --timestamp=DD/MM/YY  Overwrite the assumed data of the planet import\n");
 -				fprintf(stderr, "  -m, --map=STYLE      Instead of going through all styls of CONFIG, only use a specific map-style\n");
 +				fprintf(stderr, "  -c, --config=CONFIG               specify the renderd config file\n");
-+				fprintf(stderr, "  -n, --num-threads=N               the number of parallel request threads (default 1)\n");
-+				fprintf(stderr, "  -t, --tile-dir                    tile cache directory (defaults to '" HASH_PATH "')\n");
-+				fprintf(stderr, "  -z, --min-zoom=ZOOM               filter input to only render tiles greater or equal to this zoom level (default 0)\n");
-+				fprintf(stderr, "  -Z, --max-zoom=ZOOM               filter input to only render tiles less than or equal to this zoom level (default %d)\n", MAX_ZOOM);
-+				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
 +				fprintf(stderr, "  -l, --max-load=LOAD               maximum system load with which requests are submitted\n");
-+				fprintf(stderr, "  -T, --timestamp=DD/MM/YY          Overwrite the assumed data of the planet import\n");
 +				fprintf(stderr, "  -m, --map=STYLE                   Instead of going through all styls of CONFIG, only use a specific map-style\n");
++				fprintf(stderr, "  -n, --num-threads=N               the number of parallel request threads (default 1)\n");
++				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
++				fprintf(stderr, "  -t, --tile-dir                    tile cache directory (defaults to '" HASH_PATH "')\n");
++				fprintf(stderr, "  -T, --timestamp=DD/MM/YY          Overwrite the assumed data of the planet import\n");
++				fprintf(stderr, "  -Z, --max-zoom=ZOOM               filter input to only render tiles less than or equal to this zoom level (default %d)\n", MAX_ZOOM);
++				fprintf(stderr, "  -z, --min-zoom=ZOOM               filter input to only render tiles greater or equal to this zoom level (default 0)\n");
++				fprintf(stderr, "\n");
++				fprintf(stderr, "  -h, --help                        display this help and exit\n");
++				fprintf(stderr, "  -V, --version                     display the version number and exit\n");
  				return -1;
  
++			case 'V':
++				fprintf(stdout, "%s\n", VERSION);
++				exit(0);
++
  			default:
+ 				fprintf(stderr, "unhandled char '%c'\n", c);
+ 				break;
 diff --git a/src/render_submit_queue.c b/src/render_submit_queue.c
 index 145c6a6..ff9dde5 100644
 --- a/src/render_submit_queue.c
@@ -378,10 +639,41 @@ index 145c6a6..ff9dde5 100644
  }
 -
 diff --git a/src/speedtest.cpp b/src/speedtest.cpp
-index b9678a3..c48754b 100644
+index b9678a3..5c8c668 100644
 --- a/src/speedtest.cpp
 +++ b/src/speedtest.cpp
-@@ -250,9 +250,9 @@ int main(int argc, char **argv)
+@@ -33,6 +33,7 @@
+ 
+ #include "gen_tile.h"
+ #include "protocol.h"
++#include "config.h"
+ #include "render_config.h"
+ #include "render_submit_queue.h"
+ 
+@@ -211,15 +212,17 @@ int main(int argc, char **argv)
+ 	while (1) {
+ 		int option_index = 0;
+ 		static struct option long_options[] = {
+-			{"socket", required_argument, 0, 's'},
++			{"map",         required_argument, 0, 'm'},
+ 			{"num-threads", required_argument, 0, 'n'},
+-			{"map", required_argument, 0, 'm'},
+-			{"verbose", no_argument, 0, 'v'},
+-			{"help", no_argument, 0, 'h'},
++			{"socket",      required_argument, 0, 's'},
++			{"verbose",     no_argument,       0, 'v'},
++
++			{"help",        no_argument,       0, 'h'},
++			{"version",     no_argument,       0, 'V'},
+ 			{0, 0, 0, 0}
+ 		};
+ 
+-		c = getopt_long(argc, argv, "hvs:m:", long_options, &option_index);
++		c = getopt_long(argc, argv, "m:n:s:vhV", long_options, &option_index);
+ 
+ 		if (c == -1) {
+ 			break;
+@@ -250,11 +253,18 @@ int main(int argc, char **argv)
  
  			case 'h':   /* -h, --help */
  				fprintf(stderr, "Usage: speedtest [OPTION] ...\n");
@@ -389,8 +681,17 @@ index b9678a3..c48754b 100644
 -				fprintf(stderr, "  -s, --socket=SOCKET  unix domain socket name for contacting renderd\n");
 -				fprintf(stderr, "  -n, --num-threads=N the number of parallel request threads (default 1)\n");
 +				fprintf(stderr, "  -m, --map=MAP                     render tiles in this map (defaults to '" XMLCONFIG_DEFAULT "')\n");
-+				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
 +				fprintf(stderr, "  -n, --num-threads=N               the number of parallel request threads (default 1)\n");
++				fprintf(stderr, "  -s, --socket=SOCKET|HOSTNAME:PORT unix domain socket name or hostname and port for contacting renderd\n");
++				fprintf(stderr, "\n");
++				fprintf(stderr, "  -h, --help                        display this help and exit\n");
++				fprintf(stderr, "  -V, --version                     display the version number and exit\n");
  				return -1;
  
++			case 'V':
++				fprintf(stdout, "%s\n", VERSION);
++				exit(0);
++
  			default:
+ 				fprintf(stderr, "unhandled char '%c'\n", c);
+ 				break;

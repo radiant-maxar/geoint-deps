@@ -13,7 +13,7 @@ Summary:       A program to efficiently render and serve map tiles for www.opens
 License:       GPLv2
 URL:           https://github.com/openstreetmap/mod_tile
 Source0:       https://github.com/openstreetmap/mod_tile/archive/%{rpmbuild_version}/%{name}-%{rpmbuild_version}.tar.gz
-Patch0:        mod_tile-20220328.patch
+Patch0:        mod_tile-20220506.patch
 
 Requires:      httpd >= 2.4.6
 Requires:      iniparser
