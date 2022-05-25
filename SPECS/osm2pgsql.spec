@@ -1,7 +1,7 @@
 # The following macros are also required:
 # * libosmium_min_version
 # * postgis_min_version
-# * postgres_dotless
+# * postgres_version
 # * proj_min_version
 # * protobuf_c_min_version
 
@@ -28,15 +28,15 @@ BuildRequires:  libtool
 BuildRequires:  libxml2-devel
 BuildRequires:  lua-devel
 BuildRequires:  luajit-devel
-BuildRequires:  postgresql%{postgres_dotless}-devel
+BuildRequires:  postgresql%{postgres_version}-devel
 BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  protobuf-c-devel >= %{protobuf_c_min_version}
 BuildRequires:  zlib-devel
 # Need PostgreSQL server, PostGIS, and Psycopg2 to run the tests.
 %if %{with db_tests}
 BuildRequires:  postgis >= %{postgis_min_version}
-BuildRequires:  postgresql%{postgres_dotless}-contrib
-BuildRequires:  postgresql%{postgres_dotless}-server
+BuildRequires:  postgresql%{postgres_version}-contrib
+BuildRequires:  postgresql%{postgres_version}-server
 BuildRequires:  python3-psycopg2
 %endif
 

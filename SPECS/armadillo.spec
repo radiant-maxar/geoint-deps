@@ -4,8 +4,8 @@ Release:        %{rpmbuild_release}%{?dist}
 Summary:        Fast C++ matrix library with syntax similar to MATLAB and Octave
 
 License:        ASL 2.0
-URL:            http://arma.sourceforge.net/
-Source:         http://sourceforge.net/projects/arma/files/%{name}-%{version}.tar.xz
+URL:            https://arma.sourceforge.net/
+Source:         https://sourceforge.net/projects/arma/files/%{name}-%{version}.tar.xz
 
 BuildRequires:  gcc-c++
 BuildRequires:  cmake

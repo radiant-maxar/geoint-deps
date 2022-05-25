@@ -44,6 +44,9 @@ x-rpmbuild:
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version 1.4.1-1
+      defines:
+        # Too many build processes can exhaust RAM.
+        _smp_ncpus_max: 4
     armadillo:
       image: rpmbuild-armadillo
       version: &armadillo_version 11.1.1-1
@@ -116,6 +119,9 @@ x-rpmbuild:
     mod_tile:
       image: rpmbuild-mod_tile
       version: &mod_tile_version 0.6.1-1
+    ogdi:
+      image: rpmbuild-ogdi
+      version: &ogdi_version 4.1.0-1
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
       version: &openstreetmap_carto_version 5.4.0-1
@@ -298,6 +304,7 @@ services:
         libgeotiff_version: *libgeotiff_version
         libgta_version: *libgta_version
         libkml_version: *libkml_version
+        ogdi_version: *ogdi_version
         packages: "${RPMBUILD_GDAL_PACKAGES}"
         proj_version: *proj_version
         rpmbuild_channel: *rpmbuild_channel
@@ -373,6 +380,15 @@ services:
         packages: "${RPMBUILD_LIBOSMIUM_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-ogdi:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild-generic
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_OGDI_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
     depends_on:

@@ -13,9 +13,6 @@ if [ ! -d "${REPO}" ] ; then
     mkdir -p "${REPO}"
 fi
 
-# Update (or create) the repository database with `createrepo`.
-if [ ! -d "${REPODATA}" ]; then
-    createrepo --database --unique-md-filenames "${REPO}"
-else
-    createrepo --update "${REPO}"
-fi
+# Recreate the repository database with `createrepo`.
+rm -r "${REPO}/repodata"
+createrepo --database --xz "${REPO}"

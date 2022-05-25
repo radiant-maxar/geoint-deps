@@ -15,6 +15,7 @@ ARG g2clib_version
 ARG libgeotiff_version
 ARG libgta_version
 ARG libkml_version
+ARG ogdi_version
 ARG packages
 ARG proj_version
 ARG sfcgal_version
@@ -43,6 +44,8 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -73,6 +76,8 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     /tmp/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
+    /tmp/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \

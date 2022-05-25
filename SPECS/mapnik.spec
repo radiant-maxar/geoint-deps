@@ -1,6 +1,7 @@
 # The following macros are also required:
 # * gdal_min_version
 # * postgis_min_version
+# * postgres_version
 # * proj_min_version
 
 Name:      mapnik
@@ -51,8 +52,10 @@ BuildRequires: libwebp-devel
 BuildRequires: libxml2-devel
 BuildRequires: make
 BuildRequires: pkgconfig
-BuildRequires: postgresql%{postgres_dotless}-devel
 BuildRequires: postgis >= %{postgis_min_version}
+BuildRequires: postgresql%{postgres_version}-contrib
+BuildRequires: postgresql%{postgres_version}-devel
+BuildRequires: postgresql%{postgres_version}-server
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python3-scons
 BuildRequires: qt5-qtbase-devel
@@ -178,12 +181,12 @@ GDAL_DATA=$(gdal-config --datadir) \
                   INPUT_PLUGINS=csv,gdal,geojson,ogr,pgraster,postgis,raster,shape,sqlite,topojson
 
 # build mapnik
-%{_bindir}/scons %{?_smp_build_ncpus:-j%{_smp_build_ncpus}}
+%{_bindir}/scons %{?_smp_mflags}
 
 # build mapnik viewer app
 pushd demo/viewer
-  %qmake_qt5 viewer.pro
-  %make_build %{?_smp_mflags}
+%qmake_qt5 viewer.pro
+%make_build %{?_smp_mflags}
 popd
 
 

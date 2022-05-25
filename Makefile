@@ -24,7 +24,7 @@ rpmbuild_version = $(call config_version,$(call rpm_package,$(1)))
 ## Variables
 DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
 DOCKER_COMPOSE_VERSION := $(shell $(DOCKER_COMPOSE) --version 2>/dev/null)
-POSTGRES_DOTLESS := $(shell echo $(call rpmbuild_util,postgres_version,--variable) | tr -d '.')
+POSTGRES_VERSION := $(call rpmbuild_util,postgres_version,--variable)
 RPMBUILD_CHANNEL := $(call rpmbuild_util,channel_name,--variable)
 RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
@@ -50,6 +50,7 @@ LIBPQXX_RPM := $(call rpm_file,libpqxx)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 MOD_TILE_RPM := $(call rpm_file,mod_tile)
+OGDI_RPM := $(call rpm_file,ogdi)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
 OSMDBT_RPM := $(call rpm_file,osmdbt)
@@ -85,6 +86,7 @@ RPMBUILD_CONTAINERS := \
 	rpmbuild-libkml \
 	rpmbuild-libosmium \
 	rpmbuild-libpqxx \
+	rpmbuild-ogdi \
 	rpmbuild-openstreetmap-carto \
 	rpmbuild-osmctools \
 	rpmbuild-osmdbt \
@@ -119,6 +121,7 @@ RPMBUILD_RPMS := \
 	libkml \
 	libpqxx \
 	libosmium \
+	ogdi \
 	openstreetmap-carto \
 	osmctools \
 	osmdbt \
@@ -140,6 +143,7 @@ RPMBUILD_RPMS := \
 
 .PHONY: \
 	all \
+	bootstrap \
 	distclean \
 	$(RPMBUILD_CONTAINERS) \
 	$(RPMBUILD_RPMS)
@@ -165,24 +169,25 @@ distclean: .env
 	echo RPMBUILD_ARMADILLO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/armadillo.spec) >> .env
 	echo RPMBUILD_ARPACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/arpack.spec) >> .env
 	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/CGAL.spec) >> .env
-	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
+	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
 	echo RPMBUILD_G2CLIB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/g2clib.spec) >> .env
 	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/journald-cloudwatch-logs.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
-	echo RPMBUILD_LIBPQXX_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libpqxx.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
+	echo RPMBUILD_LIBPQXX_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libpqxx.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
-	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
+	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_MOD_TILE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mod_tile.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
-	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
+	echo RPMBUILD_OGDI_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ogdi.spec) >> .env
+	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
-	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
+	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
-	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_dotless=$(POSTGRES_DOTLESS)) >> .env
+	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
 	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-mapnik.spec) >> .env
@@ -213,7 +218,7 @@ rpmbuild-generic: .env
 rpmbuild-fonts: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-fonts
 
-rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL armadillo arpack geos gpsbabel g2clib libgeotiff libgta libkml proj uriparser
+rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL armadillo arpack geos gpsbabel g2clib libgeotiff libgta libkml ogdi proj uriparser
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
 rpmbuild-gpsbabel: .env
@@ -227,6 +232,9 @@ rpmbuild-libgeotiff: .env proj
 
 rpmbuild-libkml: .env uriparser
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libkml
+
+rpmbuild-ogdi: .env
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-ogdi
 
 rpmbuild-libpqxx: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-libpqxx
@@ -266,6 +274,9 @@ rpmbuild-pgdg: .env
 
 rpmbuild-postgis: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-postgis
+
+rpmbuild-postgres: .env
+	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-postgres
 
 rpmbuild-proj: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-proj
@@ -317,6 +328,7 @@ libpqxx: rpmbuild-libpqxx $(LIBPQXX_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
 mod_tile: rpmbuild-mod_tile $(MOD_TILE_RPM)
+ogdi: rpmbuild-ogdi $(OGDI_RPM)
 openstreetmap-carto: rpmbuild-openstreetmap-carto $(OPENSTREETMAP_CARTO_RPM)
 osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
 osmdbt: rpmbuild-osmdbt $(OSMDBT_RPM)

@@ -1,7 +1,6 @@
 # The following macros are also required:
 # * geos_min_version
-# * postgres_dotless
-# * postgres_instdir
+# * postgres_version
 # * proj_min_version
 
 # Tests can be of a different version
@@ -69,11 +68,14 @@ BuildRequires: lz4-devel
 # For 'mvn_artifact' and 'mvn_install'
 BuildRequires: maven-local
 BuildRequires: pcre-devel
+BuildRequires: ogdi-devel
 BuildRequires: openjpeg2-devel
 BuildRequires: openssl-devel
 BuildRequires: pkgconfig
 BuildRequires: poppler-devel
-BuildRequires: postgresql%{postgres_dotless}-devel
+BuildRequires: postgresql%{postgres_version}-contrib
+BuildRequires: postgresql%{postgres_version}-devel
+BuildRequires: postgresql%{postgres_version}-server
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python3-devel
 BuildRequires: python3-lxml

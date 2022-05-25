@@ -14,7 +14,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig
-BuildRequires:  postgresql%{postgres_dotless}-devel
+BuildRequires:  postgresql%{postgres_version}-devel
 
 
 %description
@@ -37,7 +37,7 @@ Requires:       pkgconfig
 %build
 %cmake \
     -G Ninja \
-    -DPostgreSQL_ROOT:PATH=/usr/pgsql-%{postgres_dotless} \
+    -DPostgreSQL_ROOT:PATH=/usr/pgsql-%{postgres_version} \
     -DBUILD_TEST:BOOL=ON
 %cmake_build
 

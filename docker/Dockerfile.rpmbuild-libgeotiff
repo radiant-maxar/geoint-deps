@@ -10,16 +10,16 @@ COPY RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      /tmp/
 
 SHELL ["/bin/bash", "-c"]
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install -y \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y \
     /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
     && \
     rm -f /tmp/*.rpm
 
 # If any package dependencies are needed, install them.
-RUN --mount=type=cache,target=/var/cache/yum \
-    if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
     rm -f /usr/local/bin/rpmbuild-user.sh
 
