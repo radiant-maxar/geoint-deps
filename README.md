@@ -17,11 +17,11 @@ export DOCKER_BUILDKIT=1
 make FileGDBAPI
 ```
 
-Or go big and create RPMs for PostGIS and friends with:
+Or go big and create RPMs for GDAL and friends with:
 
 ```
 export DOCKER_BUILDKIT=1
-make postgis
+make gdal
 ```
 
 This will consume a lot of CPU and I/O!

@@ -14,5 +14,5 @@ if [ ! -d "${REPO}" ] ; then
 fi
 
 # Recreate the repository database with `createrepo`.
-rm -r "${REPO}/repodata"
+rm -fr "${REPO}/repodata"
 createrepo --database --xz "${REPO}"

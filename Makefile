@@ -143,7 +143,7 @@ RPMBUILD_RPMS := \
 
 .PHONY: \
 	all \
-	bootstrap \
+	all-rpms \
 	distclean \
 	$(RPMBUILD_CONTAINERS) \
 	$(RPMBUILD_RPMS)
@@ -155,6 +155,8 @@ endif
 ifndef DOCKER_COMPOSE_VERSION
     $(error "command docker-compose is not available, please install Docker")
 endif
+
+all-rpms: $(RPMBUILD_RPMS)
 
 distclean: .env
 	$(DOCKER_COMPOSE) down --volumes --rmi all
