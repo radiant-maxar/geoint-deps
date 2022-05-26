@@ -152,11 +152,6 @@ echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 # Start PostgreSQL
 %{_bindir}/pg_ctl -s start
 
-# Something up with Timezone usage on EL9 in this build container,
-# disable only test using timezones:
-#  ERROR:  invalid value for parameter "TimeZone": "utc"
-%{__rm} -f regress/core/flatgeobuf{.sql,_expected}
-
 # run tests
 LANG="C.UTF-8" %{__make} check
 

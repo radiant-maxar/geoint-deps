@@ -38,6 +38,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
         --setopt=crb.enabled=1 \
         --setopt=crb.repo_gpgcheck=1 && \
     dnf -q -y update && \
+    dnf --setopt=tsflags='' reinstall -y tzdata && \
     dnf -q -y install \
       autoconf \
       automake \
