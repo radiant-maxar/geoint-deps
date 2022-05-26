@@ -206,7 +206,7 @@ x-rpmbuild:
       version: &rubygem_libxml_ruby_version 3.2.2-1
     sbt:
       image: rpmbuild-generic
-      version: &sbt_version 1.6.1-1
+      version: &sbt_version 1.6.2-1
       arch: noarch
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
