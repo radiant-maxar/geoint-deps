@@ -27,17 +27,10 @@ BuildRequires: ruby
 BuildRequires: ruby-devel
 BuildRequires: rubygems-devel
 %if %{with tests}
-BuildRequires: fcgi
-BuildRequires: fcgi-devel
-BuildRequires: lighttpd-fastcgi
 BuildRequires: memcached
 BuildRequires: rubygem-memcache-client
-# Testing requires thin, which has a circular dependency with Rack;
-# get all from RubyGems.
-#BuildRequires: rubygem-rack
 #BuildRequires: rubygem(minitest)
-#BuildRequires: rubygem(fcgi)
-#BuildRequires: rubygem(thin)
+#BuildRequires: rubygem(webrick)
 %endif
 
 BuildArch: noarch
@@ -102,6 +95,10 @@ pushd .%{gem_instdir}
 # on usual environment.
 # The server status does not return ":not_owned".
 sed -i '/^  it "check pid file presence and not owned process" do$/,/^  end$/ s/^/#/' \
+  test/spec_server.rb
+
+# Test wasn't updated for 2.2.3.1 security release.
+sed -i '/^  it "support -v option to get version" do$/,/^  end$/ s/^/#/' \
   test/spec_server.rb
 
 # Get temporary PID file name and start memcached daemon.
