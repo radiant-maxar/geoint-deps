@@ -239,7 +239,7 @@ export PGDATA="${HOME}/pgdata"
 %{_bindir}/pg_ctl -m fast -s stop || true
 %{__rm} -fr ${PGDATA}
 # Create PostgreSQL database.
-%{_bindir}/initdb --encoding UTF-8 --locale C.UTF-8
+%{_bindir}/initdb --encoding UTF-8 --locale en_US.UTF-8
 
 # Tune the database.
 echo "fsync = off" >> "${PGDATA}/postgresql.conf"

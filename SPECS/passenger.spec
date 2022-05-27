@@ -131,9 +131,9 @@ export CACHING=false
 export CCACHE_COMPRESS=1
 export CCACHE_COMPRESSLEVEL=3
 
-export LANG=C.UTF-8
-export LANGUAGE=C.UTF-8
-export LC_ALL=C.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
 # Build Passenger.
 rake fakeroot \
@@ -150,9 +150,9 @@ rake fakeroot \
 
 
 %install
-export LANG=C.UTF-8
-export LANGUAGE=C.UTF-8
-export LC_ALL=C.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 
 %{__rm} -rf %{buildroot}
 %{__mkdir} %{buildroot}
