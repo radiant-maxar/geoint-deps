@@ -178,10 +178,10 @@ x-rpmbuild:
         pybind11_version: '2.7.1'
     rack:
       image: rpmbuild-rack
-      version: &rack_version '2.2.3-1'
+      version: &rack_version 2.2.3.1-1
       arch: noarch
       name: rubygem-rack
-      spec_file: 'SPECS/rubygem-rack.spec'
+      spec_file: SPECS/rubygem-rack.spec
     ruby:
       image: rpmbuild-ruby
       version: &ruby_version '2.7.6-1'
@@ -595,11 +595,10 @@ services:
       <<: *build_defaults
       args:
         gem_packages: >-
-          fcgi
           minitest
           minitest-sprint
           minitest-global_expectations
-          thin
+          webrick
         packages: "${RPMBUILD_RACK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
