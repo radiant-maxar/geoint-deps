@@ -48,13 +48,13 @@ x-rpmbuild:
       version: '1.2.5-1'
     gdal:
       image: rpmbuild-gdal
-      version: &gdal_version '3.2.3-1'
+      version: &gdal_version 3.2.3-2
       defines:
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-geos
-      version: &geos_version '3.9.2-1'
+      version: &geos_version 3.9.3-1
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version '1.7.0-1'
@@ -70,7 +70,7 @@ x-rpmbuild:
       arch: noarch
     libgeotiff:
       image: rpmbuild-libgeotiff
-      version: &libgeotiff_version '1.6.0-1'
+      version: &libgeotiff_version 1.7.1-1
       defines:
         proj_min_version: *proj_min_version
     journald-cloudwatch-logs:

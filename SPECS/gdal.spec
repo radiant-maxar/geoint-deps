@@ -591,6 +591,7 @@ pushd gdalautotest-%{testversion}
   # Run tests with problematic cases deselected.  Some possible explanations:
   #  * gcore/tiff_read.py: will eventually pass, but consumes all memory
   #      forcing host to swap.
+  #  * gcore/vsi{curl,s3}: Old test links have gone stale.
   #  * gdrivers/gdalhttp.py: test_http_4 takes way too long
   #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms;
   #      most likely due to old poppler library
@@ -604,6 +605,8 @@ pushd gdalautotest-%{testversion}
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks \
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate \
     --deselect gcore/tiff_write.py::test_tiff_write_87 \
+    --deselect gcore/vsicurl.py::test_vsicurl_test_redirect \
+    --deselect gcore/vsis3.py::test_vsis3_no_sign_request \
     --deselect gdrivers/gdalhttp.py::test_http_4 \
     --deselect gdrivers/pdf.py::test_pdf_jp2_auto_compression \
     --deselect gdrivers/pdf.py::test_pdf_jp2openjpeg_compression \
