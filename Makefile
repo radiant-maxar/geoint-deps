@@ -211,7 +211,7 @@ rpmbuild-generic: .env
 rpmbuild-fonts: .env
 	$(DOCKER_COMPOSE) up -d rpmbuild-fonts
 
-rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL geos gpsbabel libgeotiff libkml proj sqlite
+rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL geos gpsbabel libgeotiff libkml ogdi proj sqlite
 	$(DOCKER_COMPOSE) up -d rpmbuild-gdal
 
 rpmbuild-geos: .env

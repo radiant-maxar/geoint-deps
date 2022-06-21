@@ -299,6 +299,7 @@ services:
         gpsbabel_version: *gpsbabel_version
         libgeotiff_version: *libgeotiff_version
         libkml_version: *libkml_version
+        ogdi_version: *ogdi_version
         packages: "${RPMBUILD_GDAL_PACKAGES}"
         proj_version: *proj_version
         rpmbuild_channel: *rpmbuild_channel
