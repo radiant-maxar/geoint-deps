@@ -99,6 +99,7 @@ BuildRequires: python3-numpy
 BuildRequires: pcre-devel
 BuildRequires: perl-devel
 BuildRequires: perl-generators
+BuildRequires: ogdi-devel
 BuildRequires: openjpeg2-devel
 BuildRequires: perl-ExtUtils-MakeMaker
 BuildRequires: pkgconfig
@@ -320,7 +321,7 @@ export PKG_CONFIG_PATH=%{postgres_instdir}/lib/pkgconfig:%{_libdir}/pkgconfig:%{
         --without-mdb                          \
         --without-msg                          \
         --without-mysql                        \
-        --without-ogdi                         \
+        --with-ogdi                            \
         --with-netcdf                          \
         --with-odbc                            \
         --with-openjpeg                        \
