@@ -8,11 +8,12 @@ URL:            http://ogdi.sourceforge.net/
 Source0:        https://github.com/libogdi/ogdi/archive/%{name}_%{tag}.tar.gz
 Source1:        http://ogdi.sourceforge.net/ogdi.pdf
 
+Patch0:         ogdi-%{version}-sailer.patch
+
 BuildRequires:  expat-devel
 BuildRequires:  gcc
 BuildRequires:  libtirpc-devel
 BuildRequires:  make
-BuildRequires:  tcl-devel
 BuildRequires:  unixODBC-devel
 BuildRequires:  zlib-devel
 
@@ -45,14 +46,6 @@ Requires:	%{name} = %{version}-%{release}
 ODBC driver for OGDI.
 
 
-%package tcl
-Summary:	TCL wrapper for OGDI
-Requires:	%{name} = %{version}-%{release}
-
-%description tcl
-TCL wrapper for OGDI.
-
-
 %prep
 %autosetup -p1 -n %{name}-%{name}_%{tag}
 
@@ -77,10 +70,6 @@ export CFLAGS="$RPM_OPT_FLAGS -DDONT_TD_VOID -DUSE_TERMIO"
 # using %{?_smp_mflags} may break build
 %{__make}
 
-# build tcl interface
-%{__make} -C ogdi/tcl_interface \
-	TCL_LINKLIB="-ltcl"
-
 # build contributions
 %{__make} -C contrib/gdal
 
@@ -98,8 +87,6 @@ TOPDIR=`pwd`; TARGET=Linux; export TOPDIR TARGET
 	INST_BIN=%{buildroot}%{_bindir}
 
 # install plugins olso
-%{__make} install -C ogdi/tcl_interface \
-	INST_LIB=%{buildroot}%{_libdir}
 %{__make} install -C contrib/gdal \
 	INST_LIB=%{buildroot}%{_libdir}
 %{__make} install -C ogdi/attr_driver/odbc \
@@ -147,7 +134,6 @@ touch -r ogdi-config.in %{buildroot}%{_bindir}/%{name}-config
 %{_libdir}/libogdi.so.*
 %dir %{_libdir}/ogdi
 %exclude %{_libdir}/%{name}/liblodbc.so
-%exclude %{_libdir}/%{name}/libecs_tcl.so
 %{_libdir}/%{name}/lib*.so
 
 %files devel
@@ -163,9 +149,6 @@ touch -r ogdi-config.in %{buildroot}%{_bindir}/%{name}-config
 
 %files odbc
 %{_libdir}/%{name}/liblodbc.so
-
-%files tcl
-%{_libdir}/%{name}/libecs_tcl.so
 
 
 %changelog
