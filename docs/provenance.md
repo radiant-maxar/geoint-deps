@@ -164,6 +164,16 @@ The [mod_tile](https://wiki.openstreetmap.org/wiki/Mod_tile) source archives are
 [GitHub](https://github.com/openstreetmap/mod_tile/releases) and are
 [GPLv2 licensed](https://github.com/openstreetmap/mod_tile/blob/master/COPYING).
 
+## ogdi
+
+The [ogdi](http://ogdi.sourceforge.net/) source archives are obtained directly
+from [GitHub](https://github.com/libogdi/ogdi/releases) and are
+[BSD licensed](https://github.com/libogdi/ogdi/blob/master/LICENSE).
+
+The [`ogdi.spec`](../SPECS/ogdi.spec) originates from
+[Fedora's `ogdi` RPM](https://src.fedoraproject.org/rpms/ogdi)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## openstreetmap-carto
 
 The [openstreetmap-carto](https://github.com/gravitystorm/openstreetmap-carto)

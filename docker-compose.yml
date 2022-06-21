@@ -96,6 +96,11 @@ x-rpmbuild:
     mod_tile:
       image: rpmbuild-mod_tile
       version: &mod_tile_version '0.6.1-2'
+    ogdi:
+      image: rpmbuild-ogdi
+      version: &ogdi_version '4.1.0-1'
+      defines:
+        tag: '4_1_0'
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
       version: &openstreetmap_carto_version '5.4.0-2'
@@ -423,6 +428,16 @@ services:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_MOD_TILE_PACKAGES}"
+        rpmbuild_channel: *rpmbuild_channel
+      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-ogdi:
+    <<: *service_defaults
+    depends_on:
+      - rpmbuild
+    build:
+      <<: *build_defaults
+      args:
+        packages: "${RPMBUILD_OGDI_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
