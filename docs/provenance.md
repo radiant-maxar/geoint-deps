@@ -170,9 +170,12 @@ The [ogdi](http://ogdi.sourceforge.net/) source archives are obtained directly
 from [GitHub](https://github.com/libogdi/ogdi/releases) and are
 [BSD licensed](https://github.com/libogdi/ogdi/blob/master/LICENSE).
 
-The [`ogdi.spec`](../SPECS/ogdi.spec) originates from
+The following packaging files originate from
 [Fedora's `ogdi` RPM](https://src.fedoraproject.org/rpms/ogdi)
-and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`ogdi.spec`](../SPECS/mapnik.spec)
+* [`ogdi-4.1.0-sailer.patch`](../SOURCES/ogdi-4.1.0-sailer.patch)
 
 ## openstreetmap-carto
 
