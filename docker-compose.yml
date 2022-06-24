@@ -36,7 +36,7 @@ x-rpmbuild:
   rpms:
     CGAL:
       image: rpmbuild-cgal
-      version: &CGAL_version 5.4-1
+      version: &CGAL_version 5.4.1-1
       name: CGAL-devel
     FileGDBAPI:
       image: rpmbuild-generic
@@ -49,7 +49,7 @@ x-rpmbuild:
         _smp_ncpus_max: 4
     armadillo:
       image: rpmbuild-armadillo
-      version: &armadillo_version 11.1.1-1
+      version: &armadillo_version 11.2.0-1
     arpack:
       image: rpmbuild-arpack
       version: &arpack_version 3.8.0-1
@@ -64,7 +64,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
-      version: &geos_version 3.10.2-1
+      version: &geos_version 3.10.3-1
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version 1.8.0-1
@@ -90,7 +90,7 @@ x-rpmbuild:
       version: &journald-cloudwatch-logs_version 0.2.0-1
     libgeotiff:
       image: rpmbuild-libgeotiff
-      version: &libgeotiff_version 1.7.1-1
+      version: &libgeotiff_version 1.7.1-10
       defines:
         proj_min_version: *proj_min_version
     libgta:
@@ -169,7 +169,7 @@ x-rpmbuild:
         protobuf_c_min_version: *protobuf_c_min_version
     proj:
       image: rpmbuild-proj
-      version: &proj_version 9.0.0-1
+      version: &proj_version 9.0.1-1
       defines:
         data_version: "1.9"
         googletest_version: 1.11.0

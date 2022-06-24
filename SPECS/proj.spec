@@ -39,6 +39,83 @@ Obsoletes:      %{name}-static < 7.2.0
 This package contains libproj and the appropriate header files and man pages.
 
 
+%package data-europe
+Summary:        Compat package for old proj-datumgrid-europe
+BuildArch:      noarch
+Obsoletes:      proj-datumgrid-europe < 1.6-3
+Provides:       deprecated()
+Requires:       proj-data-at
+Requires:       proj-data-be
+Requires:       proj-data-ch
+Requires:       proj-data-de
+Requires:       proj-data-dk
+Requires:       proj-data-es
+Requires:       proj-data-eur
+Requires:       proj-data-fi
+Requires:       proj-data-fo
+Requires:       proj-data-fr
+Requires:       proj-data-is
+Requires:       proj-data-nl
+Requires:       proj-data-pl
+Requires:       proj-data-pt
+Requires:       proj-data-se
+Requires:       proj-data-sk
+Requires:       proj-data-uk
+
+%description data-europe
+Compat package for old proj-datumgrid-europe.
+Please do not depend on this package, it will get removed!
+
+%files data-europe
+
+
+%package data-north-america
+Summary:        Compat package for old proj-datumgrid-north-america
+BuildArch:      noarch
+Obsoletes:      proj-datumgrid-north-america < 1.4-3
+Provides:       deprecated()
+Requires:       proj-data-ca
+Requires:       proj-data-us
+
+%description data-north-america
+Compat package for old proj-datumgrid-north-america.
+Please do not depend on this package, it will get removed!
+
+%files data-north-america
+
+
+%package data-oceania
+Summary:        Compat package for old proj-datumgrid-oceania
+BuildArch:      noarch
+Obsoletes:      proj-datumgrid-oceania < 1.2-3
+Provides:       deprecated()
+Requires:       proj-data-au
+Requires:       proj-data-nc
+Requires:       proj-data-nz
+
+%description data-oceania
+Compat package for old proj-datumgrid-oceania.
+Please do not depend on this package, it will get removed!
+
+%files data-oceania
+
+
+%package data-world
+Summary:        Compat package for old proj-datumgrid-world
+BuildArch:      noarch
+Obsoletes:      proj-datumgrid-world < 1.0-5
+Provides:       deprecated()
+Requires:       proj-data-br
+Requires:       proj-data-jp
+
+%description data-world
+Compat package for old proj-datumgrid-world.
+Please do not depend on this package, it will get removed!
+
+%files data-world
+
+
+
 %define data_subpkg(c:n:e:s:) \
 %define countrycode %{-c:%{-c*}}%{!-c:%{error:Country code not defined}} \
 %define countryname %{-n:%{-n*}}%{!-n:%{error:Country name not defined}} \
