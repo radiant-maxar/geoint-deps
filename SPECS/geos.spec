@@ -5,9 +5,7 @@ Summary:        GEOS is a C++ port of the Java Topology Suite
 
 License:        LGPLv2
 URL:            https://trac.osgeo.org/geos/
-Source0:        https://download.osgeo.org/%{name}/%{name}-%{version}.tar.bz2
-# File missing in tarball
-Source1:        geos-check_doxygen_errors.cmake
+Source0:        https://download.osgeo.org/%{name}/%{name}-%{version}%{?prerelease}.tar.bz2
 
 BuildRequires:  cmake
 BuildRequires:  doxygen
@@ -37,8 +35,7 @@ This package contains the development files to build applications that
 use GEOS.
 
 %prep
-%autosetup -p1
-%{__cp} -a %{SOURCE1} doc/check_doxygen_errors.cmake
+%autosetup -p1 -n %{name}-%{version}%{?prerelease}
 
 
 %build

@@ -23,7 +23,7 @@ x-rpmbuild:
   # Use consistent values for minimum versions for RPM build
   # and runtime requirements.
   minimum_versions:
-    geos: &geos_min_version 3.10.0
+    geos: &geos_min_version 3.11.0
     gdal: &gdal_min_version 3.5.0
     libosmium: &libosmium_min_version 2.18.0
     postgis_min_version: &postgis_min_version 3.2.0
@@ -64,7 +64,9 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
-      version: &geos_version 3.10.3-1
+      version: &geos_version 3.11.0-0
+      defines:
+        prerelease: beta2
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version 1.8.0-1
