@@ -39,13 +39,12 @@ use GEOS.
 
 
 %build
-%cmake -DBUILD_DOCUMENTATION=ON
+%cmake
 %cmake_build
 
 
 %install
 %cmake_install
-make docs -C %{__cmake_builddir}
 
 
 %check
@@ -53,7 +52,7 @@ make docs -C %{__cmake_builddir}
 
 
 %files
-%doc AUTHORS NEWS README.md
+%doc AUTHORS README.md
 %license COPYING
 %{_libdir}/libgeos.so.%{version}
 %{_libdir}/libgeos_c.so.1*
@@ -63,9 +62,9 @@ make docs -C %{__cmake_builddir}
 %exclude %{_bindir}/geosop
 
 %files devel
-%doc %{__cmake_builddir}/doc/doxygen_docs
 %{_bindir}/geos-config
 %{_includedir}/geos/
+%{_includedir}/geos.h
 %{_includedir}/geos_c.h
 %{_libdir}/libgeos_c.so
 %{_libdir}/libgeos.so
