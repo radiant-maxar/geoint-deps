@@ -97,6 +97,10 @@ pushd .%{gem_instdir}
 sed -i '/^  it "check pid file presence and not owned process" do$/,/^  end$/ s/^/#/' \
   test/spec_server.rb
 
+# Test wasn't updated for 2.2.3.1 security release.
+sed -i '/^  it "support -v option to get version" do$/,/^  end$/ s/^/#/' \
+  test/spec_server.rb
+
 # Get temporary PID file name and start memcached daemon.
 PID=%(mktemp)
 memcached -d -P "$PID"

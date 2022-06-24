@@ -242,9 +242,9 @@ export PGDATA="${HOME}/pgdata"
 %{_bindir}/initdb --encoding UTF-8 --locale en_US.UTF-8
 
 # Tune the database.
-echo "fsync = off" >> "${PGDATA}/postgresql.conf"
-echo "shared_buffers = 1GB" >> "${PGDATA}/postgresql.conf"
-echo "listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
+echo "fsync = off
+shared_buffers = 1GB
+listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start and setup to use PostgreSQL *without* PostGIS.
 export PG_USE_POSTGIS=NO
