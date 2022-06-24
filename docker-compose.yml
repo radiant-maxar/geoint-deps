@@ -6,7 +6,7 @@ x-rpmbuild:
   channel_name: &rpmbuild_channel stable-el9
   email: &rpmbuild_email foundationgeoint-packaging@maxar.com
   packager_name: &rpmbuild_name FoundationGEOINT Packaging
-  postgres_version: &postgres_version "14"
+  postgres_version: &postgres_version "15"
   vendor: &rpmbuild_vendor Maxar Technologies
   base_args: &rpmbuild_base_args
     rpmbuild_dist: *rpmbuild_dist
@@ -32,7 +32,7 @@ x-rpmbuild:
     protobuf-c: &protobuf_c_min_version 1.3.0
     protozero: &protozero_min_version 1.7.0
     sqlite_min_version: &sqlite_min_version 3.11.0
-  # Configuration for building every dependency RPM.
+  # Configuration for building every dlependency RPM.
   rpms:
     CGAL:
       image: rpmbuild-cgal
@@ -352,13 +352,15 @@ services:
   rpmbuild-libpqxx:
     <<: *service_defaults
     depends_on:
-      - rpmbuild-pgdg
+      - rpmbuild
     build:
       <<: *build_defaults
       args:
         packages: "${RPMBUILD_LIBPQXX_PACKAGES}"
+        postgres_version: *postgres_version
         rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+        testing: 1
+      dockerfile: docker/Dockerfile.rpmbuild-pgdg
   rpmbuild-libkml:
     <<: *service_defaults
     depends_on:
@@ -486,6 +488,8 @@ services:
       args:
         postgres_version: *postgres_version
         rpmbuild_channel: *rpmbuild_channel
+        # PostgreSQL 15 is currently in beta, use testing repository.
+        testing: 1
       dockerfile: docker/Dockerfile.rpmbuild-pgdg
   rpmbuild-postgis:
     <<: *service_defaults

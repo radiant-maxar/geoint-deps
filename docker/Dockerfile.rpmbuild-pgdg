@@ -3,11 +3,12 @@ ARG rpmbuild_image=rpmbuild
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG packages
 ARG postgres_version
+ARG testing=0
 
 # If any package dependencies are needed, install them.
 SHELL ["/bin/bash", "-c"]
 RUN --mount=type=cache,target=/var/cache/dnf \
-    /usr/local/bin/pgdg-repo.sh ${postgres_version} && \
+    PGDG_TESTING=${testing} /usr/local/bin/pgdg-repo.sh ${postgres_version} && \
     /usr/local/bin/postgres-install.sh ${postgres_version} && \
     if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
