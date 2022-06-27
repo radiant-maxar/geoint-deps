@@ -20,6 +20,10 @@ portions of the GEOS, GDAL, and PostGIS `.spec` files and patches.  PGDG uses
 the  [PostgreSQL license](./licenses/PostgreSQL-LICENSE)
 ([source](https://download.postgresql.org/pub/README)).
 
+## arpack
+
+## armadillo
+
 ## CGAL
 
 The [CGAL](https://www.cgal.org) source archives are obtained
@@ -87,6 +91,8 @@ The [`google-noto-fonts-extra.spec`](../SPECS/lgoogle-noto-fonts-extra.spec) ori
 [Fedora's `google-noto-fonts` RPM](https://src.fedoraproject.org/rpms/google-noto-fonts)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
+## g2clib
+
 ## Hanazono Fonts
 
 The [Hanazono Fonts](http://fonts.jp/hanazono/) source archives are obtained
@@ -99,6 +105,8 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 
 * [`hanazono-fonts.spec`](../SPECS/hanazono-fonts.spec)
 * [`hanazono-fonts-fontconfig.conf`](../SOURCES/hanazono-fonts-fontconfig.conf)
+
+## iniparser
 
 ## libgeotiff
 
@@ -145,6 +153,8 @@ The [`libosmium.spec`](../SPECS/libosmium.spec) originates from
 [Fedora's `libosmium` RPM](https://src.fedoraproject.org/rpms/libosmium)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
+## libpqxx
+
 ## Mapnik
 
 The [Mapnik](http://mapnik.org/) source and test data archives are obtained directly from
@@ -164,11 +174,18 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`mapnik-proj.patch`](../SOURCES/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/mapnik-build-json-fix.patch)
 
-## mod_tile
+## ogdi
 
-The [mod_tile](https://wiki.openstreetmap.org/wiki/Mod_tile) source archives are obtained directly from
-[GitHub](https://github.com/openstreetmap/mod_tile/releases) and are
-[GPLv2 licensed](https://github.com/openstreetmap/mod_tile/blob/master/COPYING).
+The [ogdi](http://ogdi.sourceforge.net/) source archives are obtained directly
+from [GitHub](https://github.com/libogdi/ogdi/releases) and are
+[BSD licensed](https://github.com/libogdi/ogdi/blob/master/LICENSE).
+
+The following packaging files originate from
+[Fedora's `ogdi` RPM](https://src.fedoraproject.org/rpms/ogdi)
+and are [MIT licensed](./licenses/Fedora-LICENSE):
+
+* [`ogdi.spec`](../SPECS/mapnik.spec)
+* [`ogdi-4.1.0-sailer.patch`](../SOURCES/ogdi-4.1.0-sailer.patch)
 
 ## openstreetmap-carto
 
@@ -266,12 +283,6 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`protobuf-ftdetect-proto.vim`](../SOURCES/protobuf-ftdetect-proto.vim)
 * [`protobuf-init.el`](../SOURCES/protobuf-init.el)
 
-## protobuf-c
-
-The [`protobuf-c.spec`](../SPECS/protobuf-c.spec) originates from
-[Fedora's `protobuf-c` RPM](https://src.fedoraproject.org/rpms/protobuf-c)
-and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
 ## protozero
 
 The [`protozero.spec`](../SPECS/protozero.spec) originates from
@@ -319,38 +330,7 @@ The [`rubygem-rack.spec`](../SPECS/rubygem-rack.spec) originates from
 [Fedora's `rubygem-rack` RPM](https://src.fedoraproject.org/rpms/rubygem-rack)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
-## Ruby
-
-[Ruby](https://www.ruby-lang.org) source archives are obtained
-directly from Ruby's website and Ruby/BSD licensed.
-
-The following packaging files originate from
-[Fedora's `ruby` RPM](https://src.fedoraproject.org/rpms/ruby)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`ruby.spec`](../SPECS/ruby.spec)
-* [`ruby-2.3.0-ruby_version.patch`](../SOURCES/ruby-2.3.0-ruby_version.patch)
-* [`ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch`](../SOURCES/ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch)
-* [`ruby-2.1.0-Enable-configuration-of-archlibdir.patch`](../SOURCES/ruby-2.1.0-Enable-configuration-of-archlibdir.patch)
-* [`ruby-2.1.0-always-use-i386.patch`](../SOURCES/ruby-2.1.0-always-use-i386.patch)
-* [`ruby-2.1.0-custom-rubygems-location.patch`](../SOURCES/ruby-2.1.0-custom-rubygems-location.patch)
-* [`ruby-1.9.3-mkmf-verbose.patch`](../SOURCES/ruby-1.9.3-mkmf-verbose.patch)
-* [`ruby-2.7.0-Initialize-ABRT-hook.patch`](../SOURCES/ruby-2.7.0-Initialize-ABRT-hook.patch)
-* [`ruby-2.7.2-disable-eaccess-tests.patch`](../SOURCES/ruby-2.7.2-disable-eaccess-tests.patch)
-* [`ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch`](../SOURCES/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch)
-* [`ruby-2.7.0-Remove-RubyGems-dependency.patch`](../SOURCES/ruby-2.7.0-Remove-RubyGems-dependency.patch)
-* [`ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch`](../SOURCES/ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch)
-* [`ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch`](../SOURCES/ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch)
-
-## `rubygem-pg`
-
-The [pg](https://github.com/ged/ruby-pg) source archives are obtained
-directly from [RubyGems](https://rubygems.org/gems/pg). The following packaging files
-originate from [Fedora's `rubygem-pg` RPM repository](https://src.fedoraproject.org/rpms/rubygem-pg)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`rubygem-pg.spec`](../SPECS/rubygem-pg.spec)
-* [`rubygem-pg-remove-rpath.patch`](../SOURCES/rubygem-pg-remove-rpath.patch)
+## rubygem-libxml-ruby
 
 ## SBT
 
@@ -363,45 +343,11 @@ The [SFCGAL](https://www.sfcgal.org) source archives are obtained
 directly from [GitLab](https://gitlab.com/Oslandia/SFCGAL) and
 is released under the [LGPLv2 license](https://gitlab.com/Oslandia/SFCGAL/-/blob/master/LICENSE)
 
-## SQLite
-
-The [SQLite](https://www.sqlite.org) source archives are obtained
-directly from its website and are released into the public domain.
-
-The following packaging files originate from
-[Fedora's `sqlite` RPM](https://src.fedoraproject.org/rpms/sqlite)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`sqlite.spec`](../SPECS/sqlite.spec)
-* [`sqlite-3.6.23-lemon-system-template.patch`](../SOURCES/sqlite-3.6.23-lemon-system-template.patch)
-* [`sqlite-3.12.2-no-malloc-usable-size.patch`](../SOURCES/sqlite-3.12.2-no-malloc-usable-size.patch)
-* [`sqlite-3.8.0-percentile-test.patch`](../SOURCES/sqlite-3.8.0-percentile-test.patch)
-* [`sqlite-3.18.0-sync2-dirsync.patch`](../SOURCES/sqlite-3.18.0-sync2-dirsync.patch)
-
 ## sqlite-pcre
 
 The `sqlite-pcre` package is derived from
 [Ubuntu's `sqlite3-pcre`](https://launchpad.net/ubuntu/+source/sqlite3-pcre/0~git20070120091816+4229ecc-2);
 its source code and spec file are considered public domain.
-
-## TBB
-
-The `tbb` package provides Intel's [Thread Building Blocks](http://threadingbuildingblocks.org/) library.
-Source archives are obtained directly from [GitHub](https://github.com/intel/tbb) and are Apache licensed.
-
-The following packaging files originate from
-[Fedora's `tbb` RPM](https://src.fedoraproject.org/rpms/tbb)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`tbb.spec`](../SPECS/tbb.spec)
-* [`tbb.pc`](../SOURCES/tbb.pc)
-* [`tbbmalloc.pc`](../SOURCES/tbbmalloc.pc)
-* [`tbbmalloc_proxy.pc`](../SOURCES/tbbmalloc_proxy.pc)
-* [`tbbmalloc_proxy.pc`](../SOURCES/tbbmalloc_proxy.pc)
-* [`tbb-2019-dont-snip-Wall.patch`](../SOURCES/tbb-2019-dont-snip-Wall.patch)
-* [`tbb-2020-attributes.patch`](../SOURCES/tbb-2020-attributes.patch)
-* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
-* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
 
 ## uriparser
 

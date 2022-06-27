@@ -42,8 +42,8 @@
     Sign the new RPMs, and update the repository:
 
     ```
-    rpm --addsign RPMS/noarch/libosmium-devel-*.rpm RPMS/noarch/rubygem-rack-*.rpm RPMS/x86_64/postgis-*.rpm
-    cp -pv RPMS/noarch/libosmium-devel-*.rpm RPMS/noarch/rubygem-rack-*.rpm RPMS/x86_64/postgis-*.rpm el9/stable
+    rpm --addsign RPMS/noarch/libosmium-devel-*.rpm RPMS/x86_64/passenger-*.rpm RPMS/x86_64/postgis-*.rpm
+    cp -pv RPMS/noarch/libosmium-devel-*.rpm RPMS/x86_64/passenger-*.rpm RPMS/x86_64/postgis-*.rpm el9/stable
     ./scripts/repo-update.sh el9/stable
     ./scripts/repo-sign.sh el9/stable
     ```
