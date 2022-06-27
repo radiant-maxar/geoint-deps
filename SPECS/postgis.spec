@@ -13,7 +13,7 @@
 %global postgis_majorversion %{postgis_major}.%{postgis_minor}
 %global postgiscurrmajorversion %(echo %{postgis_majorversion}|tr -d '.')
 
-%{!?postgis_prev_version: %global postgis_prev_version 2.5.5}
+%{!?postgis_prev_version: %global postgis_prev_version 2.5.6}
 %global postgis_prev_major %(echo %{postgis_prev_version} | awk -F. '{ print $1 }')
 %global postgis_prev_minor %(echo %{postgis_prev_version} | awk -F. '{ print $2 }')
 %global postgis_prev_micro %(echo %{postgis_prev_version} | awk -F. '{ print $3 }')
@@ -32,14 +32,15 @@ Name:           postgis
 Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
 License:        GPLv2+
-Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}.tar.gz
-Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}.pdf
+Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}%{?prerelease}.tar.gz
+Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}%{?prerelease}.pdf
 Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev_version}.tar.gz
 Source4:        postgis-filter-requires-perl-Pg.sh
 Patch0:         postgis-3.1-gdalfpic.patch
 
 URL:		http://www.postgis.net/
 
+BuildRequires:  ccache
 BuildRequires:  flex
 BuildRequires:  gdal-devel >= %{gdal_min_version}
 BuildRequires:  geos-devel >= %{geos_min_version}
@@ -99,7 +100,7 @@ The %{name}-utils package provides the utilities for PostGIS.
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}%{?prerelease}
 # Copy .pdf file to top directory before installing.
 %{__cp} -p %{SOURCE2} .
 
@@ -255,13 +256,15 @@ fi
 %doc utils/README
 %attr(0755,root,root) %{_datadir}/%{name}/*.pl
 %attr(0755,root,root) %{postgres_instdir}/bin/pgsql2shp
+%attr(0755,root,root) %{postgres_instdir}/bin/pgtopo_export
+%attr(0755,root,root) %{postgres_instdir}/bin/pgtopo_import
 %attr(0755,root,root) %{postgres_instdir}/bin/raster2pgsql
 %attr(0755,root,root) %{postgres_instdir}/bin/shp2pgsql
 
 
 %files docs
 %defattr(-,root,root)
-%doc postgis-%{version}.pdf
+%doc postgis-%{version}%{?prerelease}.pdf
 
 
 %changelog

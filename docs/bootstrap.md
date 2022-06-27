@@ -3,7 +3,7 @@
 1. Create basic geospatial dependencies and libraries:
 
    ```
-   make gdal iniparser libpqxx protozero
+   make gdal iniparser libpqxx protozero rack
    ```
 
 1. Create and upload repository by starting `rpmbuild-generic` container:
@@ -36,7 +36,7 @@
 1. Create the intermediate stage of RPMs necessary:
 
     ```
-    make libosmium postgis rack
+    make libosmium postgis passenger
     ```
 
     Sign the new RPMs, and update the repository:

@@ -1,12 +1,17 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
-ARG packages=""
+
+ARG gem_packages
+ARG packages
+ARG python_packages
 
 # If any package dependencies are needed, install them.
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 RUN --mount=type=cache,target=/var/cache/dnf \
-    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
+    if [ -n "${packages:-}" ] ; then dnf -q -y install ${packages}; fi && \
+    if [ -n "${gem_packages:-}" ] ; then gem install ${gem_packages}; fi && \
+    if [ -n "${python_packages:-}" ] ; then pip3 install --disable-pip-version-check ${python_packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
     rm -f /usr/local/bin/rpmbuild-user.sh
 

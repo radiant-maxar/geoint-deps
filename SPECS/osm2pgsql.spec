@@ -72,6 +72,8 @@ it to the database.
     -DBUILD_TESTS:BOOL=ON \
     -DEXTERNAL_LIBOSMIUM:BOOL=ON \
     -DEXTERNAL_PROTOZERO:BOOL=ON \
+    -DPostgreSQL_INCLUDE_DIR:PATH=$(pg_config --includedir) \
+    -DPostgreSQL_LIBRARY:PATH=$(pg_config --libdir)/libpq.so \
     -DWITH_LUAJIT:BOOL=ON
 %cmake_build
 

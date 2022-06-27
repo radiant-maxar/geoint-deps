@@ -26,7 +26,7 @@ x-rpmbuild:
     geos: &geos_min_version 3.11.0
     gdal: &gdal_min_version 3.5.0
     libosmium: &libosmium_min_version 2.18.0
-    postgis_min_version: &postgis_min_version 3.2.0
+    postgis_min_version: &postgis_min_version 3.3.0
     proj: &proj_min_version 9.0.0
     protobuf: &protobuf_min_version 3.0.0
     protobuf-c: &protobuf_c_min_version 1.3.0
@@ -118,9 +118,6 @@ x-rpmbuild:
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
         proj_min_version: *proj_min_version
-    mod_tile:
-      image: rpmbuild-mod_tile
-      version: &mod_tile_version 0.6.1-1
     ogdi:
       image: rpmbuild-ogdi
       version: &ogdi_version 4.1.0-1
@@ -162,10 +159,11 @@ x-rpmbuild:
       version: &passenger_version 6.0.14-1
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.2.1-1
+      version: &postgis_version 3.3.0-0
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
+        prerelease: alpha1
         proj_min_version: *proj_min_version
         protobuf_min_version: *protobuf_min_version
         protobuf_c_min_version: *protobuf_c_min_version
@@ -173,7 +171,7 @@ x-rpmbuild:
       image: rpmbuild-proj
       version: &proj_version 9.0.1-1
       defines:
-        data_version: "1.9"
+        data_version: "1.10"
         googletest_version: 1.11.0
     protozero:
       image: rpmbuild-protozero
@@ -413,16 +411,6 @@ services:
         packages: "${RPMBUILD_MAPNIK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
-  rpmbuild-mod_tile:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild
-    build:
-      <<: *build_defaults
-      args:
-        packages: "${RPMBUILD_MOD_TILE_PACKAGES}"
-        rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
     <<: *service_defaults
     depends_on:
@@ -550,7 +538,6 @@ services:
           webrick
         packages: "${RPMBUILD_RACK_PACKAGES}"
         rpmbuild_channel: *rpmbuild_channel
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults
     depends_on:
@@ -563,7 +550,6 @@ services:
           rake-compiler
         rpmbuild_channel: *rpmbuild_channel
         packages: "${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}"
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:

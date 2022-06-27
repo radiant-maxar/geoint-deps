@@ -49,7 +49,6 @@ LIBKML_RPM := $(call rpm_file,libkml)
 LIBPQXX_RPM := $(call rpm_file,libpqxx)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
-MOD_TILE_RPM := $(call rpm_file,mod_tile)
 OGDI_RPM := $(call rpm_file,ogdi)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
@@ -180,7 +179,6 @@ distclean: .env
 	echo RPMBUILD_LIBPQXX_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libpqxx.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_MOD_TILE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mod_tile.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
 	echo RPMBUILD_OGDI_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ogdi.spec) >> .env
@@ -249,9 +247,6 @@ rpmbuild-journald-cloudwatch-logs: .env
 
 rpmbuild-mapnik: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-mapnik
-
-rpmbuild-mod_tile: .env
-	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-mod_tile
 
 rpmbuild-openstreetmap-carto: .env
 	DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) up -d rpmbuild-openstreetmap-carto
@@ -329,7 +324,6 @@ libkml: rpmbuild-libkml $(LIBKML_RPM)
 libpqxx: rpmbuild-libpqxx $(LIBPQXX_RPM)
 libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
 mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
-mod_tile: rpmbuild-mod_tile $(MOD_TILE_RPM)
 ogdi: rpmbuild-ogdi $(OGDI_RPM)
 openstreetmap-carto: rpmbuild-openstreetmap-carto $(OPENSTREETMAP_CARTO_RPM)
 osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
