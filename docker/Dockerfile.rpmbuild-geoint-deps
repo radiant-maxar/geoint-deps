@@ -7,6 +7,7 @@ ARG packages=""
 
 # If any package dependencies are needed, install them.
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+# hadolint ignore=DL3028,DL3032,DL3033
 RUN --mount=type=cache,target=/var/cache/yum \
     /usr/local/bin/geoint-deps-repo.sh && \
     if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
