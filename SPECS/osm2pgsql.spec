@@ -50,7 +50,7 @@ geospatial analysis.
 
 %package replication
 Summary:        Update an osm2pgsql database with changes from a OSM replication server.
-Requires:	%{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python3-osmium
 Requires:       python3-psycopg2
 

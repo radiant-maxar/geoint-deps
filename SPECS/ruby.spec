@@ -225,10 +225,10 @@ Provides:   ruby(release) = %{ruby_release}
 
 # Virtual provides for CCAN copylibs.
 # https://fedorahosted.org/fpc/ticket/364
-Provides: bundled(ccan-build_assert)
-Provides: bundled(ccan-check_type)
-Provides: bundled(ccan-container_of)
-Provides: bundled(ccan-list)
+Provides: bundled(ccan-build_assert) = %{version}-%{release}
+Provides: bundled(ccan-check_type) = %{version}-%{release}
+Provides: bundled(ccan-container_of) = %{version}-%{release}
+Provides: bundled(ccan-list) = %{version}-%{release}
 
 # StdLib default gems.
 Provides: bundled(rubygem-did_you_mean) = %{did_you_mean_version}

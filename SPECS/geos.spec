@@ -26,7 +26,7 @@ predicate functions and spatial operators, as well as specific JTS topology
 functions such as IsValid().
 
 %package devel
-Summary:	Development files for GEOS
+Summary:        Development files for GEOS
 Requires:       %{name} = %{version}-%{release}
 
 %description devel

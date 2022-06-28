@@ -98,12 +98,6 @@ EOF
 %{__chmod} 0644 %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 
 
-%check
-
-
-%clean
-
-
 %changelog
 * %(%{_bindir}/date "+%%a %%b %%d %%Y") %{rpmbuild_name} <%{rpmbuild_email}> - %{version}-%{rpmbuild_release}
 - %{version}-%{rpmbuild_release}

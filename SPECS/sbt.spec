@@ -31,6 +31,9 @@ popd
 %autosetup -p 1 -n %{name}
 
 
+%build
+
+
 %install
 %{__install} -d -m 0755 %{buildroot}%{_datadir}/%{name}
 %{__install} -d -m 0755 %{buildroot}%{_datadir}/%{name}/bin

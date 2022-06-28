@@ -29,18 +29,18 @@ data products/formats.
 
 
 %package devel
-Summary:	OGDI header files and documentation
-Requires:	%{name} = %{version}-%{release}
-Requires:	pkgconfig
-Requires:	zlib-devel expat-devel
+Summary:        OGDI header files and documentation
+Requires:       %{name} = %{version}-%{release}
+Requires:       pkgconfig
+Requires:       zlib-devel expat-devel
 
 %description devel
 OGDI header files and developer's documentation.
 
 
 %package odbc
-Summary:	ODBC driver for OGDI
-Requires:	%{name} = %{version}-%{release}
+Summary:        ODBC driver for OGDI
+Requires:       %{name} = %{version}-%{release}
 
 %description odbc
 ODBC driver for OGDI.
@@ -62,9 +62,9 @@ export CFG=debug # for -g
 # ogdits-3.1 test suite produces same result with and without the flag
 export CFLAGS="$RPM_OPT_FLAGS -DDONT_TD_VOID -DUSE_TERMIO"
 %configure \
-	--with-binconfigs \
-	--with-expat \
-	--with-zlib
+  --with-binconfigs \
+  --with-expat \
+  --with-zlib
 
 # WARNING !!!
 # using %{?_smp_mflags} may break build
@@ -75,22 +75,22 @@ export CFLAGS="$RPM_OPT_FLAGS -DDONT_TD_VOID -DUSE_TERMIO"
 
 # build odbc drivers
 %{__make} -C ogdi/attr_driver/odbc \
-	ODBC_LINKLIB="-lodbc"
+  ODBC_LINKLIB="-lodbc"
 
 %install
 # export env
 TOPDIR=`pwd`; TARGET=Linux; export TOPDIR TARGET
 
 %{__make} install \
-	INST_INCLUDE=%{buildroot}%{_includedir}/%{name} \
-	INST_LIB=%{buildroot}%{_libdir} \
-	INST_BIN=%{buildroot}%{_bindir}
+  INST_INCLUDE=%{buildroot}%{_includedir}/%{name} \
+  INST_LIB=%{buildroot}%{_libdir} \
+  INST_BIN=%{buildroot}%{_bindir}
 
 # install plugins olso
 %{__make} install -C contrib/gdal \
-	INST_LIB=%{buildroot}%{_libdir}
+  INST_LIB=%{buildroot}%{_libdir}
 %{__make} install -C ogdi/attr_driver/odbc \
-	INST_LIB=%{buildroot}%{_libdir}
+  INST_LIB=%{buildroot}%{_libdir}
 
 # remove example binary
 %{__rm} %{buildroot}%{_bindir}/example?

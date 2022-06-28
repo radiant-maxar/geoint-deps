@@ -38,6 +38,9 @@ Osmosis can also be included as a library in other Java applications
 %autosetup -c -n %{name}-%{version} -p1
 
 
+%build
+
+
 %install
 %{__install} -d %{buildroot}%{_bindir}
 %{__install} -d %{buildroot}%{_datadir}/osmosis/contrib

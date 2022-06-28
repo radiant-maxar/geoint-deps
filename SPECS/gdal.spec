@@ -118,9 +118,9 @@ BuildRequires: zlib-devel
 BuildRequires: libzstd-devel
 
 # Run time dependency for gpsbabel driver
-Requires:	gpsbabel
+Requires:       gpsbabel
 
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
 # We have multilib triage
 %if "%{_lib}" == "lib"
@@ -147,61 +147,61 @@ GDAL/OGR is the most widely used geospatial data access library.
 
 
 %package devel
-Summary:	Development files for the GDAL file format library
+Summary:        Development files for the GDAL file format library
 
 # Old rpm didn't figure out
 %if 0%{?rhel} < 6
 Requires: pkgconfig
 %endif
 
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
-Requires:	%{name}-libs
-Obsoletes:	%{name}-static < 1.9.0-1
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       %{name}-libs
+Obsoletes:      %{name}-static < 1.9.0-1
 
 %description devel
 This package contains development files for GDAL.
 
 
 %package libs
-Summary:	GDAL file format library
+Summary:        GDAL file format library
 
 %description libs
 This package contains the GDAL file format library.
 
 
 %package java
-Summary:	Java modules for the GDAL file format library
-Requires:	jpackage-utils
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
+Summary:        Java modules for the GDAL file format library
+Requires:       jpackage-utils
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
 
 %description java
 The GDAL Java modules provide support to handle multiple GIS file formats.
 
 
 %package javadoc
-Summary:	Javadocs for %{name}
-Requires:	jpackage-utils
-BuildArch:	noarch
+Summary:        Javadocs for %{name}
+Requires:       jpackage-utils
+BuildArch:      noarch
 
 %description javadoc
 This package contains the API documentation for %{name}.
 
 
 %package perl
-Summary:	Perl modules for the GDAL file format library
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
-Requires:	perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+Summary:        Perl modules for the GDAL file format library
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 
 %description perl
 The GDAL Perl modules provide support to handle multiple GIS file formats.
 
 
 %package -n python2-gdal
-Summary:	Python modules for the GDAL file format library
-Requires:	numpy
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
-Provides:	gdal-python = %{version}-%{release}
-Provides:	gdal-python%{?_isa} = %{version}-%{release}
+Summary:        Python modules for the GDAL file format library
+Requires:       numpy
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Provides:       gdal-python = %{version}-%{release}
+Provides:       gdal-python%{?_isa} = %{version}-%{release}
 
 %description -n python2-gdal
 The GDAL Python modules provide support to handle multiple GIS file formats.
@@ -209,25 +209,25 @@ The package also includes a couple of useful utilities in Python.
 
 
 %package -n python3-gdal
-Summary:	Python modules for the GDAL file format library
-Requires:	python3-numpy
-Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
-Provides:	gdal-python3 = %{version}-%{release}
+Summary:        Python modules for the GDAL file format library
+Requires:       python3-numpy
+Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
+Provides:       gdal-python3 = %{version}-%{release}
 
 %description -n python3-gdal
 The GDAL Python 3 modules provide support to handle multiple GIS file formats.
 
 %package python-tools
-Summary:	Python tools for the GDAL file format library
-Requires:	python3-gdal
+Summary:        Python tools for the GDAL file format library
+Requires:       python3-gdal
 
 %description python-tools
 The GDAL Python package provides number of tools for programming and
 manipulating GDAL file format library
 
 %package doc
-Summary:	Documentation for GDAL
-BuildArch:	noarch
+Summary:        Documentation for GDAL
+BuildArch:      noarch
 
 %description doc
 This package contains HTML and PDF documentation for GDAL.
@@ -418,8 +418,8 @@ pushd swig/perl
   %make_install
 popd
 
-make    DESTDIR=%{buildroot}	\
-        install	\
+make    DESTDIR=%{buildroot} \
+        install \
         install-man
 
 install -pm 755 ogr/ogrsf_frmts/s57/s57dump %{buildroot}%{_bindir}

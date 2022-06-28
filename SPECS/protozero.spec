@@ -2,8 +2,8 @@
 # * protobuf_min_version
 
 Name:           protozero
-Version:	%{rpmbuild_version}
-Release:	%{rpmbuild_release}%{?dist}
+Version:        %{rpmbuild_version}
+Release:        %{rpmbuild_release}%{?dist}
 Summary:        Minimalistic protocol buffer decoder and encoder in C++
 
 License:        BSD

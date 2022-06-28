@@ -27,7 +27,7 @@
 %global postgisliblabel %{postgis_majorversion}
 %endif
 
-Summary:	Geographic Information Systems Extensions to PostgreSQL
+Summary:        Geographic Information Systems Extensions to PostgreSQL
 Name:           postgis
 Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
@@ -38,7 +38,7 @@ Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev
 Source4:        postgis-filter-requires-perl-Pg.sh
 Patch0:         postgis-%{postgis_majorversion}-gdalfpic.patch
 
-URL:		http://www.postgis.net/
+URL:            http://www.postgis.net/
 
 BuildRequires:  flex
 BuildRequires:  gdal-devel >= %{gdal_min_version}
@@ -52,11 +52,11 @@ BuildRequires:  protobuf-devel >= %{protobuf_min_version}
 BuildRequires:  protobuf-c-devel >= %{protobuf_c_min_version}
 BuildRequires:  SFCGAL-devel
 
-Provides:       %{name}%{postgiscurrmajorversion}_%{postgres_dotless}
+Provides:       %{name}%{postgiscurrmajorversion}_%{postgres_dotless} = %{version}-%{release}
 
 Requires:       postgresql%{postgres_dotless}
 Requires:       postgresql%{postgres_dotless}-contrib
-Requires(post):	%{_sbindir}/update-alternatives
+Requires(post): %{_sbindir}/update-alternatives
 
 Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless} = %{version}-%{release}
 
@@ -79,17 +79,17 @@ needed to compile C or C++ applications which will directly interact
 with PostGIS.
 
 %package docs
-Summary:	Extra documentation for PostGIS
-Provides:	%{name}%{postgis_prev_dotless}_%{postgres_dotless}-docs = %{version}-%{release}
+Summary:        Extra documentation for PostGIS
+Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless}-docs = %{version}-%{release}
 
 %description docs
 The %{name}-docs package includes PDF documentation of PostGIS.
 
 %package utils
-Summary:	The utils for PostGIS
-Requires:	%{name} = %{version}-%{release}
-Requires:	perl-DBD-Pg
-Provides:	%{name}%{postgis_prev_dotless}_%{postgres_dotless}-utils = %{version}-%{release}
+Summary:        The utils for PostGIS
+Requires:       %{name} = %{version}-%{release}
+Requires:       perl-DBD-Pg
+Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless}-utils = %{version}-%{release}
 
 %description utils
 The %{name}-utils package provides the utilities for PostGIS.
@@ -168,8 +168,8 @@ pg_ctl -s stop
 if [ "$1" -eq 0 ]
   then
         # Only remove these links if the package is completely removed from the system (vs.just being upgraded)
-        %{_sbindir}/update-alternatives --remove postgis-pgsql2shp	%{postgres_instdir}/bin/pgsql2shp
-        %{_sbindir}/update-alternatives --remove postgis-shp2pgsql	%{postgres_instdir}/bin/shp2pgsql
+        %{_sbindir}/update-alternatives --remove postgis-pgsql2shp %{postgres_instdir}/bin/pgsql2shp
+        %{_sbindir}/update-alternatives --remove postgis-shp2pgsql %{postgres_instdir}/bin/shp2pgsql
 fi
 
 

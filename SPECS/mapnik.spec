@@ -66,7 +66,7 @@ Provides: bundled(agg) = 2.4
 # of the boost GIL library. Attempts are being made to establish the
 # status of these files (https://svn.boost.org/trac/boost/ticket/11819)
 # in the hope of unbundling them
-Provides: bundled(boost)
+Provides: bundled(boost) = 1.6.8
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/input/.*$
 

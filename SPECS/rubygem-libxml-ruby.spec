@@ -26,7 +26,7 @@ is your need, this is a good library to consider.
 
 
 %prep
-%setup -c -n %{gem_name}-%{version}
+%setup -q -c -n %{gem_name}-%{version}
 %{__tar} -xzf data.tar.gz
 %patch0 -p1
 

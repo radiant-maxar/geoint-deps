@@ -31,7 +31,7 @@ BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-nose
 
-Provides:       python2-mapnik
+Provides:       python2-mapnik = %{version}-%{release}
 
 
 %description
