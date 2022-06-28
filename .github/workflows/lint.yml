@@ -1,0 +1,79 @@
+---
+name: Lint
+
+on:
+  - push
+
+jobs:
+  black:
+    name: Lint - black
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Lint with black
+        uses: psf/black@stable
+
+  hadolint:
+    name: Lint - hadolint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Lint with hadolint
+        uses: hadolint/hadolint-action@v2.1.0
+        with:
+          dockerfile: Dockerfile.*
+          recursive: true
+
+  rpmlint:
+    name: Lint - rpmlint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install rpmlint
+        run: |
+          sudo apt-get --quiet --quiet install python3-rpm
+          pip install rpmlint
+
+      - name: Lint with rpmlint
+        run: |
+          rpmlint --rpmlintrc .rpmlintrc SPECS/*.spec
+
+  shellcheck:
+    name: Lint - shellcheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install shellcheck
+        run: |
+          sudo apt-get --quiet --quiet install shellcheck
+
+      - name: Lint with shellcheck
+        run: |
+          shellcheck -x scripts/*.sh
+
+  yamllint:
+    name: Lint - yamllint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint with yamllint
+        run: |
+          yamllint --format github .
