@@ -164,6 +164,7 @@ This package contains development files for GDAL.
 
 %package libs
 Summary:	GDAL file format library
+Requires:	ogdi
 
 %description libs
 This package contains the GDAL file format library.
