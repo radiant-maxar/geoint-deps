@@ -162,6 +162,7 @@ local_optflags="%{optflags}"
 local_optflags="${local_optflags} -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H"
 
 # configure mapnik
+export JOBS=$(/usr/bin/getconf _NPROCESSORS_ONLN)
 PROJ_LIB=%{_datadir}/proj \
 GDAL_DATA=$(gdal-config --datadir) \
 scons configure FAST=True \
