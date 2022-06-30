@@ -4,14 +4,10 @@ Release:        %{rpmbuild_release}%{?dist}
 Summary:        Beautiful and free fonts for all languages
 
 License:        OFL 1.1
-URL:            https://github.com/googlefonts/noto-source
-Source0:        https://github.com/googlefonts/noto-source/archive/%{commit}/noto-source-%{commit}.tar.gz
+URL:            https://github.com/notofonts/noto-fonts
+Source0:        https://github.com/notofonts/noto-fonts/archive/%{commit}/noto-fonts-%{commit}.tar.gz
 
 BuildArch:      noarch
-
-BuildRequires:  git
-BuildRequires:  python3
-BuildRequires:  python3-pip
 
 
 %description
@@ -27,38 +23,29 @@ weights, and is freely available to all.
 
 
 %prep
-%autosetup -p 1 -n noto-source-%{commit}
-%{__sed} -i 's#git submodule update --init##g' ./build
-%{__sed} -i 's#pip install -r scripts/fontmake/requirements.txt##g' ./build
-%{__sed} -i 's#pip install -e scripts/fontmake#pip install fontmake#g' ./build
-./build setup
+%autosetup -n noto-fonts-%{commit}
 
 
 %build
-# Only build .ttf files to save time
-%{__sed} -i "s#'otf' 'ttf'#'ttf'#g" ./build
-# ./build all
-./build src/NotoSansAdlam/NotoSansAdlam.designspace
-./build src/NotoSansAdlamUnjoined/NotoSansAdlamUnjoined.designspace
-./build src/NotoSansArabicUI-MM.glyphs
-./build src/NotoSansChakma/NotoSansChakma.glyphs
-./build src/NotoSansCherokee/NotoSansCherokee.designspace
-./build src/NotoSansOriyaUI-MM.glyphs
-./build src/NotoSansOsage/NotoSansOsage.glyphs
-./build src/NotoSansSinhala/NotoSansSinhala-MM.glyphs
-./build src/NotoSansSymbols/NotoSansSymbols.designspace
-./build src/NotoSansSymbols2/NotoSansSymbols2.designspace
-./build src/NotoSerifTibetan-MM.glyphs
 
 
 %install
 %{__install} -d -p %{buildroot}%{_datadir}/fonts/%{name}
-%{__cp} --preserve instance_ttf/* %{buildroot}%{_datadir}/fonts/%{name}
-
+%{__install} -p hinted/ttf/NotoSansAdlam/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansAdlamUnjoined/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansArabicUI/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansChakma/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansCherokee/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansOriyaUI/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansOsage/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansSinhala/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansSymbols/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSansSymbols2/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
+%{__install} -p hinted/ttf/NotoSerifTibetan/*.ttf %{buildroot}%{_datadir}/fonts/%{name}/
 
 %files
-%doc README.md CONTRIBUTING.md FONT_CONTRIBUTION.md
-%license src/LICENSE
+%doc README.md FAQ.md FAQ-KR.md NEWS.md
+%license LICENSE
 %{_datadir}/fonts/%{name}
 
 
