@@ -1,0 +1,4 @@
+addFilter('lib-package-without-%mklibname')
+addFilter('macro-in-%changelog')
+addFilter('no-buildroot-tag')
+addFilter('no-cleaning-of-buildroot')
