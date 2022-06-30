@@ -1,5 +1,6 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-pgdg
+# hadolint ignore=DL3007
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 
 # Our GDAL package depends on RPMs we build; the desired package
@@ -86,64 +87,65 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
 # Install GDAL prerequisites first, before installing the package list
 # so they take precedence over packages from other repositories.
 SHELL ["/bin/bash", "-c"]
+# hadolint ignore=DL3040,DL3041
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y \
-    /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libgta-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-au-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-be-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-br-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-ca-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-ch-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-de-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-dk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-es-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-eur-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-europe-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-fi-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-fo-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-fr-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-is-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-jp-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-mx-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-nc-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-nl-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-no-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-north-america-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-nz-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-pl-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-pt-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-se-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-sk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-uk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-world-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/proj-data-za-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-    /tmp/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
+    "/tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libgta-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-au-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-be-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-br-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-ca-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-ch-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-de-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-dk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-es-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-eur-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-europe-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-fi-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-fo-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-fr-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-is-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-jp-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-mx-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-nc-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-nl-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-no-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-north-america-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-nz-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-pl-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-pt-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-se-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-sk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-uk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-world-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-za-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm" \
     && \
     rm -f /tmp/*.rpm && \
     if [ -n "${packages}" ] ; then dnf -y install ${packages}; fi
