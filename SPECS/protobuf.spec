@@ -230,13 +230,13 @@ popd
 %files
 %doc CHANGES.txt CONTRIBUTORS.txt README.md
 %license LICENSE
-%{_libdir}/libprotobuf.so.26*
+%{_libdir}/libprotobuf.so.28*
 
 %files compiler
 %doc README.md
 %license LICENSE
 %{_bindir}/protoc
-%{_libdir}/libprotoc.so.26*
+%{_libdir}/libprotoc.so.28*
 
 %files devel
 %dir %{_includedir}/google
@@ -251,7 +251,7 @@ popd
 %{_libdir}/libprotoc.a
 
 %files lite
-%{_libdir}/libprotobuf-lite.so.26*
+%{_libdir}/libprotobuf-lite.so.28*
 
 %files lite-devel
 %{_libdir}/libprotobuf-lite.so
