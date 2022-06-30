@@ -45,33 +45,34 @@ COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
 # Install GDAL prerequisites first, before installing the package list
 # so they take precedence over packages from other repositories.
 SHELL ["/bin/bash", "-c"]
+# hadolint ignore=DL3032,DL3033
 RUN --mount=type=cache,target=/var/cache/yum \
     yum install -y \
-    /tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
-    /tmp/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
+    "/tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm" \
     && \
     rm -f /tmp/*.rpm && \
     if [ -n "${packages}" ] ; then yum -y install ${packages}; fi && \
-    chown -R ${RPMBUILD_USER}:${RPMBUILD_GROUP} /var/run/postgresql
+    chown -R "${RPMBUILD_USER}:${RPMBUILD_GROUP}" /var/run/postgresql
 
 # Install Python 3 documentation and packages.
-RUN pip3 install --disable-pip-version-check --require-hashes \
+RUN pip3 install --disable-pip-version-check --no-cache-dir --quiet --require-hashes \
     -r /tmp/gdalautotest-requirements.txt && \
     rm -f /tmp/gdalautotest-requirements.txt
 

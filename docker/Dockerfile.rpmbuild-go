@@ -19,8 +19,8 @@ RUN curl -sSL -O https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz && 
     rm -f go${go_version}.linux-amd64.tar.gz
 
 # Install any other extra packages.
-RUN if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
-    yum -q -y clean all
+# hadolint ignore=DL3032,DL3033
+RUN if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi
 
 # Switch back to default RPM building user.
 USER ${RPMBUILD_USER}
