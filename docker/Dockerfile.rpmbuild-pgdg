@@ -5,23 +5,23 @@ ARG packages
 ARG postgres_version
 
 # If any package dependencies are needed, install them.
+# Ensure the PostgreSQL socket directory is owned by the rpmbuild user.
+# This makes it easy to start the database as run as that user.
 SHELL ["/bin/bash", "-c"]
+# hadolint ignore=DL3032,DL3033
 RUN --mount=type=cache,target=/var/cache/yum \
     /usr/local/bin/pgdg-repo.sh ${postgres_version} && \
     /usr/local/bin/postgres-install.sh ${postgres_version} && \
     if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
     /usr/local/bin/rpmbuild-user.sh && \
-    rm -f /usr/local/bin/rpmbuild-user.sh
-
-# Ensure the PostgreSQL socket directory is owned by the rpmbuild user.
-# This makes it easy to start the database as run as that user.
-RUN chown -R ${RPMBUILD_USER}:${RPMBUILD_GROUP} /var/run/postgresql
+    rm -f /usr/local/bin/rpmbuild-user.sh && \
+    chown -R "${RPMBUILD_USER}:${RPMBUILD_GROUP}" /var/run/postgresql
 
 # Use unprivileged RPM build user and work directory by default.
 USER ${RPMBUILD_USER}
 WORKDIR ${RPMBUILD_HOME}
 
 # Add in macros necessary for creating RPMs and GDAL packages.
-RUN echo "%postgres_version ${postgres_version}" >> ${RPMBUILD_HOME}/.rpmmacros && \
-    echo "%postgres_dotless %(echo %{postgres_version} | awk '{ gsub(/\\\\./, \"\"); print substr(\$0, 1, 2) }')" >> ${RPMBUILD_HOME}/.rpmmacros && \
-    echo "%postgres_instdir /usr/pgsql-%{postgres_version}" >> ${RPMBUILD_HOME}/.rpmmacros
+RUN echo "%postgres_version ${postgres_version}" >> "${RPMBUILD_HOME}/.rpmmacros" && \
+    echo "%postgres_dotless %(echo %{postgres_version} | awk '{ gsub(/\\\\./, \"\"); print substr(\$0, 1, 2) }')" >> "${RPMBUILD_HOME}/.rpmmacros" && \
+    echo "%postgres_instdir /usr/pgsql-%{postgres_version}" >> "${RPMBUILD_HOME}/.rpmmacros"

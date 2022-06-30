@@ -12,7 +12,7 @@ RUN yum -q -y install epel-release && \
     yum -q -y install python3-pip python3-wheel && \
     yum -q -y clean all && \
     groupadd --non-unique -g ${pip_tools_gid} ${pip_tools_group} && \
-    useradd -d ${pip_tools_home} -m -s ${pip_tools_shell} -u ${pip_tools_uid} -g ${pip_tools_gid} ${pip_tools_user}
+    useradd -l -d ${pip_tools_home} -m -s ${pip_tools_shell} -u ${pip_tools_uid} -g ${pip_tools_gid} ${pip_tools_user}
 
 # Drop down to unprivileged user.
 USER ${pip_tools_user}

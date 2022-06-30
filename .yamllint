@@ -1,0 +1,32 @@
+---
+rules:
+  braces: enable
+  brackets: enable
+  colons: enable
+  commas: enable
+  comments:
+    level: warning
+  comments-indentation:
+    level: warning
+  document-end: disable
+  document-start:
+    level: error
+  empty-lines: enable
+  empty-values: enable
+  hyphens: enable
+  indentation: enable
+  key-duplicates: enable
+  key-ordering: disable
+  line-length:
+    max: 125
+    level: warning
+  new-line-at-end-of-file: enable
+  new-lines: enable
+  octal-values: enable
+  quoted-strings:
+    quote-type: double
+    required: only-when-needed
+  trailing-spaces: enable
+  truthy:
+    check-keys: false
+    level: error
