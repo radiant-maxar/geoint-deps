@@ -18,6 +18,7 @@ Patch1:         python-mapnik-proj6-b.patch
 # *** "WARNING: skipping building the optional CSV datasource plugin which requires boost >= 1.56"
 Patch2:         python-mapnik-csv-unsupported.patch
 Patch3:         python-mapnik-fix-postgis-test.patch
+Patch4:         python-mapnik-failing-tests.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  gcc-c++
