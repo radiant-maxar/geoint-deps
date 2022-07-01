@@ -1,5 +1,7 @@
 # FoundationGEOINT Dependencies
 
+[![CI](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.yml/badge.svg)](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.yml)
+
 This repository provides a Docker-based build system for creating
 RPMs of the latest geospatial libraries on CentOS/RHEL 7 until the
 platform fades into obsolesence.  Priorities:
