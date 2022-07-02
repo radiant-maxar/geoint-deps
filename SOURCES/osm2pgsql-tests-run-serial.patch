@@ -1,0 +1,25 @@
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 3d56d447..02f8c526 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -102,6 +102,11 @@ if (HAVE_LUA)
+     set(FLEX_EXAMPLE_CONFIGS "attributes,compatible,data-types,generic,geometries,places,route-relations,simple,unitable")
+     # with-schema.lua is not tested because it needs the schema created in the database
+     set_tests_properties(test-output-flex-example-configs PROPERTIES ENVIRONMENT "EXAMPLE_FILES=${FLEX_EXAMPLE_CONFIGS}")
++
++    set_tests_properties(test-output-flex-update PROPERTIES RUN_SERIAL TRUE)
++    set_tests_properties(test-output-flex-way-add PROPERTIES RUN_SERIAL TRUE)
++    set_tests_properties(test-output-flex-way-del PROPERTIES RUN_SERIAL TRUE)
++    set_tests_properties(test-output-flex-way-relation-del PROPERTIES RUN_SERIAL TRUE)
+ endif()
+ 
+ 
+@@ -133,6 +138,8 @@ if (PYTHONINTERP_FOUND)
+                          PROPERTIES FIXTURES_REQUIRED Tablespace)
+     set_tests_properties(regression-test-pbf PROPERTIES ENVIRONMENT OSM2PGSQL_BINARY=$<TARGET_FILE:osm2pgsql>)
+     message(STATUS "Added test: regression-test-pbf (needs Python with psycopg2 module)")
++
++    set_tests_properties(regression-test-pbf PROPERTIES RUN_SERIAL TRUE)
+ else()
+     message(WARNING "Can not find python, regression test disabled")
+ endif()

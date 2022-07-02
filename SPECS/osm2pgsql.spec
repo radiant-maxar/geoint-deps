@@ -16,6 +16,7 @@ License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch0:         osm2pgsql-replication-osm-server.patch
+Patch1:         osm2pgsql-tests-run-serial.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
@@ -100,10 +101,6 @@ pg_ctl start
 # Create testing tablespace required by the osm2pgsql tests.
 %{__mkdir_p} /tmp/psql-tablespace
 psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tablespace'"
-
-# Set the SMP flags so only one process is used for the tests, otherwise database
-# connections will be exhausted resulting in test failures.
-%global _smp_mflags -j1
 
 # Run all tests.
 %ctest3
