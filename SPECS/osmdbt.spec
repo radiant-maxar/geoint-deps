@@ -76,9 +76,7 @@ popd
 %check
 %if %{with db_tests}
 pushd build
-# Run all tests, using a single process.
-%global _smp_mflags -j1
-%ctest3 -V
+%ctest3
 popd
 %endif
 

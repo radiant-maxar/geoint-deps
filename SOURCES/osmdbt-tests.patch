@@ -1,28 +1,37 @@
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 504b3ac..99d2692 100644
+index 504b3ac..1f2c787 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
-@@ -34,7 +34,7 @@ add_test(NAME unit-tests COMMAND unit-tests WORKING_DIRECTORY "${PROJECT_SOURCE_
+@@ -34,9 +34,14 @@ add_test(NAME unit-tests COMMAND unit-tests WORKING_DIRECTORY "${PROJECT_SOURCE_
  set_tests_properties(unit-tests PROPERTIES FIXTURES_REQUIRED UnitTest)
  
  function(add_pg_test _tname)
 -    add_test(NAME ${_tname} COMMAND pg_virtualenv ${PG_VIRTUALENV_VERSION} -o wal_level=logical -o max_replication_slots=2 ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${_tname}.sh)
++    if(NOT PGPORT)
++        set(PGPORT 5432 PARENT_SCOPE)
++    endif()
 +    add_test(NAME ${_tname} COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts/pg_virtualenv.sh ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${_tname}.sh)
      set_tests_properties(${_tname} PROPERTIES ENVIRONMENT
-                          "TEST=${_tname};TESTDIR=${CMAKE_CURRENT_BINARY_DIR}/${_tname};SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/scripts")
+-                         "TEST=${_tname};TESTDIR=${CMAKE_CURRENT_BINARY_DIR}/${_tname};SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/scripts")
++                         "PGPORT=${PGPORT};TEST=${_tname};TESTDIR=${CMAKE_CURRENT_BINARY_DIR}/${_tname};SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/scripts")
++    math(EXPR PGPORT "${PGPORT} + 1")
++    set(PGPORT ${PGPORT} PARENT_SCOPE)
  endfunction()
+ 
+ add_pg_test(osmdbt-cmdline)
 diff --git a/test/scripts/pg_virtualenv.sh b/test/scripts/pg_virtualenv.sh
 new file mode 100755
 index 0000000..acba509
 --- /dev/null
 +++ b/test/scripts/pg_virtualenv.sh
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,41 @@
 +#!/bin/bash
 +SCRIPT_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 +PGDYNLIBS="$(realpath ${SCRIPT_HOME}/../../build/postgresql-plugin):$(pg_config --pkglibdir)"
-+export PGDATA="$HOME/pgdata"
++export PGDATA="${PGDATA:-${HOME}/pgdata_${TEST:-test}}"
 +export PGDATABASE="postgres"
 +export PGHOST="127.0.0.1"
++export PGPORT="${PGPORT:-5432}"
 +export PGUSER="${USER:-${LOGNAME:-$(id -un)}}"
 +export PGPASSWORD=$(dd if=/dev/urandom bs=1k count=1 2>/dev/null | md5sum - | awk '{ print $1 }')
 +
@@ -44,6 +53,7 @@ index 0000000..acba509
 +dynamic_library_path = '${PGDYNLIBS}'
 +fsync = off
 +listen_addresses = '127.0.0.1'
++port = ${PGPORT}
 +max_replication_slots = 2
 +shared_buffers = 1GB
 +unix_socket_directories = '/tmp'
