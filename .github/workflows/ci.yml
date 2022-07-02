@@ -199,25 +199,3 @@ jobs:
         with:
           download_rpms: true
           make_target: ${{ matrix.rpm }}
-
-
-  build-rpms-7:
-    name: Build `${{ matrix.rpm }}` RPM(s)
-    needs: build-rpms-6
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        rpm:
-          - python-mapnik
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: ./.github/actions/build
-        with:
-          download_rpms: true
-          make_target: ${{ matrix.rpm }}

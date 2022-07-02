@@ -65,7 +65,6 @@ PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
 PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
-PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
 RACK_RPM := $(call rpm_file,rubygem-rack)
 RUBY_RPM := $(call rpm_file,ruby)
 RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
@@ -110,7 +109,6 @@ RPMBUILD_RPMS := \
 	protobuf-c \
 	protozero \
 	pyosmium \
-	python-mapnik \
 	rack \
 	ruby \
 	rubygem-libxml-ruby \
@@ -170,7 +168,6 @@ distclean: .env
 	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
-	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
 	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-libxml-ruby.spec) >> .env
@@ -230,7 +227,6 @@ protobuf-c: $(PROTOBUF_RPM) $(PROTOBUF_C_RPM)
 protobuf: $(PROTOBUF_RPM)
 protozero: $(PROTOBUF_RPM) $(PROTOZERO_RPM)
 pyosmium: $(PROTOBUF_RPM) $(PROTOZERO_RPM) $(LIBOSMIUM_RPM) $(PYOSMIUM_RPM)
-python-mapnik: $(FILEGDBAPI_RPM) $(GEOS_RPM) $(GPSBABEL_RPM) $(LIBKML_RPM) $(OGDI_RPM) $(CGAL_RPM) $(SFCGAL_RPM) $(SQLITE_RPM) $(PROJ_RPM) $(LIBGEOTIFF_RPM) $(GDAL_RPM) $(PROTOBUF_RPM) $(PROTOBUF_C_RPM) $(POSTGIS_RPM) $(MAPNIK_RPM) $(PYTHON_MAPNIK_RPM)
 rack: $(RACK_RPM)
 ruby: $(RUBY_RPM)
 rubygem-libxml-ruby: $(RUBYGEM_LIBXML_RUBY_RPM)
