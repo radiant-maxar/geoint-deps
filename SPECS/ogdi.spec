@@ -1,3 +1,5 @@
+%global gittag %(echo %{rpmbuild_version} | tr '.' '_')
+
 Name:           ogdi
 Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
@@ -5,9 +7,10 @@ Summary:        Open Geographic Datastore Interface
 
 License:        BSD
 URL:            http://ogdi.sourceforge.net/
-Source0:        https://github.com/libogdi/ogdi/archive/%{name}_%{tag}.tar.gz
+Source0:        https://github.com/libogdi/ogdi/archive/%{name}_%{gittag}.tar.gz
 Source1:        http://ogdi.sourceforge.net/ogdi.pdf
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1470896
 Patch0:         ogdi-%{version}-sailer.patch
 
 BuildRequires:  expat-devel
@@ -47,7 +50,7 @@ ODBC driver for OGDI.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{name}_%{tag}
+%autosetup -p1 -n %{name}-%{name}_%{gittag}
 
 # include documentation
 %{__cp} -p %{SOURCE1} .
@@ -60,7 +63,7 @@ export CFG=debug # for -g
 
 # removal of -D_FORTIFY_SOURCE from preprocessor flags seems not needed any more
 # ogdits-3.1 test suite produces same result with and without the flag
-export CFLAGS="$RPM_OPT_FLAGS -DDONT_TD_VOID -DUSE_TERMIO"
+export CFLAGS="%{optflags} -DDONT_TD_VOID -DUSE_TERMIO"
 %configure \
 	--with-binconfigs \
 	--with-expat \

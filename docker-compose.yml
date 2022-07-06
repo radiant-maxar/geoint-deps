@@ -96,8 +96,6 @@ x-rpmbuild:
     ogdi:
       image: rpmbuild-ogdi
       version: &ogdi_version 4.1.0-1
-      defines:
-        tag: 4_1_0
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
       version: &openstreetmap_carto_version 5.4.0-2
