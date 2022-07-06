@@ -100,10 +100,10 @@ x-rpmbuild:
         tag: 4_1_0
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
-      version: &openstreetmap_carto_version 5.4.0-2
+      version: &openstreetmap_carto_version 5.4.0-3
       arch: noarch
       defines:
-        data_natural_earth_version: 5.0.1
+        data_natural_earth_version: 5.1.0
     osmctools:
       image: rpmbuild-osmctools
       version: &osmctools_version 0.9-1
