@@ -1,5 +1,6 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-generic
+# hadolint ignore=DL3007
 FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
 ARG go_version=1.18.2
 ARG go_checksum=e54bec97a1a5d230fc2f9ad0880fcbabb5888f30ed9666eca4a91c5a32e86cbc
@@ -19,8 +20,8 @@ RUN curl -sSL -O https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz && 
     rm -f go${go_version}.linux-amd64.tar.gz
 
 # Install any other extra packages.
-RUN if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
-    dnf -q -y clean all
+# hadolint ignore=DL3040,DL3041
+RUN if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi
 
 # Switch back to default RPM building user.
 USER ${RPMBUILD_USER}

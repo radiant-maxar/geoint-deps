@@ -12,8 +12,8 @@ x-rpmbuild:
     rpmbuild_dist: *rpmbuild_dist
     rpmbuild_email: *rpmbuild_email
     rpmbuild_name: *rpmbuild_name
-    rpmbuild_uid: "${RPMBUILD_UID}"
-    rpmbuild_gid: "${RPMBUILD_GID}"
+    rpmbuild_uid: ${RPMBUILD_UID}
+    rpmbuild_gid: ${RPMBUILD_GID}
   build_defaults: &build_defaults
     context: .
     dockerfile: docker/Dockerfile.rpmbuild-generic
@@ -215,10 +215,10 @@ x-rpmbuild:
       image: rpmbuild-uriparser
       version: &uriparser_version 0.9.6-1
   service_volumes: &service_volumes
-    - "./RPMS:/rpmbuild/RPMS:rw"
-    - "./SOURCES:/rpmbuild/SOURCES:rw"
-    - "./SPECS:/rpmbuild/SPECS:ro"
-    - "./scripts:/rpmbuild/scripts:ro"
+    - ./RPMS:/rpmbuild/RPMS:rw
+    - ./SOURCES:/rpmbuild/SOURCES:rw
+    - ./SPECS:/rpmbuild/SPECS:ro
+    - ./scripts:/rpmbuild/scripts:ro
   service_defaults: &service_defaults
     command: tail -f /dev/null
     init: true
@@ -253,7 +253,7 @@ services:
       <<: *build_defaults
       args:
         arpack_version: *arpack_version
-        packages: "${RPMBUILD_ARMADILLO_PACKAGES}"
+        packages: ${RPMBUILD_ARMADILLO_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-armadillo
   rpmbuild-arpack:
@@ -263,7 +263,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_ARPACK_PACKAGES}"
+        packages: ${RPMBUILD_ARPACK_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-cgal:
     <<: *service_defaults
@@ -272,7 +272,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_CGAL_PACKAGES}"
+        packages: ${RPMBUILD_CGAL_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-fonts:
     <<: *service_defaults
@@ -305,7 +305,7 @@ services:
         libgta_version: *libgta_version
         libkml_version: *libkml_version
         ogdi_version: *ogdi_version
-        packages: "${RPMBUILD_GDAL_PACKAGES}"
+        packages: ${RPMBUILD_GDAL_PACKAGES}
         proj_version: *proj_version
         rpmbuild_channel: *rpmbuild_channel
         sfcgal_version: *SFCGAL_version
@@ -318,7 +318,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_GPSBABEL_PACKAGES}"
+        packages: ${RPMBUILD_GPSBABEL_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-g2clib:
     <<: *service_defaults
@@ -327,7 +327,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_G2CLIB_PACKAGES}"
+        packages: ${RPMBUILD_G2CLIB_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-proj:
     <<: *service_defaults
@@ -336,7 +336,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_PROJ_PACKAGES}"
+        packages: ${RPMBUILD_PROJ_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-libgeotiff:
     <<: *service_defaults
@@ -345,7 +345,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_LIBGEOTIFF_PACKAGES}"
+        packages: ${RPMBUILD_LIBGEOTIFF_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
         proj_version: *proj_version
       dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
@@ -356,7 +356,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_LIBPQXX_PACKAGES}"
+        packages: ${RPMBUILD_LIBPQXX_PACKAGES}
         postgres_version: *postgres_version
         rpmbuild_channel: *rpmbuild_channel
         testing: 1
@@ -368,7 +368,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_LIBKML_PACKAGES}"
+        packages: ${RPMBUILD_LIBKML_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
         uriparser_version: *uriparser_version
       dockerfile: docker/Dockerfile.rpmbuild-libkml
@@ -379,7 +379,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_LIBOSMIUM_PACKAGES}"
+        packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-ogdi:
@@ -389,7 +389,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_OGDI_PACKAGES}"
+        packages: ${RPMBUILD_OGDI_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
@@ -398,7 +398,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES}"
+        packages: ${RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-go
   rpmbuild-mapnik:
@@ -408,7 +408,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_MAPNIK_PACKAGES}"
+        packages: ${RPMBUILD_MAPNIK_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-openstreetmap-carto:
@@ -418,7 +418,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES}"
+        packages: ${RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-osmctools:
     <<: *service_defaults
@@ -427,7 +427,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_OSMCTOOLS_PACKAGES}"
+        packages: ${RPMBUILD_OSMCTOOLS_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-osmdbt:
     <<: *service_defaults
@@ -436,7 +436,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_OSMDBT_PACKAGES}"
+        packages: ${RPMBUILD_OSMDBT_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-osmium-tool:
@@ -446,7 +446,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_OSMIUM_TOOL_PACKAGES}"
+        packages: ${RPMBUILD_OSMIUM_TOOL_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-osm2pgsql:
@@ -456,7 +456,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_OSM2PGSQL_PACKAGES}"
+        packages: ${RPMBUILD_OSM2PGSQL_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-passenger:
@@ -466,7 +466,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_PASSENGER_PACKAGES}"
+        packages: ${RPMBUILD_PASSENGER_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-pgdg:
@@ -488,7 +488,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_POSTGIS_PACKAGES}"
+        packages: ${RPMBUILD_POSTGIS_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-protozero:
@@ -498,7 +498,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_PROTOZERO_PACKAGES}"
+        packages: ${RPMBUILD_PROTOZERO_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-pyosmium:
     <<: *service_defaults
@@ -507,7 +507,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_PYOSMIUM_PACKAGES}"
+        packages: ${RPMBUILD_PYOSMIUM_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-python3-mapnik:
@@ -517,7 +517,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_PYTHON_MAPNIK_PACKAGES}"
+        packages: ${RPMBUILD_PYTHON_MAPNIK_PACKAGES}
         python_packages: >-
           nose
           PyPDF2
@@ -536,7 +536,7 @@ services:
           minitest-sprint
           minitest-global_expectations
           webrick
-        packages: "${RPMBUILD_RACK_PACKAGES}"
+        packages: ${RPMBUILD_RACK_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults
@@ -549,7 +549,7 @@ services:
           minitest
           rake-compiler
         rpmbuild_channel: *rpmbuild_channel
-        packages: "${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}"
+        packages: ${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}
   rpmbuild-sfcgal:
     <<: *service_defaults
     depends_on:
@@ -558,7 +558,7 @@ services:
       <<: *build_defaults
       args:
         cgal_version: *CGAL_version
-        packages: "${RPMBUILD_SFCGAL_PACKAGES}"
+        packages: ${RPMBUILD_SFCGAL_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-sfcgal
   rpmbuild-sqlite-pcre:
@@ -568,7 +568,7 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_SQLITE_PCRE_PACKAGES}"
+        packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
   rpmbuild-uriparser:
     <<: *service_defaults
@@ -577,5 +577,5 @@ services:
     build:
       <<: *build_defaults
       args:
-        packages: "${RPMBUILD_URIPARSER_PACKAGES}"
+        packages: ${RPMBUILD_URIPARSER_PACKAGES}
         rpmbuild_channel: *rpmbuild_channel
