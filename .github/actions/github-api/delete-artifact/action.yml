@@ -1,0 +1,49 @@
+---
+name: Delete artifact
+
+inputs:
+  artifact_name:
+    description: The name of the artifact
+    required: true
+  repo:
+    default: ${{ github.repository }}
+    description: The name of the repository
+    required: false
+  run_id:
+    default: ${{ github.run_id }}
+    description: The unique identifier of the workflow run
+    required: false
+  token:
+    default: ${{ github.token }}
+    description: The token
+    required: false
+  token_type:
+    default: bearer
+    description: The token type
+    required: false
+
+runs:
+  using: composite
+
+  steps:
+    - name: Delete the `${{ inputs.artifact_name }}` artifact from workflow run `${{ inputs.run_id }}`
+      run: |
+        JQ_FILTER='.artifacts[] | select(.name=="${{ inputs.artifact_name }}").id'
+        URL_PATH="/repos/${{ inputs.repo }}/actions/runs/${{ inputs.run_id }}/artifacts"
+
+        ARTIFACTS_OUTPUT=$(curl \
+          --header "Accept: application/vnd.github.v3+json" \
+          --silent \
+          --url "https://api.github.com${URL_PATH}")
+
+        ARTIFACT_ID=$(echo ${ARTIFACTS_OUTPUT} | jq "${JQ_FILTER}")
+        echo ${ARTIFACT_ID}
+        URL_PATH="/repos/${{ inputs.repo }}/actions/artifacts/${ARTIFACT_ID}"
+
+        curl \
+          --header "Accept: application/vnd.github.v3+json" \
+          --header "Authorization: ${{ inputs.token_type }} ${{ inputs.token }}" \
+          --request DELETE \
+          --silent \
+          --url "https://api.github.com${URL_PATH}"
+      shell: bash --noprofile --norc -euxo pipefail {0}

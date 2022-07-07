@@ -2,34 +2,39 @@
 version: "3.7"
 
 x-rpmbuild:
-  dist: &rpmbuild_dist .el9
   channel_name: &rpmbuild_channel stable-el9
+  dist: &rpmbuild_dist .el9
   email: &rpmbuild_email foundationgeoint-packaging@maxar.com
+  image_prefix: &rpmbuild_image_prefix ${IMAGE_PREFIX}
   packager_name: &rpmbuild_name FoundationGEOINT Packaging
   postgres_version: &postgres_version "15"
   vendor: &rpmbuild_vendor Maxar Technologies
   base_args: &rpmbuild_base_args
     rpmbuild_dist: *rpmbuild_dist
     rpmbuild_email: *rpmbuild_email
+    rpmbuild_gid: ${RPMBUILD_GID}
     rpmbuild_name: *rpmbuild_name
     rpmbuild_uid: ${RPMBUILD_UID}
-    rpmbuild_gid: ${RPMBUILD_GID}
   build_defaults: &build_defaults
     context: .
     dockerfile: docker/Dockerfile.rpmbuild-generic
     labels:
       maintainer: *rpmbuild_email
       vendor: *rpmbuild_vendor
+  build_args_defaults: &build_args_defaults
+    rpmbuild_channel: *rpmbuild_channel
+    rpmbuild_image_prefix: *rpmbuild_image_prefix
+    rpmbuild_image: rpmbuild
   # Use consistent values for minimum versions for RPM build
   # and runtime requirements.
   minimum_versions:
-    geos: &geos_min_version 3.11.0
     gdal: &gdal_min_version 3.5.0
+    geos: &geos_min_version 3.11.0
     libosmium: &libosmium_min_version 2.18.0
     postgis_min_version: &postgis_min_version 3.3.0
     proj: &proj_min_version 9.0.0
-    protobuf: &protobuf_min_version 3.0.0
     protobuf-c: &protobuf_c_min_version 1.3.0
+    protobuf: &protobuf_min_version 3.0.0
     protozero: &protozero_min_version 1.7.0
     sqlite_min_version: &sqlite_min_version 3.11.0
   # Configuration for building every dependency RPM.
@@ -225,6 +230,7 @@ x-rpmbuild:
     volumes: *service_volumes
 
 services:
+  # Base images
   rpmbuild:
     build:
       context: .
@@ -235,65 +241,65 @@ services:
         maintainer: *rpmbuild_email
         vendor: *rpmbuild_vendor
     command: tail -f /dev/null
+    image: ${IMAGE_PREFIX}rpmbuild
     init: true
     user: nobody
+  rpmbuild-fonts:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: fontpackages-devel
+    image: ${IMAGE_PREFIX}rpmbuild-fonts
   rpmbuild-generic:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
-        rpmbuild_channel: *rpmbuild_channel
+        <<: *build_args_defaults
+    image: ${IMAGE_PREFIX}rpmbuild-generic
+  rpmbuild-pgdg:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        postgres_version: *postgres_version
+        # PostgreSQL 15 is currently in beta, use testing repository.
+        testing: 1
+      dockerfile: docker/Dockerfile.rpmbuild-pgdg
+    image: ${IMAGE_PREFIX}rpmbuild-pgdg
+  # RPM images
   rpmbuild-armadillo:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-arpack
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         arpack_version: *arpack_version
         packages: ${RPMBUILD_ARMADILLO_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-armadillo
   rpmbuild-arpack:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_ARPACK_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-cgal:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_CGAL_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
-  rpmbuild-fonts:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
-    build:
-      <<: *build_defaults
-      args:
-        packages: >-
-          fontpackages-devel
-          git
-          python3
-          python3-pip
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-gdal:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         arpack_version: *arpack_version
         armadillo_version: *armadillo_version
         cgal_version: *CGAL_version
@@ -307,229 +313,182 @@ services:
         ogdi_version: *ogdi_version
         packages: ${RPMBUILD_GDAL_PACKAGES}
         proj_version: *proj_version
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
         sfcgal_version: *SFCGAL_version
         uriparser_version: *uriparser_version
       dockerfile: docker/Dockerfile.rpmbuild-gdal
   rpmbuild-gpsbabel:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_GPSBABEL_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-g2clib:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_G2CLIB_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-proj:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_PROJ_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-libgeotiff:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-proj
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_LIBGEOTIFF_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
         proj_version: *proj_version
       dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
   rpmbuild-libpqxx:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_LIBPQXX_PACKAGES}
         postgres_version: *postgres_version
-        rpmbuild_channel: *rpmbuild_channel
         testing: 1
       dockerfile: docker/Dockerfile.rpmbuild-pgdg
   rpmbuild-libkml:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-uriparser
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_LIBKML_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
         uriparser_version: *uriparser_version
       dockerfile: docker/Dockerfile.rpmbuild-libkml
   rpmbuild-libosmium:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-ogdi:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_OGDI_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-generic
       dockerfile: docker/Dockerfile.rpmbuild-go
   rpmbuild-mapnik:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_MAPNIK_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-openstreetmap-carto:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-osmctools:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_OSMCTOOLS_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-osmdbt:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_OSMDBT_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-osmium-tool:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_OSMIUM_TOOL_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-osm2pgsql:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_OSM2PGSQL_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-passenger:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_PASSENGER_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
-  rpmbuild-pgdg:
-    <<: *service_defaults
-    depends_on:
-      - rpmbuild
-    build:
-      <<: *build_defaults
-      args:
-        postgres_version: *postgres_version
-        rpmbuild_channel: *rpmbuild_channel
-        # PostgreSQL 15 is currently in beta, use testing repository.
-        testing: 1
-      dockerfile: docker/Dockerfile.rpmbuild-pgdg
   rpmbuild-postgis:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-pgdg
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_POSTGIS_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-protozero:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_PROTOZERO_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-pyosmium:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-libosmium
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_PYOSMIUM_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-python3-mapnik:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-mapnik
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_PYTHON_MAPNIK_PACKAGES}
         python_packages: >-
           nose
           PyPDF2
-        rpmbuild_channel: *rpmbuild_channel
+        rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-rack:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         gem_packages: >-
           memcache-client
           minitest
@@ -537,45 +496,36 @@ services:
           minitest-global_expectations
           webrick
         packages: ${RPMBUILD_RACK_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         gem_packages: >-
           minitest
           rake-compiler
-        rpmbuild_channel: *rpmbuild_channel
         packages: ${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}
   rpmbuild-sfcgal:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-cgal
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         cgal_version: *CGAL_version
         packages: ${RPMBUILD_SFCGAL_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
       dockerfile: docker/Dockerfile.rpmbuild-sfcgal
   rpmbuild-sqlite-pcre:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
   rpmbuild-uriparser:
     <<: *service_defaults
-    depends_on:
-      - rpmbuild-generic
     build:
       <<: *build_defaults
       args:
+        <<: *build_args_defaults
         packages: ${RPMBUILD_URIPARSER_PACKAGES}
-        rpmbuild_channel: *rpmbuild_channel
