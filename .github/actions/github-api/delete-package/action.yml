@@ -1,0 +1,39 @@
+---
+name: Delete package
+
+inputs:
+  org:
+    default: ${{ github.repository_owner }}
+    description: The organization name
+    required: false
+  package_name:
+    description: The name of the package
+    required: true
+  package_type:
+    default: container
+    description: The type of supported package
+    required: false
+  token:
+    default: ${{ github.token }}
+    description: The token
+    required: false
+  token_type:
+    default: bearer
+    description: The token type
+    required: false
+
+runs:
+  using: composite
+
+  steps:
+    - name: Delete the `${{ inputs.package_name }}` ${{ inputs.package_type }} package
+      run: |
+        URL_PATH="/orgs/${{ inputs.org }}/packages/${{ inputs.package_type }}/${{ inputs.package_name }}"
+
+        curl \
+          --header "Accept: application/vnd.github.v3+json" \
+          --header "Authorization: ${{ inputs. token_type }} ${{ inputs.token }}" \
+          --request DELETE \
+          --silent \
+          --url "https://api.github.com${URL_PATH}"
+      shell: bash --noprofile --norc -euxo pipefail {0}
