@@ -1,6 +1,6 @@
 # The following macros are also required:
 # * geos_min_version
-# * postgres_dotless
+# * postgres_version
 # * postgres_instdir
 # * proj_min_version
 
@@ -104,7 +104,7 @@ BuildRequires: openjpeg2-devel
 BuildRequires: perl-ExtUtils-MakeMaker
 BuildRequires: pkgconfig
 BuildRequires: poppler-devel
-BuildRequires: postgresql%{postgres_dotless}-devel
+BuildRequires: postgresql%{postgres_version}-devel
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python2-devel
 BuildRequires: python3-devel

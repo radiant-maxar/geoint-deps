@@ -1,6 +1,6 @@
 # The following macros are also required:
 # * libosmium_min_version
-# * postgres_dotless
+# * postgres_version
 # * postgres_instdir
 %bcond_without db_tests
 
@@ -29,30 +29,30 @@ BuildRequires:  gettext-devel
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  libpqxx-devel
 BuildRequires:  pandoc
-BuildRequires:  postgresql%{postgres_dotless}-devel
+BuildRequires:  postgresql%{postgres_version}-devel
 BuildRequires:  yaml-cpp-devel
 BuildRequires:  zlib-devel
 # Need PostgreSQL server, PostGIS, and Psycopg2 to run the tests.
 %if %{with db_tests}
-BuildRequires:  postgresql%{postgres_dotless}-contrib
-BuildRequires:  postgresql%{postgres_dotless}-server
+BuildRequires:  postgresql%{postgres_version}-contrib
+BuildRequires:  postgresql%{postgres_version}-server
 %endif
 
 # Ensure depends on PGDG libraries it was built with.
-Requires:       postgresql%{postgres_dotless}-libs
+Requires:       postgresql%{postgres_version}-libs
 
 %description
 Tools for creating replication feeds from the main OSM database.
 
 
-%package -n postgresql%{postgres_dotless}-osm-logical
+%package -n postgresql%{postgres_version}-osm-logical
 License:        ASL 2.0
 Summary:        PostgreSQL plugin for OpenStreetMap replication
 
 # Ensure depends on PGDG server version it was built with.
-Requires:       postgresql%{postgres_dotless}-server
+Requires:       postgresql%{postgres_version}-server
 
-%description -n postgresql%{postgres_dotless}-osm-logical
+%description -n postgresql%{postgres_version}-osm-logical
 PostgreSQL plugin to support logical replication of OpenStreetMap API databases.
 
 
@@ -98,7 +98,7 @@ popd
 %{_bindir}/%{name}-*
 %{_mandir}/man1/*
 
-%files -n postgresql%{postgres_dotless}-osm-logical
+%files -n postgresql%{postgres_version}-osm-logical
 %doc postgresql-plugin/README.md
 %license postgresql-plugin/LICENSE.md
 %{_usr}/pgsql-%{postgres_version}/lib
