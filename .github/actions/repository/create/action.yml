@@ -1,0 +1,29 @@
+---
+name: Create repository
+
+inputs:
+  repo_dirname:
+    default: ${{ github.ref_name }}
+    description: Repository directory name
+    required: false
+  repo_parent_dir:
+    default: /tmp/repos
+    description: Repository parent directory
+    required: false
+  rpms_dir:
+    default: RPMS
+    description: RPMs directory
+    required: false
+
+runs:
+  using: composite
+
+  steps:
+    - name: Create repository
+      run: |
+        REPO_DIR=${{ inputs.repo_parent_dir }}/${{ inputs.repo_dirname }}
+
+        mkdir --parents ${REPO_DIR}
+        cp --verbose ${{ inputs.rpms_dir }}/{noarch,x86_64}/*.rpm ${REPO_DIR}/
+        scripts/repo-update.sh ${REPO_DIR}
+      shell: bash --noprofile --norc -euxo pipefail {0}

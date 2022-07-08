@@ -1,7 +1,8 @@
 ARG rpmbuild_channel
 ARG rpmbuild_image=rpmbuild-pgdg
+ARG rpmbuild_image_prefix
 # hadolint ignore=DL3007
-FROM deps-${rpmbuild_channel}_${rpmbuild_image}:latest
+FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
 
 # Our GDAL package depends on RPMs we build; the desired package
 # versions, *including* the release iteration (e.g, '1.0.0-1') are
