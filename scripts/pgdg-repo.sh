@@ -2,10 +2,8 @@
 set -euo pipefail
 
 POSTGRES_VERSION="${1}"
-POSTGRES_DOTLESS="$(echo "${POSTGRES_VERSION}" | awk '{ gsub(/\./, ""); print substr($0, 1, 2) }')"
-POSTGRES_MAJOR_VERSION="$(echo "${POSTGRES_VERSION}" | awk -F. '{ if ($1 >= 10) print $1; else print $0 }')"
 PGDG_KEY="${PGDG_KEY:-/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG}"
-PGDG_REPO="${PGDG_REPO:-/etc/yum.repos.d/pgdg-${POSTGRES_DOTLESS}-centos.repo}"
+PGDG_REPO="${PGDG_REPO:-/etc/yum.repos.d/pgdg-${POSTGRES_VERSION}-centos.repo}"
 PGDG_BASEURL="https://download.postgresql.org/pub/repos/yum"
 if [ "${PGDG_TESTING:-0}" = "1" ]; then
     PGDG_BASEURL="${PGDG_BASEURL}/testing"
@@ -45,19 +43,18 @@ GaCXCY8h3xi6VIhJBBgRAgAJBQJHg/JKAhsMAAoJEB8W0uFELfD4K4cAoJ4yug8y
 EOF
 
 cat > "${PGDG_REPO}" <<EOF
-[pgdg${POSTGRES_DOTLESS}]
-name=PostgreSQL ${POSTGRES_MAJOR_VERSION} \$releasever - \$basearch
-baseurl=${PGDG_BASEURL}/${POSTGRES_MAJOR_VERSION}/redhat/rhel-\$releasever-\$basearch
+[pgdg${POSTGRES_VERSION}]
+name=PostgreSQL ${POSTGRES_VERSION} \$releasever - \$basearch
+baseurl=${PGDG_BASEURL}/${POSTGRES_VERSION}/redhat/rhel-\$releasever-\$basearch
 enabled=1
-exclude=CGAL* geos* gdal* ogdi* ogr* osm* postgis* proj* SFCGAL*
 gpgcheck=1
 gpgkey=file://${PGDG_KEY}
 repo_gpgcheck=1
 
-[pgdg${POSTGRES_DOTLESS}-source]
-name=PostgreSQL ${POSTGRES_MAJOR_VERSION} \$releasever - \$basearch - Source
+[pgdg${POSTGRES_VERSION}-source]
+name=PostgreSQL ${POSTGRES_VERSION} \$releasever - \$basearch - Source
 failovermethod=priority
-baseurl=${PGDG_BASEURL}/srpms/${POSTGRES_MAJOR_VERSION}/redhat/rhel-\$releasever-\$basearch
+baseurl=${PGDG_BASEURL}/srpms/${POSTGRES_VERSION}/redhat/rhel-\$releasever-\$basearch
 enabled=0
 gpgcheck=1
 gpgkey=file://${PGDG_KEY}
