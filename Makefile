@@ -1,9 +1,15 @@
 ## Conditional variables.
 DOCKER ?= docker
 DOCKER_COMPOSE ?= docker-compose
+CI ?= false
 COMPOSE_FILE ?= docker-compose.yml
+COMPOSE_PROJECT_NAME ?= geoint-deps-$(RPMBUILD_CHANNEL)
+IMAGE_PREFIX ?= $(COMPOSE_PROJECT_NAME)_
+
 
 ## Macro functions.
+build_unless_image_exists = $(shell $(DOCKER) image inspect $(IMAGE_PREFIX)$(1) >/dev/null 2>&1 || DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) build $(1))
+pull_if_ci = $(shell bash -c '[ "$(CI)" == "false" ] || $(DOCKER_COMPOSE) pull --quiet $(1)')
 
 # The `rpmbuild_util.py` utility script is used to pull out configured versions,
 # Docker build images, and other build variables.
@@ -18,8 +24,10 @@ rpm_file = $(call rpmbuild_util,$(1),--filename)
 # Gets the RPM package name from the filename.
 rpm_package = $(shell ./scripts/rpm_package.py $(1))
 rpmbuild_image = $(call rpmbuild_util,$(call rpm_package,$(1)),--image)
+rpmbuild_image_parent = $(call rpmbuild_util,$(call rpmbuild_image,$(1)).build.args.rpmbuild_image,--variable --config-key services)
 rpmbuild_release = $(call config_release,$(call rpm_package,$(1)))
 rpmbuild_version = $(call config_version,$(call rpm_package,$(1)))
+
 
 ## Variables
 DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
@@ -45,16 +53,16 @@ LIBOSMIUM_RPM := $(call rpm_file,libosmium)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 OGDI_RPM := $(call rpm_file,ogdi)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
+OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
 OSMDBT_RPM := $(call rpm_file,osmdbt)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
-OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 PASSENGER_RPM := $(call rpm_file,passenger)
 POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
-PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
+PROTOBUF_RPM := $(call rpm_file,protobuf)
 PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
 PYTHON_MAPNIK_RPM := $(call rpm_file,python-mapnik)
@@ -64,48 +72,20 @@ RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
 RUBYGEM_PG_RPM := $(call rpm_file,rubygem-pg)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
-SQLITE_RPM := $(call rpm_file,sqlite)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
+SQLITE_RPM := $(call rpm_file,sqlite)
 TBB_RPM := $(call rpm_file,tbb)
 
-# Build containers and RPMs.
-RPMBUILD_CONTAINERS := \
+# Build images and RPMs.
+RPMBUILD_BASE_IMAGES := \
 	rpmbuild \
-	rpmbuild-cgal \
 	rpmbuild-fonts \
 	rpmbuild-generic \
-	rpmbuild-gdal \
-	rpmbuild-geos \
-	rpmbuild-gpsbabel \
-	rpmbuild-journald-cloudwatch-logs \
-	rpmbuild-libgeotiff \
-	rpmbuild-libkml \
-	rpmbuild-libosmium \
-	rpmbuild-ogdi \
-	rpmbuild-openstreetmap-carto \
-	rpmbuild-osmctools \
-	rpmbuild-osmdbt \
-	rpmbuild-osmium-tool \
-	rpmbuild-osm2pgsql \
-	rpmbuild-passenger \
-	rpmbuild-postgis \
-	rpmbuild-proj \
-	rpmbuild-protobuf \
-	rpmbuild-protobuf-c \
-	rpmbuild-protozero \
-	rpmbuild-pyosmium \
-	rpmbuild-rack \
-	rpmbuild-ruby \
-	rpmbuild-rubygem-libxml-ruby \
-	rpmbuild-rubygem-pg \
-	rpmbuild-sfcgal \
-	rpmbuild-sqlite \
-	rpmbuild-tbb
+	rpmbuild-pgdg
 RPMBUILD_RPMS := \
 	CGAL \
-	FileGDBAPI \
-	SFCGAL \
 	dumb-init \
+	FileGDBAPI \
 	gdal \
 	geos \
 	google-noto-fonts-extra \
@@ -115,42 +95,50 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	libkml \
 	libosmium \
+	mapnik \
 	ogdi \
 	openstreetmap-carto \
+	osm2pgsql \
 	osmctools \
 	osmdbt \
-	osmosis \
 	osmium-tool \
-	osm2pgsql \
+	osmosis \
 	passenger \
 	postgis \
+	proj \
 	protobuf \
 	protobuf-c \
-	proj \
 	protozero \
 	pyosmium \
+	python-mapnik \
 	rack \
 	ruby \
+	rubygem-libxml-ruby \
+	rubygem-pg \
 	sbt \
+	SFCGAL \
 	sqlite \
 	sqlite-pcre \
 	tbb
 
-## General targets
 
+## General targets
 .PHONY: \
 	all \
+	all-rpms \
 	distclean \
-	$(RPMBUILD_CONTAINERS) \
+	$(RPMBUILD_BASE_IMAGES) \
 	$(RPMBUILD_RPMS)
 
 all:
 ifndef DOCKER_VERSION
-    $(error "command docker is not available, please install Docker")
+	$(error "command docker is not available, please install Docker")
 endif
 ifndef DOCKER_COMPOSE_VERSION
-    $(error "command docker-compose is not available, please install Docker")
+	$(error "command docker-compose is not available, please install Docker")
 endif
+
+all-rpms: $(RPMBUILD_RPMS)
 
 distclean: .env
 	$(DOCKER_COMPOSE) down --volumes --rmi all
@@ -159,12 +147,12 @@ distclean: .env
 # Environment file for docker-compose; required packages for build containers
 # are provided here.
 .env: SPECS/*.spec
-	echo COMPOSE_PROJECT_NAME=deps-$(RPMBUILD_CHANNEL) > .env
+	echo COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME) > .env
+	echo IMAGE_PREFIX=$(IMAGE_PREFIX) >> .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
 	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/CGAL.spec) >> .env
-	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_dotless=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_GEOS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/geos.spec) >> .env
+	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
 	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/journald-cloudwatch-logs.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
@@ -173,176 +161,105 @@ distclean: .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
 	echo RPMBUILD_OGDI_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ogdi.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
+	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
-	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_dotless=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
-	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_dotless=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
+	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
-	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_dotless=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
 	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
+	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
 	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
 	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
 	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
 	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-libxml-ruby.spec) >> .env
-	echo RPMBUILD_RUBYGEM_PG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-pg.spec --define postgres_dotless=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_RUBYGEM_PG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-pg.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite-pcre.spec) >> .env
 	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/tbb.spec) >> .env
 
-## Container targets
 
-# Build containers.
+## Image targets
 rpmbuild: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild
+	$(call pull_if_ci,$@)
+	$(call build_unless_image_exists,$@)
 
-rpmbuild-cgal: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-cgal
+rpmbuild-fonts: rpmbuild
+	$(call pull_if_ci,$?)
+	$(call pull_if_ci,$@)
+	$(call build_unless_image_exists,$@)
 
-rpmbuild-generic: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-generic
+rpmbuild-generic: rpmbuild
+	$(call pull_if_ci,$?)
+	$(call pull_if_ci,$@)
+	$(call build_unless_image_exists,$@)
 
-rpmbuild-fonts: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-fonts
+rpmbuild-pgdg: rpmbuild
+	$(call pull_if_ci,$?)
+	$(call pull_if_ci,$@)
+	$(call build_unless_image_exists,$@)
 
-rpmbuild-gdal: .env CGAL FileGDBAPI SFCGAL geos gpsbabel libgeotiff libkml ogdi proj sqlite
-	$(DOCKER_COMPOSE) up -d rpmbuild-gdal
-
-rpmbuild-geos: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-geos
-
-rpmbuild-gpsbabel: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-gpsbabel
-
-rpmbuild-libgeotiff: .env proj sqlite
-	$(DOCKER_COMPOSE) up -d rpmbuild-libgeotiff
-
-rpmbuild-libkml: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-libkml
-
-rpmbuild-libosmium: .env protozero
-	$(DOCKER_COMPOSE) up -d rpmbuild-libosmium
-
-rpmbuild-journald-cloudwatch-logs: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-journald-cloudwatch-logs
-
-rpmbuild-mapnik: .env gdal postgis
-	$(DOCKER_COMPOSE) up -d rpmbuild-mapnik
-
-rpmbuild-ogdi: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-ogdi
-
-rpmbuild-openstreetmap-carto: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-openstreetmap-carto
-
-rpmbuild-osmctools: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-osmctools
-
-rpmbuild-osmdbt: .env libosmium
-	$(DOCKER_COMPOSE) up -d rpmbuild-osmdbt
-
-rpmbuild-osmium-tool: .env libosmium
-	$(DOCKER_COMPOSE) up -d rpmbuild-osmium-tool
-
-rpmbuild-osm2pgsql: .env libosmium postgis
-	$(DOCKER_COMPOSE) up -d rpmbuild-osm2pgsql
-
-rpmbuild-passenger: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-passenger
-
-rpmbuild-pgdg: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-pgdg
-
-rpmbuild-postgis: .env gdal protobuf-c
-	$(DOCKER_COMPOSE) up -d rpmbuild-postgis
-
-rpmbuild-proj: .env sqlite
-	$(DOCKER_COMPOSE) up -d rpmbuild-proj
-
-rpmbuild-protobuf: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-protobuf
-
-rpmbuild-protobuf-c: .env protobuf
-	$(DOCKER_COMPOSE) up -d rpmbuild-protobuf-c
-
-rpmbuild-protozero: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-protozero
-
-rpmbuild-pyosmium: .env libosmium
-	$(DOCKER_COMPOSE) up -d rpmbuild-pyosmium
-
-rpmbuild-python-mapnik: .env mapnik
-	$(DOCKER_COMPOSE) up -d rpmbuild-python-mapnik
-
-rpmbuild-rack: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-rack
-
-rpmbuild-ruby: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-ruby
-
-rpmbuild-rubygem-libxml-ruby: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-rubygem-libxml-ruby
-
-rpmbuild-rubygem-pg: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-rubygem-pg
-
-rpmbuild-sfcgal: .env $(CGAL_RPM)
-	$(DOCKER_COMPOSE) up -d rpmbuild-sfcgal
-
-rpmbuild-sqlite: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite
-
-rpmbuild-sqlite-pcre: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-sqlite-pcre
-
-rpmbuild-tbb: .env
-	$(DOCKER_COMPOSE) up -d rpmbuild-tbb
 
 ## RPM targets
-
-CGAL: rpmbuild-cgal $(CGAL_RPM)
-FileGDBAPI: rpmbuild-generic $(FILEGDBAPI_RPM)
-SFCGAL: rpmbuild-sfcgal $(SFCGAL_RPM)
-dumb-init: rpmbuild-generic $(DUMB_INIT_RPM)
-gdal: rpmbuild-gdal $(GDAL_RPM)
-geos: rpmbuild-geos $(GEOS_RPM)
+CGAL: $(CGAL_RPM)
+dumb-init: $(DUMB_INIT_RPM)
+FileGDBAPI: $(FILEGDBAPI_RPM)
+gdal: $(CGAL_RPM) $(FILEGDBAPI_RPM) $(GEOS_RPM) $(GPSBABEL_RPM) $(LIBKML_RPM) $(OGDI_RPM) $(SQLITE_RPM) \
+      $(PROJ_RPM) $(SFCGAL_RPM) \
+      $(LIBGEOTIFF_RPM) \
+      $(GDAL_RPM)
+geos: $(GEOS_RPM)
 google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
-gpsbabel: rpmbuild-gpsbabel $(GPSBABEL_RPM)
+gpsbabel: $(GPSBABEL_RPM)
 hanazono-fonts: rpmbuild-fonts $(HANAZONO_RPM)
-journald-cloudwatch-logs: rpmbuild-journald-cloudwatch-logs $(JOURNALD_CLOUDWATCH_LOGS_RPM)
-libgeotiff: rpmbuild-libgeotiff $(LIBGEOTIFF_RPM)
-libkml: rpmbuild-libkml $(LIBKML_RPM)
-libosmium: rpmbuild-libosmium $(LIBOSMIUM_RPM)
-mapnik: rpmbuild-mapnik $(MAPNIK_RPM)
-ogdi: rpmbuild-ogdi $(OGDI_RPM)
-openstreetmap-carto: rpmbuild-openstreetmap-carto $(OPENSTREETMAP_CARTO_RPM)
-osmctools: rpmbuild-osmctools $(OSMCTOOLS_RPM)
-osmdbt: rpmbuild-osmdbt $(OSMDBT_RPM)
-osmium-tool: rpmbuild-osmium-tool $(OSMIUM_TOOL_RPM)
-osmosis: rpmbuild-generic $(OSMOSIS_RPM)
-osm2pgsql: rpmbuild-osm2pgsql $(OSM2PGSQL_RPM)
-passenger: rpmbuild-passenger $(PASSENGER_RPM)
-postgis: rpmbuild-postgis $(POSTGIS_RPM)
-proj: rpmbuild-proj $(PROJ_RPM)
-protobuf: rpmbuild-protobuf $(PROTOBUF_RPM)
-protobuf-c: rpmbuild-protobuf-c $(PROTOBUF_C_RPM)
-protozero: rpmbuild-protozero $(PROTOZERO_RPM)
-pyosmium: rpmbuild-pyosmium $(PYOSMIUM_RPM)
-python-mapnik: rpmbuild-python-mapnik $(PYTHON_MAPNIK_RPM)
-rack: rpmbuild-rack $(RACK_RPM)
-ruby: rpmbuild-ruby $(RUBY_RPM)
-rubygem-libxml-ruby: rpmbuild-rubygem-libxml-ruby $(RUBYGEM_LIBXML_RUBY_RPM)
-rubygem-pg: rpmbuild-rubygem-pg $(RUBYGEM_PG_RPM)
-sbt: rpmbuild-generic $(SBT_RPM)
-sqlite: rpmbuild-sqlite $(SQLITE_RPM)
-sqlite-pcre: rpmbuild-sqlite-pcre $(SQLITE_PCRE_RPM)
-tbb: rpmbuild-tbb $(TBB_RPM)
+journald-cloudwatch-logs: $(JOURNALD_CLOUDWATCH_LOGS_RPM)
+libgeotiff: $(SQLITE_RPM) \
+            $(PROJ_RPM) \
+            $(LIBGEOTIFF_RPM)
+libkml: $(LIBKML_RPM)
+libosmium: $(PROTOBUF_RPM) \
+           $(PROTOZERO_RPM) \
+           $(LIBOSMIUM_RPM)
+mapnik: $(MAPNIK_RPM)
+ogdi: $(OGDI_RPM)
+openstreetmap-carto: $(OPENSTREETMAP_CARTO_RPM)
+osm2pgsql: $(OSM2PGSQL_RPM)
+osmctools: $(OSMCTOOLS_RPM)
+osmdbt: $(OSMDBT_RPM)
+osmium-tool: $(OSMIUM_TOOL_RPM)
+osmosis: $(OSMOSIS_RPM)
+passenger: $(PASSENGER_RPM)
+postgis: $(POSTGIS_RPM)
+proj: $(SQLITE_RPM) \
+      $(PROJ_RPM)
+protobuf-c: $(PROTOBUF_RPM) \
+            $(PROTOBUF_C_RPM)
+protobuf: $(PROTOBUF_RPM)
+protozero: $(PROTOBUF_RPM) \
+           $(PROTOZERO_RPM)
+pyosmium: $(PYOSMIUM_RPM)
+python-mapnik: $(PYTHON_MAPNIK_RPM)
+rack: $(RACK_RPM)
+ruby: $(RUBY_RPM)
+rubygem-libxml-ruby: $(RUBYGEM_LIBXML_RUBY_RPM)
+rubygem-pg: $(RUBYGEM_PG_RPM)
+sbt: $(SBT_RPM)
+SFCGAL: $(CGAL_RPM) \
+        $(SFCGAL_RPM)
+sqlite-pcre: $(SQLITE_RPM) \
+             $(SQLITE_PCRE_RPM)
+sqlite: $(SQLITE_RPM)
+tbb: $(TBB_RPM)
+
 
 ## Build patterns
-RPMS/x86_64/%.rpm RPMS/noarch/%.rpm:
-	$(DOCKER_COMPOSE) exec -T $(call rpmbuild_image,$*) \
-	$(shell ./scripts/rpmbuild_util.py $(call rpm_package,$*) --config-file $(COMPOSE_FILE))
+RPMS/x86_64/%.rpm RPMS/noarch/%.rpm: | .env
+	$(MAKE) $(call rpmbuild_image_parent,$*)
+	$(call pull_if_ci,$(call rpmbuild_image,$*))
+	$(call build_unless_image_exists,$(call rpmbuild_image,$*))
+	$(DOCKER_COMPOSE) run --rm -T $(call rpmbuild_image,$*) \
+	  $(shell ./scripts/rpmbuild_util.py $(call rpm_package,$*) --config-file $(COMPOSE_FILE))
