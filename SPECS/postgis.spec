@@ -1,7 +1,7 @@
 # The following macros are also required:
 # * gdal_min_version
 # * geos_min_version
-# * postgres_dotless
+# * postgres_version
 # * postgres_instdir
 # * proj_min_version
 # * protobuf_c_min_version
@@ -47,18 +47,18 @@ BuildRequires:  json-c-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  pcre-devel
 BuildRequires:  proj-devel >= %{proj_min_version}
-BuildRequires:  postgresql%{postgres_dotless}-devel
+BuildRequires:  postgresql%{postgres_version}-devel
 BuildRequires:  protobuf-devel >= %{protobuf_min_version}
 BuildRequires:  protobuf-c-devel >= %{protobuf_c_min_version}
 BuildRequires:  SFCGAL-devel
 
-Provides:       %{name}%{postgiscurrmajorversion}_%{postgres_dotless}
+Provides:       %{name}%{postgiscurrmajorversion}_%{postgres_version}
 
-Requires:       postgresql%{postgres_dotless}
-Requires:       postgresql%{postgres_dotless}-contrib
+Requires:       postgresql%{postgres_version}
+Requires:       postgresql%{postgres_version}-contrib
 Requires(post):	%{_sbindir}/update-alternatives
 
-Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless} = %{version}-%{release}
+Provides:       %{name}%{postgis_prev_dotless}_%{postgres_version} = %{version}-%{release}
 
 %description
 PostGIS adds support for geographic objects to the PostgreSQL object-relational
@@ -71,7 +71,7 @@ certified as compliant with the "Types and Functions" profile.
 %package devel
 Summary:        Development headers and libraries for PostGIS
 Requires:       %{name}%{?_isa} = %{version}-%{release}
-Provides:       %{name}%{postgis_prev_dotless}_%{postgres_dotless}-devel = %{version}-%{release}
+Provides:       %{name}%{postgis_prev_dotless}_%{postgres_version}-devel = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains the header files and libraries
@@ -80,7 +80,7 @@ with PostGIS.
 
 %package docs
 Summary:	Extra documentation for PostGIS
-Provides:	%{name}%{postgis_prev_dotless}_%{postgres_dotless}-docs = %{version}-%{release}
+Provides:	%{name}%{postgis_prev_dotless}_%{postgres_version}-docs = %{version}-%{release}
 
 %description docs
 The %{name}-docs package includes PDF documentation of PostGIS.
@@ -89,7 +89,7 @@ The %{name}-docs package includes PDF documentation of PostGIS.
 Summary:	The utils for PostGIS
 Requires:	%{name} = %{version}-%{release}
 Requires:	perl-DBD-Pg
-Provides:	%{name}%{postgis_prev_dotless}_%{postgres_dotless}-utils = %{version}-%{release}
+Provides:	%{name}%{postgis_prev_dotless}_%{postgres_version}-utils = %{version}-%{release}
 
 %description utils
 The %{name}-utils package provides the utilities for PostGIS.
@@ -159,8 +159,8 @@ pg_ctl -s stop
 
 # Create alternatives entries for common binaries
 %post
-%{_sbindir}/update-alternatives --install /usr/bin/pgsql2shp postgis-pgsql2shp %{postgres_instdir}/bin/pgsql2shp %{postgres_dotless}0
-%{_sbindir}/update-alternatives --install /usr/bin/shp2pgsql postgis-shp2pgsql %{postgres_instdir}/bin/shp2pgsql %{postgres_dotless}0
+%{_sbindir}/update-alternatives --install /usr/bin/pgsql2shp postgis-pgsql2shp %{postgres_instdir}/bin/pgsql2shp %{postgres_version}0
+%{_sbindir}/update-alternatives --install /usr/bin/shp2pgsql postgis-shp2pgsql %{postgres_instdir}/bin/shp2pgsql %{postgres_version}0
 
 
 # Drop alternatives entries for common binaries and man files

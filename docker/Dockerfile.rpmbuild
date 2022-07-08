@@ -44,7 +44,9 @@ RUN --mount=type=cache,target=/var/cache/yum \
       autoconf \
       automake \
       bzip2 \
+      cmake3 \
       createrepo \
+      doxygen \
       gcc \
       gcc-c++ \
       gdb \
@@ -52,8 +54,8 @@ RUN --mount=type=cache,target=/var/cache/yum \
       git-core \
       less \
       libtool \
-      make \
       m4 \
+      make \
       redhat-lsb-core \
       redhat-rpm-config \
       rpm-build \

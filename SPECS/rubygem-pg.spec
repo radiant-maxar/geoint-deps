@@ -18,7 +18,7 @@ Patch0: rubygem-pg-remove-rpath.patch
 
 BuildRequires: gcc
 BuildRequires: make
-BuildRequires: postgresql%{postgres_dotless}-devel
+BuildRequires: postgresql%{postgres_version}-devel
 BuildRequires: ruby
 BuildRequires: ruby-devel
 BuildRequires: rubygem-bigdecimal
@@ -27,7 +27,7 @@ BuildRequires: rubygem-rake
 BuildRequires: rubygems-devel
 
 # Ensure depends on PGDG libraries it was built with.
-Requires:      postgresql%{postgres_dotless}-libs
+Requires:      postgresql%{postgres_version}-libs
 Requires:      rubygem(bigdecimal)
 
 %description
