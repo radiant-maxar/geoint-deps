@@ -22,7 +22,15 @@ the  [PostgreSQL license](./licenses/PostgreSQL-LICENSE)
 
 ## arpack
 
+The [arpack](https://github.com/opencollab/arpack-ng) source archives are obtained directly from its [GitHub tags](https://github.com/opencollab/arpack-ng/tags).
+
+The [`arpack.spec`](../SPECS/arpack.spec) file originates from [Fedora's `arpack` RPM](https://src.fedoraproject.org/rpms/arpack) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## armadillo
+
+The [armadillo](https://arma.sourceforge.net/) source archives are obtained directly from [Sourceforge](https://sourceforge.net/projects/arma/files/).
+
+The [`armadillo.spec`](../SPECS/arpack.spec) file originates from [Fedora's `arpack` RPM](https://src.fedoraproject.org/rpms/arpack) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## CGAL
 
