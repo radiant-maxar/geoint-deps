@@ -22,18 +22,12 @@ Source0:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdal
 Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.zip
 Source2:        gdal.pom
 
-# Fedora uses Alternatives for Java
-Patch2:         gdal-1.9.0-java.patch
-# Fix makefiles installing libtool wrappers instead of actual executables
-Patch6:         gdal-installapps.patch
-# Drop -diag-disable compile flag
-Patch9:         gdal-no-diag-disable.patch
-
 BuildRequires: automake
 BuildRequires: autoconf
 BuildRequires: ant
 BuildRequires: armadillo-devel
 BuildRequires: bash-completion
+BuildRequires: ccache
 BuildRequires: cfitsio-devel
 BuildRequires: chrpath
 BuildRequires: cryptopp-devel
@@ -167,7 +161,9 @@ manipulating GDAL file format library
 
 
 %build
-%cmake -DCMAKE_INSTALL_INCLUDEDIR=%{_includedir}/%{name}
+%cmake \
+    -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
+    -DUSE_CCACHE:BOOL=ON
 %cmake_build
 
 
