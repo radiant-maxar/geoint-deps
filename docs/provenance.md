@@ -54,24 +54,9 @@ and are released under the [Fedora license](./licenses/Fedora-LICENSE):
 
 ## GDAL
 
-The [GDAL](https://trac.osgeo.org/gdal) source archives are obtained
-directly from [OSGeo](https://download.osgeo.org/gdal/) and are mostly
-[MIT/X11](https://trac.osgeo.org/gdal/wiki/FAQGeneral#WhatexactlywasthelicensetermsforGDAL)
-licensed.
+The [GDAL](https://trac.osgeo.org/gdal) source archives are obtained directly from [OSGeo](https://download.osgeo.org/gdal/) and are mostly [MIT/X11](https://trac.osgeo.org/gdal/wiki/FAQGeneral#WhatexactlywasthelicensetermsforGDAL) licensed.
 
-The following packaging files originate from
-[Fedora's GDAL RPM](https://src.fedoraproject.org/rpms/gdal/tree/f25)
-repository (Fedora 25 release) and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`gdal.spec`](../SPECS/gdal.spec)
-* [`gdal-1.9.0-java.patch`](../SOURCES/gdal-1.9.0-java.patch)
-* [`gdal-completion.patch`](../SOURCES/gdal-completion.patch)
-* [`gdal-installapps.patch`](../SOURCES/gdal-installapps.patch)
-* [`gdal-iso8211.patch`](../SOURCES/gdal-iso8211.patch)
-* [`gdal-no-diag-disable.patch`](../SOURCES/gdal-no-diag-disable.patch)
-* [`gdal-nopdf.patch`](../SOURCES/gdal-nopdf.patch)
-* [`gdal-tirpcinc.patch`](../SOURCES/gdal-tirpcinc.patch)
-* [`gdalautotest-increase-tolerances.patch`](../SOURCES/gdalautotest-increase-tolerances.patch)
+The [`gdal.spec`](../SPECS/gdal.spec) file originates from [Fedora's GDAL RPM](https://src.fedoraproject.org/rpms/gdal/tree/rawhide) repository (`rawhide` branch) and is [MIT licensed](./licenses/Fedora-LICENSE).
 
 ## gpsbabel
 
