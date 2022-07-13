@@ -1,0 +1,93 @@
+ARG rpmbuild_channel
+ARG rpmbuild_image=rpmbuild
+ARG rpmbuild_image_prefix
+# hadolint ignore=DL3007
+FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
+ARG packages
+ARG proj_version
+
+COPY RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/noarch/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-au-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-be-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-br-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-ca-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-ch-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-de-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-dk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-es-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-eur-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-europe-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-fi-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-fo-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-fr-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-is-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-jp-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-mx-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-nc-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-nl-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-no-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-north-america-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-nz-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-pl-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-pt-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-se-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-sk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-uk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-world-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-za-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     /tmp/
+
+SHELL ["/bin/bash", "-c"]
+# hadolint ignore=DL3040,DL3041
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y \
+    "/tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-au-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-be-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-br-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-ca-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-ch-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-de-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-dk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-es-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-eur-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-europe-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-fi-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-fo-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-fr-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-is-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-jp-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-mx-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-nc-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-nl-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-no-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-north-america-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-nz-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-pl-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-pt-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-se-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-sk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-uk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-world-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-za-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    && \
+    rm -f /tmp/*.rpm
+
+# If any package dependencies are needed, install them.
+# hadolint ignore=DL3040,DL3041
+RUN --mount=type=cache,target=/var/cache/dnf \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
+    /usr/local/bin/rpmbuild-user.sh && \
+    rm -f /usr/local/bin/rpmbuild-user.sh
+
+# Use unprivileged RPM build user and work directory by default.
+USER ${RPMBUILD_USER}
+WORKDIR ${RPMBUILD_HOME}

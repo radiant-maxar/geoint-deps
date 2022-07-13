@@ -17,7 +17,7 @@ x-rpmbuild:
     rpmbuild_uid: ${RPMBUILD_UID}
   build_defaults: &build_defaults
     context: .
-    dockerfile: docker/Dockerfile.rpmbuild-generic
+    dockerfile: docker/el7/Dockerfile.rpmbuild-generic
     labels:
       maintainer: *rpmbuild_email
       vendor: *rpmbuild_vendor
@@ -239,8 +239,8 @@ x-rpmbuild:
       arch: noarch
   service_volumes: &service_volumes
     - ./RPMS:/rpmbuild/RPMS:rw
-    - ./SOURCES:/rpmbuild/SOURCES:rw
-    - ./SPECS:/rpmbuild/SPECS:ro
+    - ./SOURCES/el7:/rpmbuild/SOURCES:rw
+    - ./SPECS/el7:/rpmbuild/SPECS:ro
     - ./scripts:/rpmbuild/scripts:ro
   service_defaults: &service_defaults
     command: tail -f /dev/null
@@ -252,7 +252,7 @@ services:
   rpmbuild:
     build:
       context: .
-      dockerfile: docker/Dockerfile.rpmbuild
+      dockerfile: docker/el7/Dockerfile.rpmbuild
       args:
         <<: *rpmbuild_base_args
       labels:
@@ -284,7 +284,7 @@ services:
       args:
         <<: *build_args_defaults
         postgres_version: *postgres_version
-      dockerfile: docker/Dockerfile.rpmbuild-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-pgdg
     image: ${IMAGE_PREFIX}rpmbuild-pgdg
   # RPM images
   rpmbuild-cgal:
@@ -312,7 +312,7 @@ services:
         rpmbuild_image: rpmbuild-pgdg
         sfcgal_version: *SFCGAL_version
         sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-gdal
+      dockerfile: docker/el7/Dockerfile.rpmbuild-gdal
   rpmbuild-gpsbabel:
     <<: *service_defaults
     build:
@@ -328,7 +328,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PROJ_PACKAGES}
         sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-proj
+      dockerfile: docker/el7/Dockerfile.rpmbuild-proj
   rpmbuild-protobuf:
     <<: *service_defaults
     build:
@@ -344,7 +344,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PROTOBUF_C_PACKAGES}
         protobuf_version: *protobuf_version
-      dockerfile: docker/Dockerfile.rpmbuild-protobuf-c
+      dockerfile: docker/el7/Dockerfile.rpmbuild-protobuf-c
   rpmbuild-libgeotiff:
     <<: *service_defaults
     build:
@@ -354,7 +354,7 @@ services:
         packages: ${RPMBUILD_LIBGEOTIFF_PACKAGES}
         proj_version: *proj_version
         sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-libgeotiff
+      dockerfile: docker/el7/Dockerfile.rpmbuild-libgeotiff
   rpmbuild-libkml:
     <<: *service_defaults
     build:
@@ -370,7 +370,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
         protozero_version: *protozero_version
-      dockerfile: docker/Dockerfile.rpmbuild-libosmium
+      dockerfile: docker/el7/Dockerfile.rpmbuild-libosmium
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
     build:
@@ -379,7 +379,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES}
         rpmbuild_image: rpmbuild-generic
-      dockerfile: docker/Dockerfile.rpmbuild-go
+      dockerfile: docker/el7/Dockerfile.rpmbuild-go
   rpmbuild-mapnik:
     <<: *service_defaults
     build:
@@ -388,7 +388,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_MAPNIK_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-ogdi:
     <<: *service_defaults
     build:
@@ -396,7 +396,7 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_OGDI_PACKAGES}
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
     <<: *service_defaults
     build:
@@ -419,7 +419,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_OSMDBT_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-osmium-tool:
     <<: *service_defaults
     build:
@@ -427,7 +427,7 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_OSMIUM_TOOL_PACKAGES}
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-osm2pgsql:
     <<: *service_defaults
     build:
@@ -436,7 +436,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_OSM2PGSQL_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-passenger:
     <<: *service_defaults
     build:
@@ -444,7 +444,7 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PASSENGER_PACKAGES}
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-postgis:
     <<: *service_defaults
     build:
@@ -453,7 +453,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_POSTGIS_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-protozero:
     <<: *service_defaults
     build:
@@ -462,7 +462,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PROTOZERO_PACKAGES}
         protobuf_version: *protobuf_version
-      dockerfile: docker/Dockerfile.rpmbuild-protozero
+      dockerfile: docker/el7/Dockerfile.rpmbuild-protozero
   rpmbuild-pyosmium:
     <<: *service_defaults
     build:
@@ -471,7 +471,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PYOSMIUM_PACKAGES}
         python_packages: pytest==7.0.1
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-python-mapnik:
     <<: *service_defaults
     build:
@@ -480,7 +480,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PYTHON_MAPNIK_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-rack:
     <<: *service_defaults
     build:
@@ -493,7 +493,7 @@ services:
           minitest-sprint
           webrick
         packages: ${RPMBUILD_RACK_PACKAGES}
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-ruby:
     <<: *service_defaults
     build:
@@ -511,7 +511,7 @@ services:
           minitest
           rake-compiler
         packages: ${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-deps
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-rubygem-pg:
     <<: *service_defaults
     build:
@@ -525,7 +525,7 @@ services:
         packages: ${RPMBUILD_RUBYGEM_PG_PACKAGES}
         postgres_version: *postgres_version
         rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/Dockerfile.rpmbuild-geoint-pgdg
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-sfcgal:
     <<: *service_defaults
     build:
@@ -534,7 +534,7 @@ services:
         <<: *build_args_defaults
         cgal_version: *CGAL_version
         packages: ${RPMBUILD_SFCGAL_PACKAGES}
-      dockerfile: docker/Dockerfile.rpmbuild-sfcgal
+      dockerfile: docker/el7/Dockerfile.rpmbuild-sfcgal
   rpmbuild-sqlite:
     <<: *service_defaults
     build:
@@ -550,7 +550,7 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
         sqlite_version: *sqlite_version
-      dockerfile: docker/Dockerfile.rpmbuild-proj
+      dockerfile: docker/el7/Dockerfile.rpmbuild-proj
   rpmbuild-tbb:
     <<: *service_defaults
     build:

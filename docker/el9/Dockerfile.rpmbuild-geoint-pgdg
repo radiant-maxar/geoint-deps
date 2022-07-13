@@ -1,0 +1,27 @@
+ARG rpmbuild_channel
+ARG rpmbuild_image=rpmbuild-pgdg
+ARG rpmbuild_image_prefix
+# hadolint ignore=DL3007
+FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
+
+ARG gem_packages
+ARG packages
+ARG python_packages
+
+# Switch to root temporarily for dependency installs.
+USER root
+
+# If any package dependencies are needed, install them.
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+# hadolint ignore=DL3013,DL3028,DL3040,DL3041
+RUN --mount=type=cache,target=/var/cache/dnf \
+    /usr/local/bin/geoint-deps-repo.sh && \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
+    if [ -n "${gem_packages:-}" ] ; then gem install ${gem_packages}; fi && \
+    if [ -n "${python_packages:-}" ] ; then pip3 install --disable-pip-version-check --no-cache-dir ${python_packages}; fi
+
+# Ensure proper permissions on PostgreSQL run directory (again).
+RUN chown -R "${RPMBUILD_USER}:${RPMBUILD_GROUP}" /var/run/postgresql
+
+# Switch back to RPM build user.
+USER ${RPMBUILD_USER}

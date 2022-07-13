@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Mapnik Viewer
+Comment=Mapnik XML template viewer
+Exec=viewer
+Terminal=false
+Type=Application
+Categories=Graphics;Engineering
+
+Name[en]=Mapnik Viewer
+Comment[en]=Mapnik XML template viewer
+Name[ro]=Vizualizator Mapnik
+Comment[ro]=Vizualizare fişiere XML Mapnik
+Name[hu]=Mapnik Böngésző
+Comment[hu]=Mapnik XML fájl böngésző

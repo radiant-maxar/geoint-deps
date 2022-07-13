@@ -2,6 +2,17 @@
 name: Create repository
 
 inputs:
+  el_version:
+    description: The EL version ('el_version' + '/' is prepended to 'repo_dirname' & appended to 'image_prefix')
+    required: true
+  image_prefix:
+    default: ghcr.io/${{ github.repository }}/
+    description: Image Prefix
+    required: false
+  image_registry:
+    default: ghcr.io
+    description: Image Registry
+    required: false
   repo_dirname:
     default: ${{ github.ref_name }}
     description: Repository directory name
@@ -19,11 +30,22 @@ runs:
   using: composite
 
   steps:
-    - name: Create repository
-      run: |
-        REPO_DIR=${{ inputs.repo_parent_dir }}/${{ inputs.repo_dirname }}
+    - name: Log in to GHCR
+      uses: ./.github/actions/docker/registry-login
+      with:
+        server: ${{ inputs.image_registry }}
 
-        mkdir --parents ${REPO_DIR}
-        cp --verbose ${{ inputs.rpms_dir }}/{noarch,x86_64}/*.rpm ${REPO_DIR}/
-        scripts/repo-update.sh ${REPO_DIR}
+    - name: Create repository
+      env:
+        COMPOSE_FILE: docker-compose.${{ inputs.el_version }}.yml
+        IMAGE_PREFIX: ${{ inputs.image_prefix }}${{ inputs.el_version }}/
+        MAKEFILES: Makefile.${{ inputs.el_version }}
+        REPO_DIR: ${{ inputs.repo_parent_dir }}/${{ inputs.el_version }}/${{ inputs.repo_dirname }}
+      run: >-
+        make rpmbuild-generic &&
+        mkdir --parents ${REPO_DIR} &&
+        cp --verbose ${{ inputs.rpms_dir }}/{noarch,x86_64}/*.rpm ${REPO_DIR}/ &&
+        docker-compose run -v ${REPO_DIR}:${REPO_DIR}:rw -v ${PWD}/scripts:/rpmbuild/scripts:ro -T rpmbuild-generic bash -c "
+          scripts/repo-update.sh ${REPO_DIR}
+        "
       shell: bash --noprofile --norc -euxo pipefail {0}

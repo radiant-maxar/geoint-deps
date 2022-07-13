@@ -8,6 +8,9 @@ inputs:
   aws_secret_access_key:
     description: AWS_SECRET_ACCESS_KEY
     required: true
+  el_version:
+    description: The EL version ('el_version' + '/' is prepended to 'repo_dirname')
+    required: true
   repo_dirname:
     default: ${{ github.ref_name }}
     description: Repository directory name
@@ -17,7 +20,7 @@ inputs:
     description: Repository parent directory
     required: false
   s3_bucket:
-    default: geoint-apps
+    default: geoint-deps
     description: S3 bucket name
     required: false
 
@@ -25,16 +28,15 @@ runs:
   using: composite
 
   steps:
+    - name: Install AWS CLI
+      run: pip3 install --user awscli
+      shell: bash --noprofile --norc -euxo pipefail {0}
+
     - name: Upload repository to S3
       env:
         AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
         AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
-      run: |
-        yum -q -y install python3-pip
-        pip3 install awscli
-
-        REPO_DIR=${{ inputs.repo_parent_dir }}/${{ inputs.repo_dirname }}
-        S3_URI=s3://${{ inputs.s3_bucket }}/${{ inputs.repo_dirname }}
-        aws s3 sync --delete --no-progress \
-          ${REPO_DIR} ${S3_URI}
+        REPO_DIR: ${{ inputs.repo_parent_dir }}/${{ inputs.el_version }}/${{ inputs.repo_dirname }}
+        S3_URI: s3://${{ inputs.s3_bucket }}/${{ inputs.el_version }}/${{ inputs.repo_dirname }}
+      run: ~/.local/bin/aws s3 sync ${REPO_DIR} ${S3_URI} --delete --no-progress
       shell: bash --noprofile --norc -euxo pipefail {0}

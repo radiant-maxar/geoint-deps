@@ -1,0 +1,12 @@
+diff -up src/Makefile.am.icb src/Makefile.am
+--- src/Makefile.am.icb	2020-12-07 11:40:45.000000000 +0100
++++ src/Makefile.am	2021-09-02 23:55:29.346733967 +0200
+@@ -1,7 +1,7 @@
+ ACLOCAL_AMFLAGS = -I m4
+ 
+ pkgincludedir = $(includedir)/arpack
+-pkginclude_HEADERS = debug.h stat.h arpackdef.h
++pkginclude_HEADERS = debug.h stat.h arpackdef.h arpackicb.h
+ 
+ AM_DISTCHECK_CONFIGURE_FLAGS =
+ if MPI

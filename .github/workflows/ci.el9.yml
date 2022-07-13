@@ -1,0 +1,175 @@
+---
+name: Build & Push (EL9)
+
+on:
+  - push
+
+env:
+  DOCKER_BUILDKIT: 1
+  EL_VERSION: el9
+
+jobs:
+  build-images:
+    name: Build `${{ matrix.image }}` Image
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Uncomment the following lines in order to build & push base images
+      max-parallel: 1
+      matrix:
+        image:
+          - rpmbuild
+          - rpmbuild-fonts
+          - rpmbuild-generic
+          - rpmbuild-pgdg
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Delete old images
+        uses: ./.github/actions/github-api/delete-package
+        with:
+          el_version: ${{ env.EL_VERSION }}
+          package_name: ${{ matrix.image }}
+          token: ${{ secrets.PKG_DELETE_TOKEN }}
+          token_type: token
+
+      - name: Build `${{ matrix.image }}` Image
+        uses: ./.github/actions/build
+        with:
+          el_version: ${{ env.EL_VERSION }}
+          make_target: ${{ matrix.image }}
+          push_image: true
+
+
+  build-rpms-1:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-images
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - arpack
+          - CGAL
+          - dumb-init
+          - FileGDBAPI
+          - g2clib
+          - geos
+          - google-noto-fonts-extra
+          - gpsbabel
+          - hanazono-fonts
+          - iniparser
+          - journald-cloudwatch-logs
+          - libgta
+          - libosmium
+          - libpqxx
+          - mapnik
+          - ogdi
+          - openstreetmap-carto
+          - osm2pgsql
+          - osmctools
+          - osmdbt
+          - osmium-tool
+          - osmosis
+          - passenger
+          - postgis
+          - proj
+          - protozero
+          - pyosmium
+          - python3-mapnik
+          - rack
+          - rubygem-libxml-ruby
+          - sbt
+          - sqlite-pcre
+          - uriparser
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          el_version: ${{ env.EL_VERSION }}
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-2:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-1
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - armadillo
+          - libgeotiff
+          - libkml
+          - SFCGAL
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          el_version: ${{ env.EL_VERSION }}
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  build-rpms-3:
+    name: Build `${{ matrix.rpm }}` RPM(s)
+    needs: build-rpms-2
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        rpm:
+          - gdal
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build `${{ matrix.rpm }}` RPM(s)
+        uses: ./.github/actions/build
+        with:
+          el_version: ${{ env.EL_VERSION }}
+          download_rpms: true
+          make_target: ${{ matrix.rpm }}
+
+
+  create-and-push-repo:
+    name: Create & push repository
+    if: ${{ github.ref_name != 'stable' }}
+    needs: build-rpms-3
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download RPMS directory
+        uses: actions/download-artifact@v3
+        with:
+          name: RPMS-${{ env.EL_VERSION }}-${{ github.sha }}
+          path: RPMS
+
+      - name: Create repository
+        uses: ./.github/actions/repository/create
+        with:
+          el_version: ${{ env.EL_VERSION }}
+
+      # - name: Upload repository
+      #   uses: ./.github/actions/repository/upload
+      #   with:
+      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     el_version: ${{ env.EL_VERSION }}

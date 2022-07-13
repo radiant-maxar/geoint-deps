@@ -1,0 +1,27 @@
+From 7aee1785850e566bf1096e6cb01687989fb2baa7 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Tue, 26 Jan 2016 09:43:05 +0000
+Subject: [PATCH 4/7] Don't set rpath
+
+---
+ src/build.py | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/build.py b/src/build.py
+index 8fb358008..1833d051c 100644
+--- a/src/build.py
++++ b/src/build.py
+@@ -145,10 +145,6 @@ else: # unix, non-macos
+         mapnik_lib_link_flag += ' -Wl,-rpath-link,.'
+         if env['ENABLE_SONAME']:
+             mapnik_lib_link_flag += ' -Wl,-soname,%s' % mapnik_libname
+-        if env['FULL_LIB_PATH']:
+-            mapnik_lib_link_flag += ' -Wl,-rpath=%s' % env['MAPNIK_LIB_BASE']
+-        else:
+-            mapnik_lib_link_flag += ' -Wl,-z,origin -Wl,-rpath=\$$ORIGIN'
+ 
+ source = Split(
+     """
+-- 
+2.29.2
+

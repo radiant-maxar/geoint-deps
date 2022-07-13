@@ -5,6 +5,9 @@ inputs:
   download_rpms:
     description: Download RPMS
     required: false
+  el_version:
+    description: The EL version ('el_version' + '/' is appended to 'image_prefix')
+    required: true
   image_prefix:
     default: ghcr.io/${{ github.repository }}/
     description: Image Prefix
@@ -28,7 +31,7 @@ runs:
       if: inputs.download_rpms
       uses: actions/download-artifact@v3
       with:
-        name: RPMS
+        name: RPMS-${{ inputs.el_version }}-${{ github.sha }}
         path: RPMS
 
     - name: Get list of pre-existing RPMs
@@ -44,12 +47,16 @@ runs:
 
     - name: Build Image / RPM(s)
       env:
-        IMAGE_PREFIX: ${{ inputs.image_prefix }}
+        COMPOSE_FILE: docker-compose.${{ inputs.el_version }}.yml
+        IMAGE_PREFIX: ${{ inputs.image_prefix }}${{ inputs.el_version }}/
+        MAKEFILES: Makefile.${{ inputs.el_version }}
       run: |
         make ${{ inputs.make_target }}
       shell: bash --noprofile --norc -euxo pipefail {0}
 
     - name: Push `${{ matrix.image }}` to GHCR
+      env:
+        COMPOSE_FILE: docker-compose.${{ inputs.el_version }}.yml
       if: inputs.push_image
       run: |
         docker-compose push ${{ matrix.image }}
@@ -64,5 +71,5 @@ runs:
     - name: Upload RPMS directory
       uses: actions/upload-artifact@v3
       with:
-        name: RPMS
+        name: RPMS-${{ inputs.el_version }}-${{ github.sha }}
         path: RPMS

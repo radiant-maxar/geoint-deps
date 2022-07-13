@@ -1,0 +1,79 @@
+FROM quay.io/centos/centos:stream9
+
+# Required arguments.
+ARG rpmbuild_dist
+ARG rpmbuild_email
+ARG rpmbuild_name
+ARG rpmbuild_uid
+
+# Arguments with defaults.
+ARG rpmbuild_user=rpmbuild
+ARG rpmbuild_gid=${rpmbuild_uid}
+ARG rpmbuild_group=${rpmbuild_user}
+ARG rpmbuild_home=/${rpmbuild_user}
+ARG rpmbuild_lang=en_US.UTF-8
+ARG rpmbuild_locale=en_US.UTF-8
+
+# Ensure proper language/locale environment settings, and place key arguments
+# in environment to allow access in child containers.
+SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
+ENV LANG=${rpmbuild_lang} \
+    LC_ALL=${rpmbuild_locale} \
+    RPMBUILD_DIST=${rpmbuild_dist} \
+    RPMBUILD_EMAIL=${rpmbuild_email} \
+    RPMBUILD_GID=${rpmbuild_gid} \
+    RPMBUILD_GROUP=${rpmbuild_group} \
+    RPMBUILD_HOME=${rpmbuild_home} \
+    RPMBUILD_NAME=${rpmbuild_name} \
+    RPMBUILD_UID=${rpmbuild_uid} \
+    RPMBUILD_USER=${rpmbuild_user}
+
+# Install basic development and RPM authoring tools.
+# hadolint ignore=DL3040,DL3041
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf -q -y install "dnf-command(config-manager)" && \
+    dnf config-manager --save \
+        --setopt=keepcache=1 \
+        --setopt=baseos.repo_gpgcheck=1 \
+        --setopt=appstream.repo_gpgcheck=1 \
+        --setopt=crb.enabled=1 \
+        --setopt=crb.repo_gpgcheck=1 && \
+    dnf -q -y update && \
+    dnf --setopt=tsflags='' reinstall -y tzdata && \
+    dnf -q -y install \
+      autoconf \
+      automake \
+      bzip2 \
+      cmake \
+      createrepo \
+      doxygen \
+      epel-release \
+      gcc \
+      gcc-c++ \
+      gdb \
+      git \
+      git-core \
+      glibc-langpack-en \
+      less \
+      libtool \
+      make \
+      m4 \
+      pinentry \
+      redhat-rpm-config \
+      rpm-build \
+      rpm-sign \
+      rpmdevtools \
+      rpmlint \
+      unzip \
+      vim \
+      which \
+      zip
+
+# Copy in necessary scripts.
+COPY scripts/geoint-deps-repo.sh \
+     scripts/nodesource-repo.sh \
+     scripts/postgres-install.sh \
+     scripts/pgdg-repo.sh \
+     scripts/rpmbuild-user.sh \
+     scripts/yarn-repo.sh \
+     /usr/local/bin/

@@ -1,0 +1,25 @@
+From 75514fa696a1e91ebc9b43ca99bdc54ac978e4ad Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Mon, 13 Jul 2020 08:45:29 +0100
+Subject: [PATCH 6/6] Stop setting SourceCode attribute
+
+SCons 4 has dropped dropped support for the SourceCode attribute.
+---
+ SConstruct | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/SConstruct b/SConstruct
+index a8bffcb5e..43983f233 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -126,7 +126,6 @@ PLUGINS = { # plugins with external dependencies
+ 
+ def init_environment(env):
+     env.Decider('MD5-timestamp')
+-    env.SourceCode(".", None)
+     if os.environ.get('RANLIB'):
+         env['RANLIB'] = os.environ['RANLIB']
+     if os.environ.get('AR'):
+-- 
+2.29.2
+

@@ -1,10 +1,10 @@
 # FoundationGEOINT Dependencies
 
-[![CI](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.el7.yml/badge.svg)](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.el7.yml)
+[![CI](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.el7.yml/badge.svg)](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.el7.yml) [![CI](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.el9.yml/badge.svg)](https://github.com/radiant-maxar/geoint-deps/actions/workflows/ci.el9.yml)
 
-This repository provides a Docker-based build system for creating
-RPMs of the latest geospatial libraries on CentOS/RHEL 7 until the
-platform fades into obsolesence.  Priorities:
+This repository provides a Docker-based build system for creating RPMs of the latest geospatial libraries on CentOS/RHEL 9 (*as well as CentOS/RHEL 7 until the platform fades into obsolesence*).
+
+**Priorities:**
 
 * Support common geospatial libraries and applications, e.g., those from OSGeo and OSM.
 * Build RPMs in isolated environments, using only what's required, as a non-privileged user.
@@ -16,14 +16,16 @@ Just type `make $RPM_NAME`, for example start small:
 
 ```
 export DOCKER_BUILDKIT=1
+export MAKEFILES=Makefile.el9
 make FileGDBAPI
 ```
 
-Or go big and create RPMs for GDAL and friends with:
+Or go big and create RPMs for all applications with:
 
 ```
 export DOCKER_BUILDKIT=1
-make gdal
+export MAKEFILES=Makefile.el9
+make all-rpms
 ```
 
 This will consume a lot of CPU and I/O!

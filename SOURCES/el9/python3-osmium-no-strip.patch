@@ -1,0 +1,20 @@
+commit dd5e209ba5804bfce06de8a574fc52545485da91
+Author: Tom Hughes <tom@compton.nu>
+Date:   Mon Dec 10 21:49:57 2018 +0000
+
+    Disable stripping
+
+diff --git a/setup.py b/setup.py
+index 5204246..cc895e5 100644
+--- a/setup.py
++++ b/setup.py
+@@ -69,7 +69,8 @@ class CMakeBuild(build_ext):
+     def build_extension(self, ext):
+         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
+-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
++                      '-DPYTHON_EXECUTABLE=' + sys.executable,
++                      '-DCMAKE_STRIP=/bin/true']
+ 
+         cfg = 'Debug' if self.debug else 'Release'
+         build_args = ['--config', cfg]

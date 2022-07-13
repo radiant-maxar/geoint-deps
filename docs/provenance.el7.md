@@ -26,7 +26,7 @@ The [CGAL](https://www.cgal.org) source archives are obtained
 directly from its [GitHub releases](https://github.com/CGAL/cgal/releases/) and
 is released under the [GNU LGPLv3, GPLv3, and Boost licenses](https://github.com/CGAL/cgal/blob/v4.14.3/Installation/LICENSE).
 
-The [`CGAL.spec`](../SPECS/CGAL.spec) originates from
+The [`CGAL.spec`](../SPECS/el7/CGAL.spec) originates from
 [Fedora's `CGAL` RPM](https://src.fedoraproject.org/rpms/CGAL)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -45,8 +45,8 @@ directly from [OSGeo](https://download.osgeo.org/geos/) and licensed under the
 The following packaging files originate from [Fedora's `geos` RPM](https://src.fedoraproject.org/rpms/geos)
 and are released under the [Fedora license](./licenses/Fedora-LICENSE):
 
-* [`geos.spec`](../SPECS/geos.spec)
-* [`geos_libsuffix.patch`](../SOURCES/geos_libsuffix.patch)
+* [`geos.spec`](../SPECS/el7/geos.spec)
+* [`geos_libsuffix.patch`](../SOURCES/el7/geos_libsuffix.patch)
 
 ## GDAL
 
@@ -59,20 +59,20 @@ The following packaging files originate from
 [Fedora's GDAL RPM](https://src.fedoraproject.org/rpms/gdal/tree/f25)
 repository (Fedora 25 release) and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`gdal.spec`](../SPECS/gdal.spec)
-* [`gdal-1.9.0-java.patch`](../SOURCES/gdal-1.9.0-java.patch)
-* [`gdal-completion.patch`](../SOURCES/gdal-completion.patch)
-* [`gdal-installapps.patch`](../SOURCES/gdal-installapps.patch)
-* [`gdal-iso8211.patch`](../SOURCES/gdal-iso8211.patch)
-* [`gdal-no-diag-disable.patch`](../SOURCES/gdal-no-diag-disable.patch)
-* [`gdal-nopdf.patch`](../SOURCES/gdal-nopdf.patch)
-* [`gdal-tirpcinc.patch`](../SOURCES/gdal-tirpcinc.patch)
-* [`gdalautotest-increase-tolerances.patch`](../SOURCES/gdalautotest-increase-tolerances.patch)
+* [`gdal.spec`](../SPECS/el7/gdal.spec)
+* [`gdal-1.9.0-java.patch`](../SOURCES/el7/gdal-1.9.0-java.patch)
+* [`gdal-completion.patch`](../SOURCES/el7/gdal-completion.patch)
+* [`gdal-installapps.patch`](../SOURCES/el7/gdal-installapps.patch)
+* [`gdal-iso8211.patch`](../SOURCES/el7/gdal-iso8211.patch)
+* [`gdal-no-diag-disable.patch`](../SOURCES/el7/gdal-no-diag-disable.patch)
+* [`gdal-nopdf.patch`](../SOURCES/el7/gdal-nopdf.patch)
+* [`gdal-tirpcinc.patch`](../SOURCES/el7/gdal-tirpcinc.patch)
+* [`gdalautotest-increase-tolerances.patch`](../SOURCES/el7/gdalautotest-increase-tolerances.patch)
 
 ## gpsbabel
 
 The [gpsbabel](https://www.gpsbabel.org/) source archive was obtained directly
-from their website.  The [`gpsbabel.spec`](../SPECS/gpsbabel.spec) and all
+from their website.  The [`gpsbabel.spec`](../SPECS/el7/gpsbabel.spec) and all
 patches from [`SOURCES`](../SOURCES) starting with `gpsbabel` are from
 [Fedora's `gpsbabel` RPM](https://src.fedoraproject.org/rpms/gpsbabel/tree/master)
 repository and are [MIT licensed](./licenses/Fedora-LICENSE).
@@ -83,7 +83,7 @@ The [Google Noto Fonts](https://github.com/googlefonts/noto-source) source
 archives are obtained directly from the project's GitHub page and are
 released under the Open Font License 1.1.
 
-The [`google-noto-fonts-extra.spec`](../SPECS/lgoogle-noto-fonts-extra.spec) originates from
+The [`google-noto-fonts-extra.spec`](../SPECS/el7/lgoogle-noto-fonts-extra.spec) originates from
 [Fedora's `google-noto-fonts` RPM](https://src.fedoraproject.org/rpms/google-noto-fonts)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -97,8 +97,8 @@ The following packaging files originate from
 [Fedora's `hanazono-fonts` RPM](https://src.fedoraproject.org/rpms/hanazono-fonts)
 repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`hanazono-fonts.spec`](../SPECS/hanazono-fonts.spec)
-* [`hanazono-fonts-fontconfig.conf`](../SOURCES/hanazono-fonts-fontconfig.conf)
+* [`hanazono-fonts.spec`](../SPECS/el7/hanazono-fonts.spec)
+* [`hanazono-fonts-fontconfig.conf`](../SOURCES/el7/hanazono-fonts-fontconfig.conf)
 
 ## libgeotiff
 
@@ -107,7 +107,7 @@ obtained directly from [OSGeo's GitHub](https://github.com/OSGeo/libgeotiff/rele
 and is mostly [MIT/X11](https://github.com/OSGeo/libgeotiff/blob/master/libgeotiff/LICENSE)
 licensed.
 
-The [`libgeotiff.spec`](../SPECS/libgeotiff.spec) originates from
+The [`libgeotiff.spec`](../SPECS/el7/libgeotiff.spec) originates from
 [Fedora's `libgeotiff` RPM](https://src.fedoraproject.org/rpms/libgeotiff)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -121,13 +121,13 @@ The following packaging files originate from
 [Fedora's `libkml` RPM](https://src.fedoraproject.org/rpms/libkml.git)
 repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`libkml.spec`](../SPECS/libkml.spec)
-* [`libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch`](../SOURCES/libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch)
-* [`libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch`](../SOURCES/libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch)
-* [`libkml-0003-Fix-python-tests.patch`](../SOURCES/libkml-0003-Fix-python-tests.patch)
-* [`libkml-0004-Correctly-build-and-run-java-test.patch`](../SOURCES/libkml-0004-Correctly-build-and-run-java-test.patch)
-* [`libkml-fragile_test.patch`](../SOURCES/libkml-fragile_test.patch)
-* [`libkml-dont-bytecompile.patch`](../SOURCES/libkml-dont-bytecompile.patch)
+* [`libkml.spec`](../SPECS/el7/libkml.spec)
+* [`libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch`](../SOURCES/el7/libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch)
+* [`libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch`](../SOURCES/el7/libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch)
+* [`libkml-0003-Fix-python-tests.patch`](../SOURCES/el7/libkml-0003-Fix-python-tests.patch)
+* [`libkml-0004-Correctly-build-and-run-java-test.patch`](../SOURCES/el7/libkml-0004-Correctly-build-and-run-java-test.patch)
+* [`libkml-fragile_test.patch`](../SOURCES/el7/libkml-fragile_test.patch)
+* [`libkml-dont-bytecompile.patch`](../SOURCES/el7/libkml-dont-bytecompile.patch)
 
 ## libosmium
 
@@ -135,7 +135,7 @@ The [libosmium](http://osmcode.org/libosmium/) library source archives are
 obtained directly from [GitHub](https://github.com/osmcode/libosmium)
 and is [Boost licensed](https://github.com/osmcode/libosmium/blob/master/LICENSE).
 
-The [`libosmium.spec`](../SPECS/libosmium.spec) originates from
+The [`libosmium.spec`](../SPECS/el7/libosmium.spec) originates from
 [Fedora's `libosmium` RPM](https://src.fedoraproject.org/rpms/libosmium)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -149,14 +149,14 @@ The following packaging files originate from
 [Fedora's `mapnik` RPM](https://src.fedoraproject.org/rpms/mapnik)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`mapnik.spec`](../SPECS/mapnik.spec)
-* [`mapnik-viewer.desktop`](../SOURCES/mapnik-viewer.desktop)
-* [`mapnik-build-viewer.patch`](../SOURCES/mapnik-build-viewer.patch)
-* [`mapnik-system-sparsehash.patch`](../SOURCES/mapnik-system-sparsehash.patch)
-* [`mapnik-visual-compare.patch`](../SOURCES/mapnik-visual-compare.patch)
-* [`mapnik-rpath.patch`](../SOURCES/mapnik-rpath.patch)
-* [`mapnik-proj.patch`](../SOURCES/mapnik-proj.patch)
-* [`mapnik-build-json-fix.patch`](../SOURCES/mapnik-build-json-fix.patch)
+* [`mapnik.spec`](../SPECS/el7/mapnik.spec)
+* [`mapnik-viewer.desktop`](../SOURCES/el7/mapnik-viewer.desktop)
+* [`mapnik-build-viewer.patch`](../SOURCES/el7/mapnik-build-viewer.patch)
+* [`mapnik-system-sparsehash.patch`](../SOURCES/el7/mapnik-system-sparsehash.patch)
+* [`mapnik-visual-compare.patch`](../SOURCES/el7/mapnik-visual-compare.patch)
+* [`mapnik-rpath.patch`](../SOURCES/el7/mapnik-rpath.patch)
+* [`mapnik-proj.patch`](../SOURCES/el7/mapnik-proj.patch)
+* [`mapnik-build-json-fix.patch`](../SOURCES/el7/mapnik-build-json-fix.patch)
 
 ## ogdi
 
@@ -168,8 +168,8 @@ The following packaging files originate from
 [Fedora's `ogdi` RPM](https://src.fedoraproject.org/rpms/ogdi)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`ogdi.spec`](../SPECS/mapnik.spec)
-* [`ogdi-4.1.0-sailer.patch`](../SOURCES/ogdi-4.1.0-sailer.patch)
+* [`ogdi.spec`](../SPECS/el7/mapnik.spec)
+* [`ogdi-4.1.0-sailer.patch`](../SOURCES/el7/ogdi-4.1.0-sailer.patch)
 
 ## openstreetmap-carto
 
@@ -187,12 +187,12 @@ obtained directly from GitHub and are
 [GPLv2 licensed](https://github.com/openstreetmap/osm2pgsql/blob/master/COPYING).
 Using the same license, the following patch files were derived from changesets in GitHub:
 
-* [`osm2pgsql-replication-analyze.patch`](../SOURCES/osm2pgsql-replication-analyze.patch)
-* [`osm2pgsql-replication-older-python.patch`](../SOURCES/osm2pgsql-replication-older-python.patch)
-* [`osm2pgsql-replication-prefix-argument.patch`](../SOURCES/osm2pgsql-replication-prefix-argument.patch)
-* [`osm2pgsql-replication-status.patch`](../SOURCES/osm2pgsql-replication-status.patch)
+* [`osm2pgsql-replication-analyze.patch`](../SOURCES/el7/osm2pgsql-replication-analyze.patch)
+* [`osm2pgsql-replication-older-python.patch`](../SOURCES/el7/osm2pgsql-replication-older-python.patch)
+* [`osm2pgsql-replication-prefix-argument.patch`](../SOURCES/el7/osm2pgsql-replication-prefix-argument.patch)
+* [`osm2pgsql-replication-status.patch`](../SOURCES/el7/osm2pgsql-replication-status.patch)
 
-The [`osm2pgsql.spec`](../SPECS/osm2pgsql.spec) originates from
+The [`osm2pgsql.spec`](../SPECS/el7/osm2pgsql.spec) originates from
 [Fedora's `osm2pgsql` RPM](https://src.fedoraproject.org/rpms/osm2pgsql)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -214,7 +214,7 @@ The [osmium-tool](http://osmcode.org/osmium-tool/) source archives are
 obtained directly from [GitHub](https://github.com/osmcode/osmium-tool)
 and is [GPLv3 licensed](https://github.com/osmcode/osmium-tool/blob/master/LICENSE.txt).
 
-The [`osmium-tool.spec`](../SPECS/osmium-tool.spec) originates from
+The [`osmium-tool.spec`](../SPECS/el7/osmium-tool.spec) originates from
 [Fedora's `osmium-tool` RPM](https://src.fedoraproject.org/rpms/osmium-tool)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -225,7 +225,7 @@ obtained directly from its [GitHub releases](https://github.com/openstreetmap/os
 project and was released under the
 [LGPLv3 and public domain licenses](https://github.com/openstreetmap/osmosis/blob/master/package/copying.txt).
 
-The [`osmosis-fix_launcher.patch`](../SOURCES/osmosis-fix_launcher.patch) file
+The [`osmosis-fix_launcher.patch`](../SOURCES/el7/osmosis-fix_launcher.patch) file
 comes from [Debian's GIS Project](https://salsa.debian.org/debian-gis-team/osmosis/blob/master/debian/patches/01-fix_launcher.patch)
 and is licensed under the GPLv3.
 
@@ -239,11 +239,11 @@ The following packaging files originate from
 [Fedora's `passenger` RPM](https://src.fedoraproject.org/rpms/passenger)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`passenger.spec`](../SPECS/passenger.spec)
-* [`apache-passenger.conf.in`](../SOURCES/apache-passenger.conf.in)
-* [`apache-passenger-module.conf`](../SOURCES/apache-passenger-module.conf)
-* [`passenger.logrotate`](../SOURCES/passenger.logrotate)
-* [`passenger.tmpfiles`](../SOURCES/passenger.tmpfiles)
+* [`passenger.spec`](../SPECS/el7/passenger.spec)
+* [`apache-passenger.conf.in`](../SOURCES/el7/apache-passenger.conf.in)
+* [`apache-passenger-module.conf`](../SOURCES/el7/apache-passenger-module.conf)
+* [`passenger.logrotate`](../SOURCES/el7/passenger.logrotate)
+* [`passenger.tmpfiles`](../SOURCES/el7/passenger.tmpfiles)
 
 ## PROJ
 
@@ -255,27 +255,27 @@ and its data archives are under [public domain, MIT, BSD, and Creative Commons l
 The following packaging files originate from
 [Fedora's `proj` RPM](https://src.fedoraproject.org/rpms/proj)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
-* [`proj.spec`](../SPECS/proj.spec)
-* [`proj-pkgconfig.patch`](../SOURCES/proj-pkgconfig.patch)
+* [`proj.spec`](../SPECS/el7/proj.spec)
+* [`proj-pkgconfig.patch`](../SOURCES/el7/proj-pkgconfig.patch)
 
 ## protobuf
 
 The following files originate from [Fedora's `protobuf` RPM](https://src.fedoraproject.org/rpms/protobuf)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
-* [`protobuf.spec`](../SPECS/protobuf.spec)
-* [`protobuf-3.14-disable-IoTest.LargeOutput.patch`](../SOURCES/protobuf-3.14-disable-IoTest.LargeOutput.patch)
-* [`protobuf-ftdetect-proto.vim`](../SOURCES/protobuf-ftdetect-proto.vim)
-* [`protobuf-init.el`](../SOURCES/protobuf-init.el)
+* [`protobuf.spec`](../SPECS/el7/protobuf.spec)
+* [`protobuf-3.14-disable-IoTest.LargeOutput.patch`](../SOURCES/el7/protobuf-3.14-disable-IoTest.LargeOutput.patch)
+* [`protobuf-ftdetect-proto.vim`](../SOURCES/el7/protobuf-ftdetect-proto.vim)
+* [`protobuf-init.el`](../SOURCES/el7/protobuf-init.el)
 
 ## protobuf-c
 
-The [`protobuf-c.spec`](../SPECS/protobuf-c.spec) originates from
+The [`protobuf-c.spec`](../SPECS/el7/protobuf-c.spec) originates from
 [Fedora's `protobuf-c` RPM](https://src.fedoraproject.org/rpms/protobuf-c)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## protozero
 
-The [`protozero.spec`](../SPECS/protozero.spec) originates from
+The [`protozero.spec`](../SPECS/el7/protozero.spec) originates from
 [Fedora's `protozero` RPM](https://src.fedoraproject.org/rpms/protozero)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -290,9 +290,9 @@ PGDG's PostGIS [2.5.5](https://download.postgresql.org/pub/repos/yum/srpms/9.5/r
 and [3.1.1](https://download.postgresql.org/pub/repos/yum/srpms/13/redhat/rhel-7-x86_64/)
 source RPMs released under the [PostgreSQL license](./licenses/PostgreSQL-LICENSE).
 
-* [`postgis.spec`](../SPECS/postgis.spec)
-* [`postgis-filter-requires-perl-Pg.sh`](../SOURCES/postgis-filter-requires-perl-Pg.sh)
-* [`postgis-gdalfpic.patch`](../SOURCES/postgis-gdalfpic.patch)
+* [`postgis.spec`](../SPECS/el7/postgis.spec)
+* [`postgis-filter-requires-perl-Pg.sh`](../SOURCES/el7/postgis-filter-requires-perl-Pg.sh)
+* [`postgis-gdalfpic.patch`](../SOURCES/el7/postgis-gdalfpic.patch)
 
 Any portions of [Fedora's `postgis` RPM](https://src.fedoraproject.org/rpms/postgis/tree/master)
 that may appear in these files are [MIT licensed](./licenses/Fedora-LICENSE).
@@ -307,16 +307,16 @@ The following packaging files originate from
 [Fedora's `pyosmium` RPM](https://src.fedoraproject.org/rpms/pyosmium)
 repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`python3-osmium.spec`](../SPECS/python3-osmium.spec)
-* [`python3-osmium-no-strip.patch`](../SOURCES/python3-osmium-no-strip.patch)
-* [`python3-osmium-no-extras.patch`](../SOURCES/python3-osmium-no-extras.patch)
+* [`python3-osmium.spec`](../SPECS/el7/python3-osmium.spec)
+* [`python3-osmium-no-strip.patch`](../SOURCES/el7/python3-osmium-no-strip.patch)
+* [`python3-osmium-no-extras.patch`](../SOURCES/el7/python3-osmium-no-extras.patch)
 
 ## Rack
 
 [Rack](https://rack.github.io/) source archives are obtained
 directly from RubyGems  and are MIT/BSD licensed.
 
-The [`rubygem-rack.spec`](../SPECS/rubygem-rack.spec) originates from
+The [`rubygem-rack.spec`](../SPECS/el7/rubygem-rack.spec) originates from
 [Fedora's `rubygem-rack` RPM](https://src.fedoraproject.org/rpms/rubygem-rack)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
@@ -329,19 +329,19 @@ The following packaging files originate from
 [Fedora's `ruby` RPM](https://src.fedoraproject.org/rpms/ruby)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`ruby.spec`](../SPECS/ruby.spec)
-* [`ruby-2.3.0-ruby_version.patch`](../SOURCES/ruby-2.3.0-ruby_version.patch)
-* [`ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch`](../SOURCES/ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch)
-* [`ruby-2.1.0-Enable-configuration-of-archlibdir.patch`](../SOURCES/ruby-2.1.0-Enable-configuration-of-archlibdir.patch)
-* [`ruby-2.1.0-always-use-i386.patch`](../SOURCES/ruby-2.1.0-always-use-i386.patch)
-* [`ruby-2.1.0-custom-rubygems-location.patch`](../SOURCES/ruby-2.1.0-custom-rubygems-location.patch)
-* [`ruby-1.9.3-mkmf-verbose.patch`](../SOURCES/ruby-1.9.3-mkmf-verbose.patch)
-* [`ruby-2.7.0-Initialize-ABRT-hook.patch`](../SOURCES/ruby-2.7.0-Initialize-ABRT-hook.patch)
-* [`ruby-2.7.2-disable-eaccess-tests.patch`](../SOURCES/ruby-2.7.2-disable-eaccess-tests.patch)
-* [`ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch`](../SOURCES/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch)
-* [`ruby-2.7.0-Remove-RubyGems-dependency.patch`](../SOURCES/ruby-2.7.0-Remove-RubyGems-dependency.patch)
-* [`ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch`](../SOURCES/ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch)
-* [`ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch`](../SOURCES/ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch)
+* [`ruby.spec`](../SPECS/el7/ruby.spec)
+* [`ruby-2.3.0-ruby_version.patch`](../SOURCES/el7/ruby-2.3.0-ruby_version.patch)
+* [`ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch`](../SOURCES/el7/ruby-2.1.0-Prevent-duplicated-paths-when-empty-version-string-i.patch)
+* [`ruby-2.1.0-Enable-configuration-of-archlibdir.patch`](../SOURCES/el7/ruby-2.1.0-Enable-configuration-of-archlibdir.patch)
+* [`ruby-2.1.0-always-use-i386.patch`](../SOURCES/el7/ruby-2.1.0-always-use-i386.patch)
+* [`ruby-2.1.0-custom-rubygems-location.patch`](../SOURCES/el7/ruby-2.1.0-custom-rubygems-location.patch)
+* [`ruby-1.9.3-mkmf-verbose.patch`](../SOURCES/el7/ruby-1.9.3-mkmf-verbose.patch)
+* [`ruby-2.7.0-Initialize-ABRT-hook.patch`](../SOURCES/el7/ruby-2.7.0-Initialize-ABRT-hook.patch)
+* [`ruby-2.7.2-disable-eaccess-tests.patch`](../SOURCES/el7/ruby-2.7.2-disable-eaccess-tests.patch)
+* [`ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch`](../SOURCES/el7/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch)
+* [`ruby-2.7.0-Remove-RubyGems-dependency.patch`](../SOURCES/el7/ruby-2.7.0-Remove-RubyGems-dependency.patch)
+* [`ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch`](../SOURCES/el7/ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch)
+* [`ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch`](../SOURCES/el7/ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch)
 
 ## `rubygem-pg`
 
@@ -350,8 +350,8 @@ directly from [RubyGems](https://rubygems.org/gems/pg). The following packaging 
 originate from [Fedora's `rubygem-pg` RPM repository](https://src.fedoraproject.org/rpms/rubygem-pg)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`rubygem-pg.spec`](../SPECS/rubygem-pg.spec)
-* [`rubygem-pg-remove-rpath.patch`](../SOURCES/rubygem-pg-remove-rpath.patch)
+* [`rubygem-pg.spec`](../SPECS/el7/rubygem-pg.spec)
+* [`rubygem-pg-remove-rpath.patch`](../SOURCES/el7/rubygem-pg-remove-rpath.patch)
 
 ## SBT
 
@@ -373,11 +373,11 @@ The following packaging files originate from
 [Fedora's `sqlite` RPM](https://src.fedoraproject.org/rpms/sqlite)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`sqlite.spec`](../SPECS/sqlite.spec)
-* [`sqlite-3.6.23-lemon-system-template.patch`](../SOURCES/sqlite-3.6.23-lemon-system-template.patch)
-* [`sqlite-3.12.2-no-malloc-usable-size.patch`](../SOURCES/sqlite-3.12.2-no-malloc-usable-size.patch)
-* [`sqlite-3.8.0-percentile-test.patch`](../SOURCES/sqlite-3.8.0-percentile-test.patch)
-* [`sqlite-3.18.0-sync2-dirsync.patch`](../SOURCES/sqlite-3.18.0-sync2-dirsync.patch)
+* [`sqlite.spec`](../SPECS/el7/sqlite.spec)
+* [`sqlite-3.6.23-lemon-system-template.patch`](../SOURCES/el7/sqlite-3.6.23-lemon-system-template.patch)
+* [`sqlite-3.12.2-no-malloc-usable-size.patch`](../SOURCES/el7/sqlite-3.12.2-no-malloc-usable-size.patch)
+* [`sqlite-3.8.0-percentile-test.patch`](../SOURCES/el7/sqlite-3.8.0-percentile-test.patch)
+* [`sqlite-3.18.0-sync2-dirsync.patch`](../SOURCES/el7/sqlite-3.18.0-sync2-dirsync.patch)
 
 ## sqlite-pcre
 
@@ -394,12 +394,12 @@ The following packaging files originate from
 [Fedora's `tbb` RPM](https://src.fedoraproject.org/rpms/tbb)
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
-* [`tbb.spec`](../SPECS/tbb.spec)
-* [`tbb.pc`](../SOURCES/tbb.pc)
-* [`tbbmalloc.pc`](../SOURCES/tbbmalloc.pc)
-* [`tbbmalloc_proxy.pc`](../SOURCES/tbbmalloc_proxy.pc)
-* [`tbbmalloc_proxy.pc`](../SOURCES/tbbmalloc_proxy.pc)
-* [`tbb-2019-dont-snip-Wall.patch`](../SOURCES/tbb-2019-dont-snip-Wall.patch)
-* [`tbb-2020-attributes.patch`](../SOURCES/tbb-2020-attributes.patch)
-* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
-* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/tbb-2019-test-thread-monitor.patch)
+* [`tbb.spec`](../SPECS/el7/tbb.spec)
+* [`tbb.pc`](../SOURCES/el7/tbb.pc)
+* [`tbbmalloc.pc`](../SOURCES/el7/tbbmalloc.pc)
+* [`tbbmalloc_proxy.pc`](../SOURCES/el7/tbbmalloc_proxy.pc)
+* [`tbbmalloc_proxy.pc`](../SOURCES/el7/tbbmalloc_proxy.pc)
+* [`tbb-2019-dont-snip-Wall.patch`](../SOURCES/el7/tbb-2019-dont-snip-Wall.patch)
+* [`tbb-2020-attributes.patch`](../SOURCES/el7/tbb-2020-attributes.patch)
+* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/el7/tbb-2019-test-thread-monitor.patch)
+* [`tbb-2019-test-thread-monitor.patch`](../SOURCES/el7/tbb-2019-test-thread-monitor.patch)
