@@ -30,7 +30,7 @@ The [`arpack.spec`](../SPECS/el9/arpack.spec) file originates from [Fedora's `ar
 
 The [armadillo](https://arma.sourceforge.net/) source archives are obtained directly from [Sourceforge](https://sourceforge.net/projects/arma/files/).
 
-The [`armadillo.spec`](../SPECS/el9/arpack.spec) file originates from [Fedora's `arpack` RPM](https://src.fedoraproject.org/rpms/arpack) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+The [`armadillo.spec`](../SPECS/el9/armadillo.spec) file originates from [Fedora's `armadillo` RPM](https://src.fedoraproject.org/rpms/armadillo) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## CGAL
 
