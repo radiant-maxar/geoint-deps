@@ -1,0 +1,529 @@
+---
+version: "3.7"
+
+x-rpmbuild:
+  channel_name: &rpmbuild_channel stable-el9
+  dist: &rpmbuild_dist .el9
+  email: &rpmbuild_email foundationgeoint-packaging@maxar.com
+  image_prefix: &rpmbuild_image_prefix ${IMAGE_PREFIX}
+  packager_name: &rpmbuild_name FoundationGEOINT Packaging
+  postgres_version: &postgres_version "15"
+  vendor: &rpmbuild_vendor Maxar Technologies
+  base_args: &rpmbuild_base_args
+    rpmbuild_dist: *rpmbuild_dist
+    rpmbuild_email: *rpmbuild_email
+    rpmbuild_gid: ${RPMBUILD_GID}
+    rpmbuild_name: *rpmbuild_name
+    rpmbuild_uid: ${RPMBUILD_UID}
+  build_defaults: &build_defaults
+    context: .
+    dockerfile: docker/el9/Dockerfile.rpmbuild-generic
+    labels:
+      maintainer: *rpmbuild_email
+      vendor: *rpmbuild_vendor
+  build_args_defaults: &build_args_defaults
+    rpmbuild_channel: *rpmbuild_channel
+    rpmbuild_image_prefix: *rpmbuild_image_prefix
+    rpmbuild_image: rpmbuild
+  # Use consistent values for minimum versions for RPM build
+  # and runtime requirements.
+  minimum_versions:
+    gdal: &gdal_min_version 3.5.0
+    geos: &geos_min_version 3.11.0
+    libosmium: &libosmium_min_version 2.18.0
+    postgis_min_version: &postgis_min_version 3.3.0
+    proj: &proj_min_version 9.0.0
+    protobuf-c: &protobuf_c_min_version 1.3.0
+    protobuf: &protobuf_min_version 3.0.0
+    protozero: &protozero_min_version 1.7.0
+    sqlite_min_version: &sqlite_min_version 3.11.0
+  # Configuration for building every dependency RPM.
+  rpms:
+    CGAL:
+      image: rpmbuild-cgal
+      version: &CGAL_version 5.4.1-1
+      name: CGAL-devel
+    FileGDBAPI:
+      image: rpmbuild-generic
+      version: &FileGDBAPI_version 1.5.2-1
+    SFCGAL:
+      image: rpmbuild-sfcgal
+      version: &SFCGAL_version 1.4.1-1
+      defines:
+        # Too many build processes can exhaust RAM.
+        _smp_ncpus_max: 4
+    armadillo:
+      image: rpmbuild-armadillo
+      version: &armadillo_version 11.2.0-1
+    arpack:
+      image: rpmbuild-arpack
+      version: &arpack_version 3.8.0-1
+    dumb-init:
+      image: rpmbuild-generic
+      version: 1.2.5-1
+    gdal:
+      image: rpmbuild-gdal
+      version: &gdal_version 3.5.1-1
+      defines:
+        geos_min_version: *geos_min_version
+        proj_min_version: *proj_min_version
+    geos:
+      image: rpmbuild-generic
+      version: &geos_version 3.11.0-1
+    gpsbabel:
+      image: rpmbuild-gpsbabel
+      version: &gpsbabel_version 1.8.0-1
+    google-noto-fonts-extra:
+      image: rpmbuild-fonts
+      version: &google-noto-fonts-extra_version 20220418-1
+      defines:
+        commit: 523a250c35d417c217c580f0743e41d8ca4b7657
+      arch: noarch
+    g2clib:
+      image: rpmbuild-g2clib
+      name: g2clib-devel
+      version: &g2clib_version 1.6.4-1
+    hanazono-fonts:
+      image: rpmbuild-fonts
+      version: &hanazono-fonts_version 20170904-1
+      arch: noarch
+    iniparser:
+      image: rpmbuild-generic
+      version: &iniparser_version 4.1-1
+    journald-cloudwatch-logs:
+      image: rpmbuild-journald-cloudwatch-logs
+      version: &journald-cloudwatch-logs_version 0.2.0-1
+    libgeotiff:
+      image: rpmbuild-libgeotiff
+      version: &libgeotiff_version 1.7.1-10
+      defines:
+        proj_min_version: *proj_min_version
+    libgta:
+      image: rpmbuild-generic
+      version: &libgta_version 1.2.1-1
+    libpqxx:
+      image: rpmbuild-libpqxx
+      version: &libpqxx_version 7.7.3-1
+    libkml:
+      image: rpmbuild-libkml
+      version: &libkml_version 1.3.0-1
+    libosmium:
+      image: rpmbuild-libosmium
+      version: &libosmium_version 2.18.0-1
+      arch: noarch
+      name: libosmium-devel
+      defines:
+        protozero_min_version: *protozero_min_version
+    mapnik:
+      image: rpmbuild-mapnik
+      version: &mapnik_version 3.1.0-1
+      defines:
+        geos_min_version: *geos_min_version
+        postgis_min_version: *postgis_min_version
+        proj_min_version: *proj_min_version
+    ogdi:
+      image: rpmbuild-ogdi
+      version: &ogdi_version 4.1.0-1
+    openstreetmap-carto:
+      image: rpmbuild-openstreetmap-carto
+      version: &openstreetmap_carto_version 5.4.0-1
+      arch: noarch
+      defines:
+        data_natural_earth_version: 5.1.0
+    osmctools:
+      image: rpmbuild-osmctools
+      version: &osmctools_version 0.9-1
+    osmdbt:
+      image: rpmbuild-osmdbt
+      version: &osmdbt_version 0.6-1
+      defines:
+        commit: c03a67558b80ae00cbd881b0b4b2a458bc3540d1
+        libosmium_min_version: *libosmium_min_version
+    osmosis:
+      image: rpmbuild-generic
+      version: &osmosis_version 0.48.3-1
+      arch: noarch
+    osmium-tool:
+      image: rpmbuild-osmium-tool
+      version: &osmium-tool_version 1.14.0-1
+      defines:
+        libosmium_min_version: *libosmium_min_version
+        protozero_min_version: *protozero_min_version
+    osm2pgsql:
+      image: rpmbuild-osm2pgsql
+      version: &osm2pgsql_version 1.6.0-1
+      defines:
+        libosmium_min_version: *libosmium_min_version
+        proj_min_version: *proj_min_version
+        postgis_min_version: *postgis_min_version
+        protobuf_c_min_version: *protobuf_c_min_version
+    passenger:
+      image: rpmbuild-passenger
+      version: &passenger_version 6.0.14-1
+    postgis:
+      image: rpmbuild-postgis
+      version: &postgis_version 3.3.0-0
+      defines:
+        gdal_min_version: *gdal_min_version
+        geos_min_version: *geos_min_version
+        prerelease: alpha1
+        proj_min_version: *proj_min_version
+        protobuf_min_version: *protobuf_min_version
+        protobuf_c_min_version: *protobuf_c_min_version
+    proj:
+      image: rpmbuild-proj
+      version: &proj_version 9.0.1-1
+      defines:
+        data_version: "1.10"
+        googletest_version: 1.11.0
+    protozero:
+      image: rpmbuild-protozero
+      version: &protozero_version 1.7.1-1
+      arch: noarch
+      name: protozero-devel
+      defines:
+        protobuf_min_version: *protobuf_min_version
+    python3-mapnik:
+      image: rpmbuild-python3-mapnik
+      version: &python-mapnik_version 3.0.23-1
+      defines:
+        # Have to specify git commit, project doesn't consistently use tags.
+        commit: 7da019cf9eb12af8f8aa88b7d75789dfcd1e901b
+        testcommit: dd0c41c3f9f5dc98291a727af00bb42734d2a8c0
+        visualcommit: 1f20cf257f35224d3c139a6015b1cf70814b0d24
+    python3-osmium:
+      image: rpmbuild-pyosmium
+      version: &pyosmium_version 3.3.0-1
+      defines:
+        libosmium_min_version: *libosmium_min_version
+        protozero_min_version: *protozero_min_version
+        pybind11_version: 2.7.1
+    rack:
+      image: rpmbuild-rack
+      version: &rack_version 2.2.3.1-1
+      arch: noarch
+      name: rubygem-rack
+      spec_file: SPECS/rubygem-rack.spec
+    rubygem-libxml-ruby:
+      image: rpmbuild-rubygem-libxml-ruby
+      version: &rubygem_libxml_ruby_version 3.2.2-1
+    sbt:
+      image: rpmbuild-generic
+      version: &sbt_version 1.6.2-1
+      arch: noarch
+    sqlite-pcre:
+      image: rpmbuild-sqlite-pcre
+      version: &sqlite_pcre_version 2007.1.20-1
+    uriparser:
+      image: rpmbuild-uriparser
+      version: &uriparser_version 0.9.6-1
+  service_volumes: &service_volumes
+    - ./RPMS:/rpmbuild/RPMS:rw
+    - ./SOURCES/el9:/rpmbuild/SOURCES:rw
+    - ./SPECS/el9:/rpmbuild/SPECS:ro
+    - ./scripts:/rpmbuild/scripts:ro
+  service_defaults: &service_defaults
+    command: tail -f /dev/null
+    init: true
+    volumes: *service_volumes
+
+services:
+  # Base images
+  rpmbuild:
+    build:
+      context: .
+      dockerfile: docker/el9/Dockerfile.rpmbuild
+      args:
+        <<: *rpmbuild_base_args
+      labels:
+        maintainer: *rpmbuild_email
+        vendor: *rpmbuild_vendor
+    command: tail -f /dev/null
+    image: ${IMAGE_PREFIX}rpmbuild
+    init: true
+    user: nobody
+  rpmbuild-fonts:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: fontpackages-devel
+    image: ${IMAGE_PREFIX}rpmbuild-fonts
+  rpmbuild-generic:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+    image: ${IMAGE_PREFIX}rpmbuild-generic
+  rpmbuild-pgdg:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        postgres_version: *postgres_version
+        # PostgreSQL 15 is currently in beta, use testing repository.
+        testing: 1
+      dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
+    image: ${IMAGE_PREFIX}rpmbuild-pgdg
+  # RPM images
+  rpmbuild-armadillo:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        arpack_version: *arpack_version
+        packages: ${RPMBUILD_ARMADILLO_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-armadillo
+  rpmbuild-arpack:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_ARPACK_PACKAGES}
+  rpmbuild-cgal:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_CGAL_PACKAGES}
+  rpmbuild-gdal:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        arpack_version: *arpack_version
+        armadillo_version: *armadillo_version
+        cgal_version: *CGAL_version
+        filegdbapi_version: *FileGDBAPI_version
+        geos_version: *geos_version
+        gpsbabel_version: *gpsbabel_version
+        g2clib_version: *g2clib_version
+        libgeotiff_version: *libgeotiff_version
+        libgta_version: *libgta_version
+        libkml_version: *libkml_version
+        ogdi_version: *ogdi_version
+        packages: ${RPMBUILD_GDAL_PACKAGES}
+        proj_version: *proj_version
+        rpmbuild_image: rpmbuild-pgdg
+        sfcgal_version: *SFCGAL_version
+        uriparser_version: *uriparser_version
+      dockerfile: docker/el9/Dockerfile.rpmbuild-gdal
+  rpmbuild-gpsbabel:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_GPSBABEL_PACKAGES}
+  rpmbuild-g2clib:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_G2CLIB_PACKAGES}
+  rpmbuild-proj:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_PROJ_PACKAGES}
+  rpmbuild-libgeotiff:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBGEOTIFF_PACKAGES}
+        proj_version: *proj_version
+      dockerfile: docker/el9/Dockerfile.rpmbuild-libgeotiff
+  rpmbuild-libpqxx:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBPQXX_PACKAGES}
+        postgres_version: *postgres_version
+        testing: 1
+      dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
+  rpmbuild-libkml:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBKML_PACKAGES}
+        uriparser_version: *uriparser_version
+      dockerfile: docker/el9/Dockerfile.rpmbuild-libkml
+  rpmbuild-libosmium:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-ogdi:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OGDI_PACKAGES}
+  rpmbuild-journald-cloudwatch-logs:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES}
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el9/Dockerfile.rpmbuild-go
+  rpmbuild-mapnik:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_MAPNIK_PACKAGES}
+        rpmbuild_image: rpmbuild-pgdg
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-openstreetmap-carto:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES}
+  rpmbuild-osmctools:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OSMCTOOLS_PACKAGES}
+  rpmbuild-osmdbt:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OSMDBT_PACKAGES}
+        rpmbuild_image: rpmbuild-pgdg
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-osmium-tool:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OSMIUM_TOOL_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-osm2pgsql:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OSM2PGSQL_PACKAGES}
+        rpmbuild_image: rpmbuild-pgdg
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-passenger:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_PASSENGER_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-postgis:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_POSTGIS_PACKAGES}
+        rpmbuild_image: rpmbuild-pgdg
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-protozero:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_PROTOZERO_PACKAGES}
+  rpmbuild-pyosmium:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_PYOSMIUM_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-python3-mapnik:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_PYTHON_MAPNIK_PACKAGES}
+        python_packages: >-
+          nose
+          PyPDF2
+        rpmbuild_image: rpmbuild-pgdg
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-rack:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        gem_packages: >-
+          memcache-client
+          minitest
+          minitest-sprint
+          minitest-global_expectations
+          webrick
+        packages: ${RPMBUILD_RACK_PACKAGES}
+  rpmbuild-rubygem-libxml-ruby:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        gem_packages: >-
+          minitest
+          rake-compiler
+        packages: ${RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES}
+  rpmbuild-sfcgal:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        cgal_version: *CGAL_version
+        packages: ${RPMBUILD_SFCGAL_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-sfcgal
+  rpmbuild-sqlite-pcre:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
+  rpmbuild-uriparser:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_URIPARSER_PACKAGES}

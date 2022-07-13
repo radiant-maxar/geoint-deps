@@ -41,7 +41,7 @@ COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/sqlite-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/sqlite-devel-${sqlite_version}${RPMBUILD_DIST}.x86_64.rpm \
-     SPECS/gdalautotest-requirements.txt \
+     SPECS/el7/gdalautotest-requirements.txt \
      /tmp/
 
 # Install GDAL prerequisites first, before installing the package list

@@ -1,15 +1,16 @@
 ## Conditional variables.
 DOCKER ?= docker
 DOCKER_COMPOSE ?= docker-compose
+EL_VERSION ?= el7
 CI ?= false
-COMPOSE_FILE ?= docker-compose.yml
-COMPOSE_PROJECT_NAME ?= geoint-deps-$(RPMBUILD_CHANNEL)
+COMPOSE_FILE ?= docker-compose.$(EL_VERSION).yml
+COMPOSE_PROJECT_NAME ?= geoint-deps-$(RPMBUILD_CHANNEL)-$(EL_VERSION)
 IMAGE_PREFIX ?= $(COMPOSE_PROJECT_NAME)_
 
 
 ## Macro functions.
-build_unless_image_exists = $(shell $(DOCKER) image inspect $(IMAGE_PREFIX)$(1) >/dev/null 2>&1 || DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) build $(1))
-pull_if_ci = $(shell bash -c '[ "$(CI)" == "false" ] || $(DOCKER_COMPOSE) pull --quiet $(1)')
+build_unless_image_exists = $(shell $(DOCKER) image inspect $(IMAGE_PREFIX)$(1) >/dev/null 2>&1 || COMPOSE_FILE=$(COMPOSE_FILE) DOCKER_BUILDKIT=1 $(DOCKER_COMPOSE) build $(1))
+pull_if_ci = $(shell bash -c '[ "$(CI)" == "false" ] || COMPOSE_FILE=$(COMPOSE_FILE) $(DOCKER_COMPOSE) pull --quiet $(1)')
 
 # The `rpmbuild_util.py` utility script is used to pull out configured versions,
 # Docker build images, and other build variables.
@@ -141,46 +142,48 @@ endif
 all-rpms: $(RPMBUILD_RPMS)
 
 distclean: .env
-	$(DOCKER_COMPOSE) down --volumes --rmi all
-	rm -fr .env RPMS/noarch RPMS/x86_64 SOURCES/*.asc SOURCES/*.sha256 SOURCES/*.tgz SOURCES/*.tar.gz SOURCES/*.tar.xz SOURCES/*.zip
+	COMPOSE_FILE=$(COMPOSE_FILE) $(DOCKER_COMPOSE) down --volumes --rmi all
+	rm -fr .env RPMS/noarch RPMS/x86_64 \
+		  SOURCES/$(EL_VERSION)/*.asc SOURCES/$(EL_VERSION)/*.sha256 SOURCES/$(EL_VERSION)/*.tgz \
+		  SOURCES/$(EL_VERSION)/*.tar.gz SOURCES/$(EL_VERSION)/*.tar.xz SOURCES/$(EL_VERSION)/*.zip
 
 # Environment file for docker-compose; required packages for build containers
 # are provided here.
-.env: SPECS/*.spec
+.env: SPECS/$(EL_VERSION)/*.spec
 	echo COMPOSE_PROJECT_NAME=$(COMPOSE_PROJECT_NAME) > .env
 	echo IMAGE_PREFIX=$(IMAGE_PREFIX) >> .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
-	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/CGAL.spec) >> .env
-	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gdal.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/gpsbabel.spec) >> .env
-	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/journald-cloudwatch-logs.spec) >> .env
-	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libgeotiff.spec) >> .env
-	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libkml.spec) >> .env
-	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/libosmium.spec) >> .env
-	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/mapnik.spec) >> .env
-	echo RPMBUILD_OGDI_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ogdi.spec) >> .env
-	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/openstreetmap-carto.spec) >> .env
-	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osm2pgsql.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmctools.spec) >> .env
-	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmdbt.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/osmium-tool.spec) >> .env
-	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/passenger.spec) >> .env
-	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/postgis.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/proj.spec) >> .env
-	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf-c.spec) >> .env
-	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protobuf.spec) >> .env
-	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/protozero.spec) >> .env
-	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python3-osmium.spec) >> .env
-	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/python-mapnik.spec) >> .env
-	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-rack.spec) >> .env
-	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/ruby.spec) >> .env
-	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-libxml-ruby.spec) >> .env
-	echo RPMBUILD_RUBYGEM_PG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/rubygem-pg.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/SFCGAL.spec) >> .env
-	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite.spec) >> .env
-	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/sqlite-pcre.spec) >> .env
-	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/tbb.spec) >> .env
+	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/CGAL.spec) >> .env
+	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/gdal.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/gpsbabel.spec) >> .env
+	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/journald-cloudwatch-logs.spec) >> .env
+	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libgeotiff.spec) >> .env
+	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libkml.spec) >> .env
+	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libosmium.spec) >> .env
+	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/mapnik.spec) >> .env
+	echo RPMBUILD_OGDI_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/ogdi.spec) >> .env
+	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/openstreetmap-carto.spec) >> .env
+	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osm2pgsql.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmctools.spec) >> .env
+	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmdbt.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmium-tool.spec) >> .env
+	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/passenger.spec) >> .env
+	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/postgis.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/proj.spec) >> .env
+	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/protobuf-c.spec) >> .env
+	echo RPMBUILD_PROTOBUF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/protobuf.spec) >> .env
+	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/protozero.spec) >> .env
+	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/python3-osmium.spec) >> .env
+	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/python-mapnik.spec) >> .env
+	echo RPMBUILD_RACK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/rubygem-rack.spec) >> .env
+	echo RPMBUILD_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/ruby.spec) >> .env
+	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/rubygem-libxml-ruby.spec) >> .env
+	echo RPMBUILD_RUBYGEM_PG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/rubygem-pg.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/SFCGAL.spec) >> .env
+	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite.spec) >> .env
+	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite-pcre.spec) >> .env
+	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/tbb.spec) >> .env
 
 
 ## Image targets
@@ -261,5 +264,5 @@ RPMS/x86_64/%.rpm RPMS/noarch/%.rpm: | .env
 	$(MAKE) $(call rpmbuild_image_parent,$*)
 	$(call pull_if_ci,$(call rpmbuild_image,$*))
 	$(call build_unless_image_exists,$(call rpmbuild_image,$*))
-	$(DOCKER_COMPOSE) run --rm -T $(call rpmbuild_image,$*) \
+	COMPOSE_FILE=$(COMPOSE_FILE) $(DOCKER_COMPOSE) run --rm -T $(call rpmbuild_image,$*) \
 	  $(shell ./scripts/rpmbuild_util.py $(call rpm_package,$*) --config-file $(COMPOSE_FILE))

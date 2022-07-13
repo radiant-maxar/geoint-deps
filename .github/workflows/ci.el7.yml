@@ -1,13 +1,12 @@
 ---
-name: CI (EL7)
+name: Build & Push (EL7)
 
 on:
   - push
 
 env:
   DOCKER_BUILDKIT: 1
-  IMAGE_PREFIX: ghcr.io/${{ github.repository }}/el7/
-  PACKAGE_PREFIX: geoint-deps%2Fel7%2F
+  EL_VERSION: el7
 
 jobs:
   build-images:
@@ -31,14 +30,15 @@ jobs:
       - name: Delete old images
         uses: ./.github/actions/github-api/delete-package
         with:
-          package_name: ${{ env.PACKAGE_PREFIX }}${{ matrix.image }}
+          el_version: ${{ env.EL_VERSION }}
+          package_name: ${{ matrix.image }}
           token: ${{ secrets.PKG_DELETE_TOKEN }}
           token_type: token
 
       - name: Build `${{ matrix.image }}` Image
         uses: ./.github/actions/build
         with:
-          image_prefix: ${{ env.IMAGE_PREFIX }}
+          el_version: ${{ env.EL_VERSION }}
           make_target: ${{ matrix.image }}
           push_image: true
 
@@ -89,7 +89,7 @@ jobs:
       - name: Build `${{ matrix.rpm }}` RPM(s)
         uses: ./.github/actions/build
         with:
-          image_prefix: ${{ env.IMAGE_PREFIX }}
+          el_version: ${{ env.EL_VERSION }}
           make_target: ${{ matrix.rpm }}
 
 
@@ -115,7 +115,7 @@ jobs:
       - name: Build `${{ matrix.rpm }}` RPM(s)
         uses: ./.github/actions/build
         with:
-          image_prefix: ${{ env.IMAGE_PREFIX }}
+          el_version: ${{ env.EL_VERSION }}
           download_rpms: true
           make_target: ${{ matrix.rpm }}
 
@@ -139,7 +139,7 @@ jobs:
       - name: Build `${{ matrix.rpm }}` RPM(s)
         uses: ./.github/actions/build
         with:
-          image_prefix: ${{ env.IMAGE_PREFIX }}
+          el_version: ${{ env.EL_VERSION }}
           download_rpms: true
           make_target: ${{ matrix.rpm }}
 
@@ -162,6 +162,35 @@ jobs:
       - name: Build `${{ matrix.rpm }}` RPM(s)
         uses: ./.github/actions/build
         with:
-          image_prefix: ${{ env.IMAGE_PREFIX }}
+          el_version: ${{ env.EL_VERSION }}
           download_rpms: true
           make_target: ${{ matrix.rpm }}
+
+
+  create-and-push-repo:
+    name: Create & push repository
+    if: ${{ github.ref_name != 'stable' }}
+    needs: build-rpms-4
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download RPMS directory
+        uses: actions/download-artifact@v3
+        with:
+          name: RPMS-${{ env.EL_VERSION }}-${{ github.sha }}
+          path: RPMS
+
+      - name: Create repository
+        uses: ./.github/actions/repository/create
+        with:
+          el_version: ${{ env.EL_VERSION }}
+
+      # - name: Upload repository
+      #   uses: ./.github/actions/repository/upload
+      #   with:
+      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     el_version: ${{ env.EL_VERSION }}

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+
 source /etc/os-release
 GEOINT_DEPS_CHANNEL="${GEOINT_DEPS_CHANNEL:-stable}"
 GEOINT_DEPS_BASEURL="${GEOINT_DEPS_BASEURL:-https://geoint-deps.s3.amazonaws.com/el${VERSION_ID}/${GEOINT_DEPS_CHANNEL}}"

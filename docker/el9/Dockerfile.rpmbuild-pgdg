@@ -1,0 +1,30 @@
+ARG rpmbuild_channel
+ARG rpmbuild_image=rpmbuild
+ARG rpmbuild_image_prefix
+# hadolint ignore=DL3007
+FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
+ARG packages
+ARG postgres_version
+ARG testing=0
+
+# If any package dependencies are needed, install them.
+SHELL ["/bin/bash", "-c"]
+# hadolint ignore=DL3040,DL3041
+RUN --mount=type=cache,target=/var/cache/dnf \
+    PGDG_TESTING=${testing} /usr/local/bin/pgdg-repo.sh ${postgres_version} && \
+    /usr/local/bin/postgres-install.sh ${postgres_version} && \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi && \
+    /usr/local/bin/rpmbuild-user.sh && \
+    rm -f /usr/local/bin/rpmbuild-user.sh
+
+# Ensure the PostgreSQL socket directory is owned by the rpmbuild user.
+# This makes it easy to start the database as run as that user.
+RUN chown -R "${RPMBUILD_USER}:${RPMBUILD_GROUP}" /var/run/postgresql
+
+# Use unprivileged RPM build user and work directory by default.
+USER ${RPMBUILD_USER}
+WORKDIR ${RPMBUILD_HOME}
+
+# Add in macros necessary for creating RPMs and GDAL packages.
+RUN echo "%postgres_version ${postgres_version}" >> "${RPMBUILD_HOME}/.rpmmacros" && \
+    echo "%postgres_instdir /usr/pgsql-%{postgres_version}" >> "${RPMBUILD_HOME}/.rpmmacros"

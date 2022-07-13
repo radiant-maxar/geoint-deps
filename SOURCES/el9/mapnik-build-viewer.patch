@@ -1,0 +1,36 @@
+From 1de5d54f6bd172c8366f73902cf36a65827d6925 Mon Sep 17 00:00:00 2001
+From: Tom Hughes <tom@compton.nu>
+Date: Fri, 1 Mar 2013 20:03:49 +0000
+Subject: [PATCH 1/7] Link viewer against uninstalled mapnik
+
+---
+ demo/viewer/viewer.pro | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/demo/viewer/viewer.pro b/demo/viewer/viewer.pro
+index aad00b424..48ab1238e 100644
+--- a/demo/viewer/viewer.pro
++++ b/demo/viewer/viewer.pro
+@@ -3,12 +3,13 @@
+ ######################################################################
+ TEMPLATE = app
+ QT += core gui widgets
+-QMAKE_CXX = $$system(mapnik-config --cxx)
+-QMAKE_LINK = $$system(mapnik-config --cxx)
+-QMAKE_CXXFLAGS += $$system(mapnik-config --cxxflags)
+-QMAKE_CXXFLAGS += $$system(mapnik-config --includes --dep-includes --defines)
+-QMAKE_LFLAGS += $$system(mapnik-config --libs)
+-QMAKE_LFLAGS += $$system(mapnik-config --ldflags --dep-libs)
++QMAKE_CXX = $$system(../../utils/mapnik-config/mapnik-config --cxx)
++QMAKE_LINK = $$system(../../utils/mapnik-config/mapnik-config --cxx)
++QMAKE_CXXFLAGS += $$system(../../utils/mapnik-config/mapnik-config --cxxflags)
++QMAKE_CXXFLAGS += -I../../include -I../../deps/mapbox/variant/include -I../../deps/agg/include
++QMAKE_CXXFLAGS += $$system(../../utils/mapnik-config/mapnik-config --dep-includes --defines)
++QMAKE_LFLAGS += -L../../src -lmapnik
++QMAKE_LFLAGS += $$system(../../utils/mapnik-config/mapnik-config --ldflags --dep-libs)
+ # Input
+ 
+ CONFIG += qt debug_and_release
+-- 
+2.29.2
+

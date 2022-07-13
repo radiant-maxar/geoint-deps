@@ -1,0 +1,70 @@
+From: Justin Bronn <justin.bronn@maxar.com>
+Subject: Various Test Fixes
+
+* Patch had to be formatted assuming CRLF endings like in gem source.
+* Add `rt` mode to `IO.read` to adjust for CRLF test case sources.
+* Don't assume a Windows-style path for test file source.
+
+diff --git a/test/test_canonicalize.rb b/test/test_canonicalize.rb
+index 6aec5a8..ee6a3ee 100644
+--- a/test/test_canonicalize.rb
++++ b/test/test_canonicalize.rb
+@@ -12,16 +12,16 @@ class TestCanonicalize < Minitest::Test
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-1.xml'))
+ 
+     # With Comments
+-    expected_with_comments = IO.read(self.path('c14n/result/with-comments/example-1'))
++    expected_with_comments = IO.read(self.path('c14n/result/with-comments/example-1'), mode: 'rt')
+     assert_equal(expected_with_comments, given_doc.canonicalize(:comments => true))
+ 
+     # Without Comments
+-    expected_without_comments = IO.read(self.path('c14n/result/without-comments/example-1'))
++    expected_without_comments = IO.read(self.path('c14n/result/without-comments/example-1'), mode: 'rt')
+     assert_equal(expected_without_comments, given_doc.canonicalize)
+     assert_equal(expected_without_comments, given_doc.canonicalize(:comments => false))
+ 
+     # Without Comments (XML_C14N_1_1)
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-1'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-1'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end#test_canonicalize_with_w3c_c14n_3_1
+@@ -31,10 +31,10 @@ class TestCanonicalize < Minitest::Test
+   # http://www.w3.org/TR/xml-c14n#Example-WhitespaceInContent
+   def test_canonicalize_with_w3c_c14n_3_2
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-2.xml'))
+-    expected = IO.read(self.path('c14n/result/without-comments/example-2'))
++    expected = IO.read(self.path('c14n/result/without-comments/example-2'), mode: 'rt')
+     assert_equal(expected, given_doc.canonicalize)
+ 
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-2'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-2'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end
+@@ -46,10 +46,10 @@ class TestCanonicalize < Minitest::Test
+   #     not applied to canonicalization.
+   def test_canonicalize_with_w3c_c14n_3_3
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-3.xml'))
+-    expected = IO.read(self.path('c14n/result/without-comments/example-3'))
++    expected = IO.read(self.path('c14n/result/without-comments/example-3'), mode: 'rt')
+     assert_equal(expected, given_doc.canonicalize)
+ 
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-3'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-3'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end
+@@ -58,10 +58,10 @@ class TestCanonicalize < Minitest::Test
+   # http://www.w3.org/TR/xml-c14n#Example-Chars
+   def test_canonicalize_with_w3c_c14n_3_4
+     given_doc = LibXML::XML::Document.file(self.path('c14n/given/example-4.xml'))
+-    expected = IO.read(self.path('c14n/result/without-comments/example-4'))
++    expected = IO.read(self.path('c14n/result/without-comments/example-4'), mode: 'rt')
+     assert_equal(expected, given_doc.canonicalize)
+ 
+-    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-4'))
++    expected_1_1_without_comments = IO.read(self.path('c14n/result/1-1-without-comments/example-4'), mode: 'rt')
+     mode = LibXML::XML::Document::XML_C14N_1_1
+     assert_equal(expected_1_1_without_comments, given_doc.canonicalize(:mode => mode))
+   end

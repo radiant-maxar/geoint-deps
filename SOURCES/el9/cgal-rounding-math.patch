@@ -1,0 +1,13 @@
+diff -rupN --no-dereference CMakeLists.txt CMakeLists.txt
+--- CMakeLists.txt	2021-08-12 12:35:38.273409524 -0500
++++ CMakeLists.txt	2021-08-12 12:35:44.904613229 -0500
+@@ -41,6 +41,9 @@ option(CGAL_HEADER_ONLY "Enable header-o
+ #
+ #--------------------------------------------------------------------------------------------------
+ 
++message( "== Fixing Valgrind Rounding Math Error ==" )
++add_definitions(-DCGAL_DISABLE_ROUNDING_MATH_CHECK)
++
+ message( "== Setting paths ==" )
+ 
+ if ( CGAL_BRANCH_BUILD )
