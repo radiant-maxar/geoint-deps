@@ -217,6 +217,9 @@ x-rpmbuild:
     uriparser:
       image: rpmbuild-uriparser
       version: &uriparser_version 0.9.6-1
+    wal-g:
+      image: rpmbuild-wal-g
+      version: &walg_version 2.0.0-1
   service_volumes: &service_volumes
     - ./RPMS:/rpmbuild/RPMS:rw
     - ./SOURCES/el9:/rpmbuild/SOURCES:rw
@@ -527,3 +530,12 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_URIPARSER_PACKAGES}
+  rpmbuild-wal-g:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_WALG_PACKAGES}
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el9/Dockerfile.rpmbuild-go

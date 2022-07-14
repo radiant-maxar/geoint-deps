@@ -76,6 +76,7 @@ SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
 SQLITE_RPM := $(call rpm_file,sqlite)
 TBB_RPM := $(call rpm_file,tbb)
+WALG_RPM := $(call rpm_file,wal-g)
 
 # Build images and RPMs.
 RPMBUILD_BASE_IMAGES := \
@@ -120,7 +121,8 @@ RPMBUILD_RPMS := \
 	SFCGAL \
 	sqlite \
 	sqlite-pcre \
-	tbb
+	tbb \
+	wal-g
 
 
 ## General targets
@@ -184,6 +186,7 @@ distclean: .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite-pcre.spec) >> .env
 	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/tbb.spec) >> .env
+	echo RPMBUILD_WALG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/wal-g.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 
 
 ## Image targets
@@ -257,6 +260,7 @@ sqlite-pcre: $(SQLITE_RPM) \
              $(SQLITE_PCRE_RPM)
 sqlite: $(SQLITE_RPM)
 tbb: $(TBB_RPM)
+wal-g: $(WALG_RPM)
 
 
 ## Build patterns

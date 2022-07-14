@@ -81,6 +81,7 @@ jobs:
           - sbt
           - sqlite
           - tbb
+          - wal-g
 
     steps:
       - name: Checkout repository
