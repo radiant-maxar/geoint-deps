@@ -3,7 +3,7 @@ Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
 Summary:        Archival and Restoration for Postgres
 
-License:        GPLv3
+License:        ASL 2.0
 URL:            https://github.com/%{name}/%{name}
 Source0:        https://github.com/%{name}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
