@@ -188,9 +188,9 @@ jobs:
         with:
           el_version: ${{ env.EL_VERSION }}
 
-      # - name: Upload repository
-      #   uses: ./.github/actions/repository/upload
-      #   with:
-      #     aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     el_version: ${{ env.EL_VERSION }}
+      - name: Upload repository
+        uses: ./.github/actions/repository/upload
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          el_version: ${{ env.EL_VERSION }}
