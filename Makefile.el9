@@ -77,6 +77,7 @@ SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
 URIPARSER_RPM := $(call rpm_file,uriparser)
+WALG_RPM := $(call rpm_file,wal-g)
 
 # Build images and RPMs.
 RPMBUILD_BASE_IMAGES := \
@@ -122,7 +123,8 @@ RPMBUILD_RPMS := \
 	sbt \
 	SFCGAL \
 	sqlite-pcre \
-	uriparser
+	uriparser \
+	wal-g
 
 
 ## General targets
@@ -185,6 +187,7 @@ distclean: .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite-pcre.spec) >> .env
 	echo RPMBUILD_URIPARSER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/uriparser.spec) >> .env
+	echo RPMBUILD_WALG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/wal-g.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 
 
 ## Image targets
@@ -253,11 +256,12 @@ SFCGAL: $(CGAL_RPM) \
         $(SFCGAL_RPM)
 sqlite-pcre: $(SQLITE_PCRE_RPM)
 uriparser: $(URIPARSER_RPM)
+wal-g: $(WALG_RPM)
 
 
 ## Build patterns
 RPMS/x86_64/%.rpm RPMS/noarch/%.rpm: | .env
-	$(MAKE) $(call rpmbuild_image_parent,$*)
+	$(MAKE) -f Makefile.$(EL_VERSION) $(call rpmbuild_image_parent,$*)
 	$(call pull_if_ci,$(call rpmbuild_image,$*))
 	$(call build_unless_image_exists,$(call rpmbuild_image,$*))
 	COMPOSE_FILE=$(COMPOSE_FILE) $(DOCKER_COMPOSE) run --rm -T $(call rpmbuild_image,$*) \

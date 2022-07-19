@@ -224,6 +224,10 @@ x-rpmbuild:
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
       version: &rubygem_libxml_ruby_version 3.2.2-1
+    sbt:
+      image: rpmbuild-generic
+      version: &sbt_version 1.6.1-1
+      arch: noarch
     sqlite:
       image: rpmbuild-sqlite
       version: &sqlite_version 3.36.0-2
@@ -233,10 +237,9 @@ x-rpmbuild:
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version 2020.3-1
-    sbt:
-      image: rpmbuild-generic
-      version: &sbt_version 1.6.1-1
-      arch: noarch
+    wal-g:
+      image: rpmbuild-wal-g
+      version: &walg_version 2.0.0-1
   service_volumes: &service_volumes
     - ./RPMS:/rpmbuild/RPMS:rw
     - ./SOURCES/el7:/rpmbuild/SOURCES:rw
@@ -558,3 +561,12 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_TBB_PACKAGES}
+  rpmbuild-wal-g:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_WALG_PACKAGES}
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el7/Dockerfile.rpmbuild-go
