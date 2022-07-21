@@ -44,7 +44,7 @@ runs:
       run: >-
         make rpmbuild-generic &&
         mkdir --parents ${REPO_DIR} &&
-        cp --verbose ${{ inputs.rpms_dir }}/{noarch,x86_64}/*.rpm ${REPO_DIR}/ &&
+        cp --verbose ${{ inputs.rpms_dir }}/*/*.rpm ${REPO_DIR}/ &&
         docker-compose run -v ${REPO_DIR}:${REPO_DIR}:rw -v ${PWD}/scripts:/rpmbuild/scripts:ro -T rpmbuild-generic bash -c "
           scripts/repo-update.sh ${REPO_DIR}
         "
