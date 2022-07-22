@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Delete old images
-        uses: ./.github/actions/github-api/delete-package
+        uses: radiant-maxar/geoint-actions/github-api/delete-package@v1
         with:
           el_version: ${{ env.EL_VERSION }}
           package_name: ${{ matrix.image }}
@@ -36,7 +36,7 @@ jobs:
           token_type: token
 
       - name: Build `${{ matrix.image }}` Image
-        uses: ./.github/actions/build
+        uses: radiant-maxar/geoint-actions/build@v1
         with:
           el_version: ${{ env.EL_VERSION }}
           make_target: ${{ matrix.image }}
@@ -88,7 +88,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: ./.github/actions/build
+        uses: radiant-maxar/geoint-actions/build@v1
         with:
           el_version: ${{ env.EL_VERSION }}
           make_target: ${{ matrix.rpm }}
@@ -114,7 +114,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: ./.github/actions/build
+        uses: radiant-maxar/geoint-actions/build@v1
         with:
           el_version: ${{ env.EL_VERSION }}
           download_rpms: true
@@ -138,7 +138,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: ./.github/actions/build
+        uses: radiant-maxar/geoint-actions/build@v1
         with:
           el_version: ${{ env.EL_VERSION }}
           download_rpms: true
@@ -161,7 +161,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: ./.github/actions/build
+        uses: radiant-maxar/geoint-actions/build@v1
         with:
           el_version: ${{ env.EL_VERSION }}
           download_rpms: true
@@ -185,13 +185,14 @@ jobs:
           path: RPMS
 
       - name: Create repository
-        uses: ./.github/actions/repository/create
+        uses: radiant-maxar/geoint-actions/repository/create@v1
         with:
           el_version: ${{ env.EL_VERSION }}
 
       - name: Upload repository
-        uses: ./.github/actions/repository/upload
+        uses: radiant-maxar/geoint-actions/repository/upload@v1
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           el_version: ${{ env.EL_VERSION }}
+          s3_bucket: geoint-deps
