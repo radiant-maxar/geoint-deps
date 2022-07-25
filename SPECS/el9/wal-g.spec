@@ -7,6 +7,8 @@ License:        ASL 2.0
 URL:            https://github.com/%{name}/%{name}
 Source0:        https://github.com/%{name}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
+Patch0:         wal-g-postgresql15.patch
+
 
 BuildRequires:  brotli-devel
 BuildRequires:  libsodium-devel
@@ -18,13 +20,14 @@ WAL-G is an archival restoration tool for PostgreSQL.
 
 
 %prep
-%autosetup
+%setup
 # Building wal-g depends on a full git checkout, so do this after "tricking"
 # rpmbuild everything is normal by using the `autosetup` macro.
 cd "${HOME}"
 %{__rm} -fr %{_builddir}/%{name}-%{version}
 %{__git} clone --single-branch -b v%{rpmbuild_version} %{url} %{_builddir}/%{name}-%{version}
 cd %{_builddir}/%{name}-%{version}
+%autopatch -p1
 
 
 %build

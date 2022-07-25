@@ -219,7 +219,7 @@ x-rpmbuild:
       version: &uriparser_version 0.9.6-1
     wal-g:
       image: rpmbuild-wal-g
-      version: &walg_version 2.0.0-1
+      version: &walg_version 2.0.0-2
   service_volumes: &service_volumes
     - ./RPMS:/rpmbuild/RPMS:rw
     - ./SOURCES/el9:/rpmbuild/SOURCES:rw
