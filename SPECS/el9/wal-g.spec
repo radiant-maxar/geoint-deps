@@ -22,7 +22,7 @@ WAL-G is an archival restoration tool for PostgreSQL.
 %prep
 %setup
 # Building wal-g depends on a full git checkout, so do this after "tricking"
-# rpmbuild everything is normal by using the `autosetup` macro.
+# rpmbuild everything is normal by using the `setup` macro w/ `autopatch`.
 cd "${HOME}"
 %{__rm} -fr %{_builddir}/%{name}-%{version}
 %{__git} clone --single-branch -b v%{rpmbuild_version} %{url} %{_builddir}/%{name}-%{version}
