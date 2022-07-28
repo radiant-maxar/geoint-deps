@@ -67,6 +67,7 @@ jobs:
           - libosmium
           - libpqxx
           - mapnik
+          - mapserver
           - ogdi
           - openstreetmap-carto
           - osm2pgsql
@@ -83,6 +84,7 @@ jobs:
           - rack
           - rubygem-libxml-ruby
           - sbt
+          - spawn-fcgi
           - sqlite-pcre
           - uriparser
           - wal-g
