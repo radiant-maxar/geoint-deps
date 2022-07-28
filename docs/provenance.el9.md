@@ -373,3 +373,7 @@ its source code and spec file are considered public domain.
 The [uriparser](https://uriparser.github.io) library code archives are obtained directly from [GitHub](https://github.com/uriparser/uriparser/releases) and are [BSD licensed](https://github.com/uriparser/uriparser/blob/master/COPYING).
 
 The [`uriparser.spec`](../SPECS/el9/uriparser.spec) file originates from [Fedora's `uriparser` RPM](https://src.fedoraproject.org/rpms/uriparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
+## wal-g
+
+The [wal-g](https://github.com/wal-g/wal-g) source archives are obtained directly from its [GitHub releases](https://github.com/wal-g/wal-g/releases) and are released under the [ASL 2.0 license](https://github.com/wal-g/wal-g/blob/master/LICENSE.md).
