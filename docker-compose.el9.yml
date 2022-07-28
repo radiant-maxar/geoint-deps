@@ -193,11 +193,11 @@ x-rpmbuild:
         visualcommit: 1f20cf257f35224d3c139a6015b1cf70814b0d24
     python3-osmium:
       image: rpmbuild-pyosmium
-      version: &pyosmium_version 3.3.0-1
+      version: &pyosmium_version 3.4.1-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
-        pybind11_version: 2.7.1
+        pybind11_version: 2.10.0
     rack:
       image: rpmbuild-rack
       version: &rack_version 2.2.3.1-1
