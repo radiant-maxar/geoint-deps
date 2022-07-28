@@ -76,6 +76,7 @@ RACK_RPM := $(call rpm_file,rubygem-rack)
 RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
+SPAWN_FCGI_RPM := $(call rpm_file,spawn-fcgi)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
 URIPARSER_RPM := $(call rpm_file,uriparser)
 WALG_RPM := $(call rpm_file,wal-g)
@@ -124,6 +125,7 @@ RPMBUILD_RPMS := \
 	rubygem-libxml-ruby \
 	sbt \
 	SFCGAL \
+	spawn-fcgi \
 	sqlite-pcre \
 	uriparser \
 	wal-g
@@ -259,6 +261,7 @@ sbt: $(SBT_RPM)
 SFCGAL: $(CGAL_RPM) \
         $(SFCGAL_RPM)
 sqlite-pcre: $(SQLITE_PCRE_RPM)
+spawn-fcgi: $(SPAWN_FCGI_RPM)
 uriparser: $(URIPARSER_RPM)
 wal-g: $(WALG_RPM)
 

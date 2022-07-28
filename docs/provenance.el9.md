@@ -356,6 +356,12 @@ The [SFCGAL](https://www.sfcgal.org) source archives are obtained
 directly from [GitLab](https://gitlab.com/Oslandia/SFCGAL) and
 is released under the [LGPLv2 license](https://gitlab.com/Oslandia/SFCGAL/-/blob/master/LICENSE)
 
+## spawn-fcgi
+
+The [spawn-fcgi](https://redmine.lighttpd.net/projects/spawn-fcgi/) source archives are obtained directly from the [Lighttpd website](https://github.com/ndevilla/iniparser/tags) and are BSD licensed.
+
+The [`spawn-fcgi.spec`](../SPECS/el9/spawn-fcgi.spec) file originates from [Fedora's `spawn-fcgi` RPM](https://src.fedoraproject.org/rpms/spawn-fcgi) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## sqlite-pcre
 
 The `sqlite-pcre` package is derived from

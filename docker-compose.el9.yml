@@ -218,6 +218,9 @@ x-rpmbuild:
       image: rpmbuild-generic
       version: &sbt_version 1.6.2-1
       arch: noarch
+    spawn-fcgi:
+      image: rpmbuild-generic
+      version: &spawn_fcgi_version 1.6.4-1
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version 2007.1.20-1
