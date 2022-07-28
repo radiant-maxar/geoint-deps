@@ -353,6 +353,10 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`rubygem-pg.spec`](../SPECS/el7/rubygem-pg.spec)
 * [`rubygem-pg-remove-rpath.patch`](../SOURCES/el7/rubygem-pg-remove-rpath.patch)
 
+## rubygem-libxml-ruby
+
+The [libxml-ruby](https://github.com/xml4r/libxml-ruby) source is obtained directly from [RubyGems](https://rubygems.org) and are [MIT licensed](https://github.com/xml4r/libxml-ruby/blob/master/LICENSE).
+
 ## SBT
 
 The [SBT](http://www.scala-sbt.org) source archives are obtained

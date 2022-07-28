@@ -86,6 +86,10 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## g2clib
 
+The [g2clib](https://github.com/NOAA-EMC/NCEPLIBS-g2c) source archives are obtained directly from its [GitHub releases](https://github.com/NOAA-EMC/NCEPLIBS-g2c/releases).
+
+The [`g2clib.spec`](../SPECS/el9/g2clib.spec) file originates from [Fedora's `g2clib` RPM](https://src.fedoraproject.org/rpms/g2clib) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Hanazono Fonts
 
 The [Hanazono Fonts](http://fonts.jp/hanazono/) source archives are obtained
@@ -100,6 +104,10 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`hanazono-fonts-fontconfig.conf`](../SOURCES/el9/hanazono-fonts-fontconfig.conf)
 
 ## iniparser
+
+The [iniparser](https://github.com/ndevilla/iniparser) source archives are obtained directly from its [GitHub tags](https://github.com/ndevilla/iniparser/tags).
+
+The [`iniparser.spec`](../SPECS/el9/iniparser.spec) file originates from [Fedora's `iniparser` RPM](https://src.fedoraproject.org/rpms/iniparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## libgeotiff
 
@@ -148,6 +156,10 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## libpqxx
 
+The [libpqxx](https://github.com/jtv/libpqxx) source archives are obtained directly from its [GitHub releases](https://github.com/jtv/libpqxx/releases) and are [BSD licensed](https://github.com/jtv/libpqxx/blob/master/COPYING).
+
+The [`libpqxx.spec`](../SPECS/el9/libpqxx.spec) file originates from [Fedora's `libpqxx` RPM](https://src.fedoraproject.org/rpms/libpqxx) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Mapnik
 
 The [Mapnik](http://mapnik.org/) source and test data archives are obtained directly from
@@ -166,6 +178,12 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`mapnik-rpath.patch`](../SOURCES/el9/mapnik-rpath.patch)
 * [`mapnik-proj.patch`](../SOURCES/el9/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/el9/mapnik-build-json-fix.patch)
+
+## MapServer
+
+The [mapserver](https://github.com/MapServer/MapServer) source archives are obtained directly from its [GitHub releases](https://github.com/MapServer/MapServer/releases).
+
+The [`mapserver.spec`](../SPECS/el9/mapserver.spec) and [`mapserver_php8.patch`](../SOURCES/el9/mapserver_php8.patch) files originate from [Fedora's `mapserver` RPM](https://src.fedoraproject.org/rpms/mapserver) and are released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## ogdi
 
@@ -324,6 +342,8 @@ The [`rubygem-rack.spec`](../SPECS/el9/rubygem-rack.spec) originates from
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## rubygem-libxml-ruby
+
+The [libxml-ruby](https://github.com/xml4r/libxml-ruby) source is obtained directly from [RubyGems](https://rubygems.org) and are [MIT licensed](https://github.com/xml4r/libxml-ruby/blob/master/LICENSE).
 
 ## SBT
 
