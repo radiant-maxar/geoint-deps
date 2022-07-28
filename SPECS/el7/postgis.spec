@@ -13,7 +13,7 @@
 %global postgis_majorversion %{postgis_major}.%{postgis_minor}
 %global postgiscurrmajorversion %(echo %{postgis_majorversion}|tr -d '.')
 
-%{!?postgis_prev_version: %global postgis_prev_version 2.5.5}
+%{!?postgis_prev_version: %global postgis_prev_version 2.5.7}
 %global postgis_prev_major %(echo %{postgis_prev_version} | awk -F. '{ print $1 }')
 %global postgis_prev_minor %(echo %{postgis_prev_version} | awk -F. '{ print $2 }')
 %global postgis_prev_micro %(echo %{postgis_prev_version} | awk -F. '{ print $3 }')

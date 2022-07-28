@@ -173,7 +173,7 @@ x-rpmbuild:
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
-        prerelease: alpha1
+        prerelease: beta2
         proj_min_version: *proj_min_version
         protobuf_min_version: *protobuf_min_version
         protobuf_c_min_version: *protobuf_c_min_version
