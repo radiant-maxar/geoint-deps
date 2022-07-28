@@ -121,6 +121,13 @@ x-rpmbuild:
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
         proj_min_version: *proj_min_version
+    mapserver:
+      image: rpmbuild-mapserver
+      version: &mapserver_version 7.6.4-1
+      defines:
+        gdal_min_version: *gdal_min_version
+        geos_min_version: *geos_min_version
+        proj_min_version: *proj_min_version
     ogdi:
       image: rpmbuild-ogdi
       version: &ogdi_version 4.1.0-1
@@ -211,6 +218,9 @@ x-rpmbuild:
       image: rpmbuild-generic
       version: &sbt_version 1.6.2-1
       arch: noarch
+    spawn-fcgi:
+      image: rpmbuild-generic
+      version: &spawn_fcgi_version 1.6.4-1
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version 2007.1.20-1
@@ -400,6 +410,14 @@ services:
         packages: ${RPMBUILD_MAPNIK_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-mapserver:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_MAPSERVER_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
     <<: *service_defaults
     build:

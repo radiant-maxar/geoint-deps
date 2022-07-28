@@ -86,6 +86,10 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## g2clib
 
+The [g2clib](https://github.com/NOAA-EMC/NCEPLIBS-g2c) source archives are obtained directly from its [GitHub releases](https://github.com/NOAA-EMC/NCEPLIBS-g2c/releases).
+
+The [`g2clib.spec`](../SPECS/el9/g2clib.spec) file originates from [Fedora's `g2clib` RPM](https://src.fedoraproject.org/rpms/g2clib) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Hanazono Fonts
 
 The [Hanazono Fonts](http://fonts.jp/hanazono/) source archives are obtained
@@ -100,6 +104,10 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`hanazono-fonts-fontconfig.conf`](../SOURCES/el9/hanazono-fonts-fontconfig.conf)
 
 ## iniparser
+
+The [iniparser](https://github.com/ndevilla/iniparser) source archives are obtained directly from its [GitHub tags](https://github.com/ndevilla/iniparser/tags).
+
+The [`iniparser.spec`](../SPECS/el9/iniparser.spec) file originates from [Fedora's `iniparser` RPM](https://src.fedoraproject.org/rpms/iniparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## libgeotiff
 
@@ -148,6 +156,10 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## libpqxx
 
+The [libpqxx](https://github.com/jtv/libpqxx) source archives are obtained directly from its [GitHub releases](https://github.com/jtv/libpqxx/releases) and are [BSD licensed](https://github.com/jtv/libpqxx/blob/master/COPYING).
+
+The [`libpqxx.spec`](../SPECS/el9/libpqxx.spec) file originates from [Fedora's `libpqxx` RPM](https://src.fedoraproject.org/rpms/libpqxx) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Mapnik
 
 The [Mapnik](http://mapnik.org/) source and test data archives are obtained directly from
@@ -166,6 +178,12 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`mapnik-rpath.patch`](../SOURCES/el9/mapnik-rpath.patch)
 * [`mapnik-proj.patch`](../SOURCES/el9/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/el9/mapnik-build-json-fix.patch)
+
+## MapServer
+
+The [mapserver](https://github.com/MapServer/MapServer) source archives are obtained directly from its [GitHub releases](https://github.com/MapServer/MapServer/releases).
+
+The [`mapserver.spec`](../SPECS/el9/mapserver.spec) and [`mapserver_php8.patch`](../SOURCES/el9/mapserver_php8.patch) files originate from [Fedora's `mapserver` RPM](https://src.fedoraproject.org/rpms/mapserver) and are released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## ogdi
 
@@ -325,6 +343,8 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## rubygem-libxml-ruby
 
+The [libxml-ruby](https://github.com/xml4r/libxml-ruby) source is obtained directly from [RubyGems](https://rubygems.org) and are [MIT licensed](https://github.com/xml4r/libxml-ruby/blob/master/LICENSE).
+
 ## SBT
 
 The [SBT](http://www.scala-sbt.org) source archives are obtained
@@ -335,6 +355,12 @@ directly from [GitHub](https://github.com/sbt/sbt) and are Apache licensed.
 The [SFCGAL](https://www.sfcgal.org) source archives are obtained
 directly from [GitLab](https://gitlab.com/Oslandia/SFCGAL) and
 is released under the [LGPLv2 license](https://gitlab.com/Oslandia/SFCGAL/-/blob/master/LICENSE)
+
+## spawn-fcgi
+
+The [spawn-fcgi](https://redmine.lighttpd.net/projects/spawn-fcgi/) source archives are obtained directly from the [Lighttpd website](https://github.com/ndevilla/iniparser/tags) and are BSD licensed.
+
+The [`spawn-fcgi.spec`](../SPECS/el9/spawn-fcgi.spec) file originates from [Fedora's `spawn-fcgi` RPM](https://src.fedoraproject.org/rpms/spawn-fcgi) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## sqlite-pcre
 
@@ -347,3 +373,7 @@ its source code and spec file are considered public domain.
 The [uriparser](https://uriparser.github.io) library code archives are obtained directly from [GitHub](https://github.com/uriparser/uriparser/releases) and are [BSD licensed](https://github.com/uriparser/uriparser/blob/master/COPYING).
 
 The [`uriparser.spec`](../SPECS/el9/uriparser.spec) file originates from [Fedora's `uriparser` RPM](https://src.fedoraproject.org/rpms/uriparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
+## wal-g
+
+The [wal-g](https://github.com/wal-g/wal-g) source archives are obtained directly from its [GitHub releases](https://github.com/wal-g/wal-g/releases) and are released under the [ASL 2.0 license](https://github.com/wal-g/wal-g/blob/master/LICENSE.md).

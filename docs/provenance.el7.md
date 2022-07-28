@@ -353,6 +353,10 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`rubygem-pg.spec`](../SPECS/el7/rubygem-pg.spec)
 * [`rubygem-pg-remove-rpath.patch`](../SOURCES/el7/rubygem-pg-remove-rpath.patch)
 
+## rubygem-libxml-ruby
+
+The [libxml-ruby](https://github.com/xml4r/libxml-ruby) source is obtained directly from [RubyGems](https://rubygems.org) and are [MIT licensed](https://github.com/xml4r/libxml-ruby/blob/master/LICENSE).
+
 ## SBT
 
 The [SBT](http://www.scala-sbt.org) source archives are obtained
@@ -403,3 +407,7 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`tbb-2020-attributes.patch`](../SOURCES/el7/tbb-2020-attributes.patch)
 * [`tbb-2019-test-thread-monitor.patch`](../SOURCES/el7/tbb-2019-test-thread-monitor.patch)
 * [`tbb-2019-test-thread-monitor.patch`](../SOURCES/el7/tbb-2019-test-thread-monitor.patch)
+
+## wal-g
+
+The [wal-g](https://github.com/wal-g/wal-g) source archives are obtained directly from its [GitHub releases](https://github.com/wal-g/wal-g/releases) and are released under the [ASL 2.0 license](https://github.com/wal-g/wal-g/blob/master/LICENSE.md).
