@@ -1,7 +1,6 @@
 # The following macros are also required:
 # * libosmium_min_version
 # * protozero_min_version
-# * pybind11_version
 
 Name:           python3-osmium
 Version:        %{rpmbuild_version}
