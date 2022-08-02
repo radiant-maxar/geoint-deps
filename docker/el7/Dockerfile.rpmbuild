@@ -62,6 +62,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
       rpm-sign \
       rpmdevtools \
       rpmlint \
+      rsync \
       unzip \
       vim \
       which \
