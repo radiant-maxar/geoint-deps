@@ -11,21 +11,20 @@ This repository provides a Docker-based build system for creating RPMs of the la
 * Embrace the RPM toolchain to support compilation hardening flags.
 
 ## Quickstart
+***Substitute `Makefile.el9` with `Makefile.el7` in order to target `EL7`***
 
 Just type `make $RPM_NAME`, for example start small:
 
 ```
 export DOCKER_BUILDKIT=1
-export MAKEFILES=Makefile.el9
-make FileGDBAPI
+make --makefile=Makefile.el9 FileGDBAPI
 ```
 
 Or go big and create RPMs for all applications with:
 
 ```
 export DOCKER_BUILDKIT=1
-export MAKEFILES=Makefile.el9
-make all-rpms
+make --makefile=Makefile.el9 all-rpms
 ```
 
 This will consume a lot of CPU and I/O!
