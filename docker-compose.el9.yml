@@ -63,7 +63,7 @@ x-rpmbuild:
       version: 1.2.5-1
     gdal:
       image: rpmbuild-gdal
-      version: &gdal_version 3.5.1-1
+      version: &gdal_version 3.5.1-2
       defines:
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
