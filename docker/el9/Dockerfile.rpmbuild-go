@@ -3,26 +3,33 @@ ARG rpmbuild_image=rpmbuild-generic
 ARG rpmbuild_image_prefix
 # hadolint ignore=DL3007
 FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
-ARG go_version=1.18.4
-ARG go_checksum=c9b099b68d93f5c5c8a8844a89f8db07eaa58270e3a1e01804f17f4cf8df02f5
+ARG go_version=1.19
+ARG go_checksum=464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
 ARG packages
 
 ENV GOPATH=${RPMBUILD_HOME}/go
 ENV PATH=${RPMBUILD_HOME}/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# Temporarily switch to root for package installation.
 SHELL ["/bin/bash", "-c", "-o", "pipefail"]
-USER root
 
-# Download & install go.
-RUN curl -sSL -O https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz && \
-    echo "${go_checksum}  go${go_version}.linux-amd64.tar.gz" | sha256sum -c && \
-    tar -C /usr/local -xzf go${go_version}.linux-amd64.tar.gz &&\
-    rm -f go${go_version}.linux-amd64.tar.gz
+# Download and verify Go as ftp.
+COPY scripts/google_linux_signing_key.gpg /tmp/google_linux_signing_key.gpg
+USER ftp
+RUN cd /tmp && \
+    curl -sSL -O https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz && \
+    curl -sSL -O https://dl.google.com/go/go${go_version}.linux-amd64.tar.gz.asc && \
+    echo "${go_checksum}  go${go_version}.linux-amd64.tar.gz" | sha256sum && \
+    HOME=/tmp gpg --import < google_linux_signing_key.gpg && \
+    HOME=/tmp gpg --verify go${go_version}.linux-amd64.tar.gz.asc && \
+    rm -fr /tmp/.gnupg /tmp/go${go_version}.linux-amd64.tar.gz.asc
 
-# Install any other extra packages.
+# Switch back to root to innstall Go and any other extra packages.
 # hadolint ignore=DL3040,DL3041
-RUN if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi
+USER root
+RUN --mount=type=cache,target=/var/cache/dnf \
+    tar -C /usr/local -xzf /tmp/go${go_version}.linux-amd64.tar.gz && \
+    rm -f /tmp/go${go_version}.linux-amd64.tar.gz && \
+    if [ -n "${packages}" ] ; then dnf -q -y install ${packages}; fi
 
 # Switch back to default RPM building user.
 USER ${RPMBUILD_USER}
