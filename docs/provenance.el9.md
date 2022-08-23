@@ -183,7 +183,7 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 
 The [mapserver](https://github.com/MapServer/MapServer) source archives are obtained directly from its [GitHub releases](https://github.com/MapServer/MapServer/releases).
 
-The [`mapserver.spec`](../SPECS/el9/mapserver.spec) and [`mapserver_php8.patch`](../SOURCES/el9/mapserver_php8.patch) files originate from [Fedora's `mapserver` RPM](https://src.fedoraproject.org/rpms/mapserver) and are released under the [Fedora license](./licenses/Fedora-LICENSE).
+The [`mapserver.spec`](../SPECS/el9/mapserver.spec) file originates from [Fedora's `mapserver` RPM](https://src.fedoraproject.org/rpms/mapserver) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## ogdi
 

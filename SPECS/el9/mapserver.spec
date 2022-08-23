@@ -16,9 +16,7 @@ Summary:        Environment for building spatially-enabled internet applications
 License:        BSD
 URL:            http://www.mapserver.org
 
-Source0:        https://github.com/%{project_owner}/%{project_name}/archive/rel-%{dashver}/%{project_name}-%{version}.tar.gz
-# PHP8 compatibility
-Patch0:         mapserver_php8.patch
+Source0:        https://github.com/%{project_owner}/%{project_name}/archive/rel-%{dashver}%{?prerelease}/%{project_name}-%{version}%{?prerelease}.tar.gz
 
 BuildRequires:  autoconf
 BuildRequires:  gcc-c++
@@ -49,7 +47,6 @@ BuildRequires:  pam-devel
 BuildRequires:  perl-devel
 BuildRequires:  perl-generators
 BuildRequires:  perl-ExtUtils-MakeMaker
-BuildRequires:  php-devel
 BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  protobuf-c-devel
 BuildRequires:  python3-devel
@@ -82,17 +79,6 @@ Requires:       %{name} = %{version}
 
 %description devel
 This package contains development files for mapserver.
-
-
-%package -n php-%{name}
-Summary:        PHP/Mapscript map making extensions to PHP
-Requires:       php-gd%{?_isa}
-Requires:       php(zend-abi) = %{php_zend_api}
-Requires:       php(api) = %{php_core_api}
-
-%description -n php-%{name}
-The PHP/Mapscript extension provides full map customization capabilities within
-the PHP scripting language.
 
 
 %package perl
@@ -130,7 +116,7 @@ the ruby programming language.
 
 
 %prep
-%autosetup -p1 -n %{project_owner}-rel-%{dashver}
+%autosetup -p1 -n %{project_owner}-rel-%{dashver}%{?prerelease}
 
 # replace fonts for tests with symlinks
 ln -sf /usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf tests/vera/Vera.ttf
@@ -163,7 +149,6 @@ rm -rf mapscript/perl/mapscript_wrap.c
     -DWITH_MYSQL:BOOL=TRUE \
     -DWITH_PERL:BOOL=TRUE \
     -DCUSTOM_PERL_SITE_ARCH_DIR:PATH="%{perl_vendorarch}" \
-    -DWITH_PHP:BOOL=TRUE \
     -DWITH_POSTGIS:BOOL=TRUE \
     -DWITH_PROJ:BOOL=TRUE \
     -DWITH_PYTHON:BOOL=TRUE \
@@ -204,21 +189,18 @@ rm -rf mapscript/perl/mapscript_wrap.c
 # fix python3 install
 %{__mv} -v %{buildroot}/usr/lib/python%{__default_python3_version} %{buildroot}%{_libdir}
 
-# install php config file
-%{__mkdir_p} %{buildroot}%{php_inidir}
-cat > %{buildroot}%{php_inidir}/%{ini_name} <<EOF
-; Enable %{name} extension module
-extension=php_mapscript.so
-EOF
+# remove example config file
+%{__rm} %{buildroot}%{_sysconfdir}/mapserver-sample.conf
 
 
 %files
 %doc README.rst
+%{_bindir}/coshp
 %{_bindir}/legend
+%{_bindir}/map2img
 %{_bindir}/mapserv
 %{_bindir}/msencrypt
 %{_bindir}/scalebar
-%{_bindir}/shp2img
 %{_bindir}/shptree
 %{_bindir}/shptreetst
 %{_bindir}/shptreevis
@@ -228,20 +210,13 @@ EOF
 
 %files libs
 %doc README.rst
-%{_libdir}/libmapserver.so.%{version}
-%{_libdir}/libmapserver.so.2
+%{_libdir}/libmapserver.so.*
 
 %files devel
 %doc README.rst
 %{_libdir}/libmapserver.so
 %{_libdir}/cmake/%{name}
 %{_includedir}/%{name}
-
-%files -n php-%{name}
-%doc mapscript/php/README
-%doc mapscript/php/examples
-%config(noreplace) %{php_inidir}/%{ini_name}
-%{php_extdir}/php_mapscript.so*
 
 %files perl
 %doc README.rst
