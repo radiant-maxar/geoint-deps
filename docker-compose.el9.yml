@@ -127,7 +127,7 @@ x-rpmbuild:
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
-        prerelease: -beta2
+        prerelease: -rc1
         proj_min_version: *proj_min_version
     ogdi:
       image: rpmbuild-ogdi
