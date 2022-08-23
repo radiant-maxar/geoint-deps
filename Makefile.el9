@@ -78,6 +78,7 @@ SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SPAWN_FCGI_RPM := $(call rpm_file,spawn-fcgi)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
+STEP_CLI_RPM := $(call rpm_file,step-cli)
 URIPARSER_RPM := $(call rpm_file,uriparser)
 WALG_RPM := $(call rpm_file,wal-g)
 
@@ -127,6 +128,7 @@ RPMBUILD_RPMS := \
 	SFCGAL \
 	spawn-fcgi \
 	sqlite-pcre \
+	step-cli \
 	uriparser \
 	wal-g
 
@@ -262,6 +264,7 @@ SFCGAL: $(CGAL_RPM) \
         $(SFCGAL_RPM)
 sqlite-pcre: $(SQLITE_PCRE_RPM)
 spawn-fcgi: $(SPAWN_FCGI_RPM)
+step-cli: $(STEP_CLI_RPM)
 uriparser: $(URIPARSER_RPM)
 wal-g: $(WALG_RPM)
 

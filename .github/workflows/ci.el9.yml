@@ -86,6 +86,7 @@ jobs:
           - sbt
           - spawn-fcgi
           - sqlite-pcre
+          - step-cli
           - uriparser
           - wal-g
 

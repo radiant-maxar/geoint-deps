@@ -234,6 +234,9 @@ x-rpmbuild:
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version 2007.1.20-1
+    step-cli:
+      image: rpmbuild-step-cli
+      version: &step_cli_version 0.21.0-1
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version 2020.3-1
@@ -554,6 +557,14 @@ services:
         packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
         sqlite_version: *sqlite_version
       dockerfile: docker/el7/Dockerfile.rpmbuild-proj
+  rpmbuild-step-cli:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el7/Dockerfile.rpmbuild-go
   rpmbuild-tbb:
     <<: *service_defaults
     build:

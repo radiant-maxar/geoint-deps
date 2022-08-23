@@ -224,6 +224,9 @@ x-rpmbuild:
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version 2007.1.20-1
+    step-cli:
+      image: rpmbuild-step-cli
+      version: &step_cli_version 0.21.0-1
     uriparser:
       image: rpmbuild-uriparser
       version: &uriparser_version 0.9.6-1
@@ -541,6 +544,14 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
+  rpmbuild-step-cli:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el9/Dockerfile.rpmbuild-go
   rpmbuild-uriparser:
     <<: *service_defaults
     build:
