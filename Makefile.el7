@@ -75,6 +75,7 @@ SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
 SQLITE_RPM := $(call rpm_file,sqlite)
 SQLITE_PCRE_RPM := $(call rpm_file,sqlite-pcre)
+STEP_CA_RPM := $(call rpm_file,step-ca)
 STEP_CLI_RPM := $(call rpm_file,step-cli)
 TBB_RPM := $(call rpm_file,tbb)
 WALG_RPM := $(call rpm_file,wal-g)
@@ -122,6 +123,7 @@ RPMBUILD_RPMS := \
 	SFCGAL \
 	sqlite \
 	sqlite-pcre \
+	step-ca \
 	step-cli \
 	tbb \
 	wal-g
@@ -261,6 +263,7 @@ SFCGAL: $(CGAL_RPM) \
 sqlite-pcre: $(SQLITE_RPM) \
              $(SQLITE_PCRE_RPM)
 sqlite: $(SQLITE_RPM)
+step-ca: $(STEP_CA_RPM)
 step-cli: $(STEP_CLI_RPM)
 tbb: $(TBB_RPM)
 wal-g: $(WALG_RPM)

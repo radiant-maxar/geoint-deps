@@ -224,8 +224,11 @@ x-rpmbuild:
     sqlite-pcre:
       image: rpmbuild-sqlite-pcre
       version: &sqlite_pcre_version 2007.1.20-1
+    step-ca:
+      image: rpmbuild-smallstep
+      version: &step_ca_version 0.21.0-1
     step-cli:
-      image: rpmbuild-step-cli
+      image: rpmbuild-smallstep
       version: &step_cli_version 0.21.0-1
     uriparser:
       image: rpmbuild-uriparser
@@ -544,7 +547,7 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_SQLITE_PCRE_PACKAGES}
-  rpmbuild-step-cli:
+  rpmbuild-smallstep:
     <<: *service_defaults
     build:
       <<: *build_defaults
