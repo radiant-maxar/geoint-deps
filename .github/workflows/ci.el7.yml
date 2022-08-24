@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Delete old images
-        uses: radiant-maxar/geoint-actions/github-api/delete-package@v1
+        uses: radiant-maxar/geoint-actions/github-api/delete-package@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
           package_name: ${{ matrix.image }}
@@ -36,11 +36,12 @@ jobs:
           token_type: token
 
       - name: Build `${{ matrix.image }}` Image
-        uses: radiant-maxar/geoint-actions/build@v1
+        uses: radiant-maxar/geoint-actions/build@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
           make_target: ${{ matrix.image }}
           push_image: true
+          upload_rpms: false
 
 
   build-rpms-1:
@@ -88,7 +89,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: radiant-maxar/geoint-actions/build@v1
+        uses: radiant-maxar/geoint-actions/build@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
           make_target: ${{ matrix.rpm }}
@@ -114,7 +115,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: radiant-maxar/geoint-actions/build@v1
+        uses: radiant-maxar/geoint-actions/build@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
           download_rpms: true
@@ -138,7 +139,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: radiant-maxar/geoint-actions/build@v1
+        uses: radiant-maxar/geoint-actions/build@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
           download_rpms: true
@@ -161,7 +162,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build `${{ matrix.rpm }}` RPM(s)
-        uses: radiant-maxar/geoint-actions/build@v1
+        uses: radiant-maxar/geoint-actions/build@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
           download_rpms: true
@@ -178,19 +179,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download RPMS directory
-        uses: actions/download-artifact@v3
+      - name: Download RPMS artifact
+        uses: radiant-maxar/geoint-actions/artifact/download@v1.1
         with:
-          name: RPMS-${{ env.EL_VERSION }}-${{ github.sha }}
-          path: RPMS
+          base_path: .
+          directory: RPMS
+          el_version: ${{ env.EL_VERSION }}
 
       - name: Create repository
-        uses: radiant-maxar/geoint-actions/repository/create@v1
+        uses: radiant-maxar/geoint-actions/repository/create@v1.1
         with:
           el_version: ${{ env.EL_VERSION }}
 
       - name: Upload repository
-        uses: radiant-maxar/geoint-actions/repository/upload@v1
+        uses: radiant-maxar/geoint-actions/repository/upload@v1.1
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
