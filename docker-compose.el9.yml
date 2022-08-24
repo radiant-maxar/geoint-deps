@@ -92,7 +92,7 @@ x-rpmbuild:
       version: &iniparser_version 4.1-1
     journald-cloudwatch-logs:
       image: rpmbuild-journald-cloudwatch-logs
-      version: &journald-cloudwatch-logs_version 0.2.1-1
+      version: &journald-cloudwatch-logs_version 0.2.2-1
     libgeotiff:
       image: rpmbuild-libgeotiff
       version: &libgeotiff_version 1.7.1-10
