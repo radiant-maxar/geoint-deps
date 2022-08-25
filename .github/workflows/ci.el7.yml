@@ -81,6 +81,8 @@ jobs:
           - rubygem-pg
           - sbt
           - sqlite
+          - step-ca
+          - step-cli
           - tbb
           - wal-g
 

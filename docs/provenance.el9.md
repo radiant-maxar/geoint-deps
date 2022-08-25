@@ -368,6 +368,10 @@ The `sqlite-pcre` package is derived from
 [Ubuntu's `sqlite3-pcre`](https://launchpad.net/ubuntu/+source/sqlite3-pcre/0~git20070120091816+4229ecc-2);
 its source code and spec file are considered public domain.
 
+## Smallstep CA / CLI (`step-ca` / `step-cli`)
+
+The [Smallstep CLI](https://github.com/smallstep/cli) and [Smallstep CA](https://github.com/smallstep/certificates) source archives are obtained directly from their GitHub releases. Both are released under the Apache License 2.0: [certificates](https://github.com/smallstep/certificates/blob/master/LICENSE), [cli](https://github.com/smallstep/cli/blob/master/LICENSE).
+
 ## uriparser
 
 The [uriparser](https://uriparser.github.io) library code archives are obtained directly from [GitHub](https://github.com/uriparser/uriparser/releases) and are [BSD licensed](https://github.com/uriparser/uriparser/blob/master/COPYING).
