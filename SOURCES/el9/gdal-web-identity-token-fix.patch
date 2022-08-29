@@ -1,0 +1,329 @@
+Backport of https://github.com/OSGeo/gdal/pull/6074
+
+diff --git a/gdalautotest-3.5.1/gcore/vsis3.py b/gdalautotest-3.5.1/gcore/vsis3.py
+index 6686f9a979..60053fcd29 100755
+--- a/gdalautotest-3.5.1/gcore/vsis3.py
++++ b/gdalautotest-3.5.1/gcore/vsis3.py
+@@ -32,6 +32,8 @@ import json
+ import os.path
+ import stat
+ import sys
++import tempfile
++
+ from osgeo import gdal
+ 
+ 
+@@ -301,9 +303,15 @@ def get_s3_fake_bucket_resource_method(request):
+         'x-amz-date,Signature='
+         '9f623b7ffce76188a456c70fb4813eb31969e88d130d6b4d801b3accbf050d6c'
+     )
++    expected_authorization_8082 = (
++        'AWS4-HMAC-SHA256 Credential=AWS_ACCESS_KEY_ID/20150101/us-east-1/'
++        's3/aws4_request,SignedHeaders=host;x-amz-content-sha256;x-amz-date;'
++        'x-amz-security-token,Signature='
++        'a78e2d484679a19bec940a72d40c7fda37d1651a8ab82a6ed8fd7be46a53afb1'
++    )
+     actual_authorization = request.headers['Authorization']
+     if (actual_authorization not in
+-            (expected_authorization_8080, expected_authorization_8081)):
++            (expected_authorization_8080, expected_authorization_8081, expected_authorization_8082)):
+         sys.stderr.write(
+             "Bad Authorization: '%s'\n" % str(actual_authorization)
+         )
+@@ -4632,6 +4640,80 @@ aws_secret_access_key = bar
+     gdal.Unlink('/vsimem/aws_config')
+ 
+ 
++###############################################################################
++# Read credentials from sts AssumeRoleWithWebIdentity
++@pytest.mark.skipif(
++    sys.platform not in ('linux', 'win32'),
++    reason='Incorrect platform'
++)
++def test_vsis3_read_credentials_sts_assume_role_with_web_identity(
++        aws_test_config,
++        webserver_port
++):
++    fp = tempfile.NamedTemporaryFile(delete=False)
++    fp.write(b'token')
++    fp.close()
++
++    aws_role_arn = 'arn:aws:iam:role/test'
++    options = {
++        'CPL_AWS_CREDENTIALS_FILE': '',
++        'AWS_CONFIG_FILE': '',
++        'AWS_SECRET_ACCESS_KEY': '',
++        'AWS_ACCESS_KEY_ID': '',
++        'AWS_ROLE_ARN': aws_role_arn,
++        'AWS_WEB_IDENTITY_TOKEN_FILE': fp.name
++    }
++
++    gdal.VSICurlClearCache()
++
++    handler = webserver.SequentialHandler()
++    handler.add(
++        'GET',
++        f'/?Action=AssumeRoleWithWebIdentity&RoleSessionName=gdal&Version=2011-06-15&RoleArn={aws_role_arn}&WebIdentityToken=token',
++        200,
++        {},
++        """<AssumeRoleWithWebIdentityResponse xmlns="https://sts.amazonaws.com/doc/2011-06-15/">
++          <AssumeRoleWithWebIdentityResult>
++            <SubjectFromWebIdentityToken>amzn1.account.AF6RHO7KZU5XRVQJGXK6HB56KR2A</SubjectFromWebIdentityToken>
++            <Audience>client.5498841531868486423.1548@apps.example.com</Audience>
++            <AssumedRoleUser>
++              <Arn>arn:aws:sts::123456789012:assumed-role/FederatedWebIdentityRole/app1</Arn>
++              <AssumedRoleId>AROACLKWSDQRAOEXAMPLE:app1</AssumedRoleId>
++            </AssumedRoleUser>
++            <Credentials>
++              <SessionToken>AWS_SESSION_TOKEN</SessionToken>
++              <SecretAccessKey>AWS_SECRET_ACCESS_KEY</SecretAccessKey>
++              <Expiration>3000-01-01T00:00:00Z</Expiration>
++              <AccessKeyId>AWS_ACCESS_KEY_ID</AccessKeyId>
++            </Credentials>
++            <SourceIdentity>SourceIdentityValue</SourceIdentity>
++            <Provider>www.amazon.com</Provider>
++          </AssumeRoleWithWebIdentityResult>
++          <ResponseMetadata>
++            <RequestId>ad4156e9-bce1-11e2-82e6-6b6efEXAMPLE</RequestId>
++          </ResponseMetadata>
++        </AssumeRoleWithWebIdentityResponse>"""
++    )
++    handler.add(
++        'GET',
++        '/s3_fake_bucket/resource',
++        custom_method=get_s3_fake_bucket_resource_method
++    )
++    with webserver.install_http_handler(handler):
++        with gdaltest.config_options(options):
++            with gdaltest.config_option(
++                    'CPL_AWS_STS_ROOT_URL',
++                    'http://localhost:%d' % webserver_port
++            ):
++                f = open_for_read('/vsis3/s3_fake_bucket/resource')
++        assert f is not None
++        data = gdal.VSIFReadL(1, 4, f).decode('ascii')
++        gdal.VSIFCloseL(f)
++
++    gdal.Unlink(fp.name)
++    assert data == 'foo'
++
++
+ ###############################################################################
+ # Read credentials from simulated EC2 instance
+ @pytest.mark.skipif(
+@@ -4648,7 +4730,8 @@ def test_vsis3_read_credentials_ec2_imdsv2(
+         'AWS_SECRET_ACCESS_KEY': '',
+         'AWS_ACCESS_KEY_ID': '',
+         # Disable hypervisor related check to test if we are really on EC2
+-        'CPL_AWS_AUTODETECT_EC2': 'NO'
++        'CPL_AWS_AUTODETECT_EC2': 'NO',
++        'CPL_AWS_WEB_IDENTITY_ENABLE': 'NO'
+     }
+ 
+     gdal.VSICurlClearCache()
+diff --git a/port/cpl_aws.cpp b/port/cpl_aws.cpp
+index f8c2e615b3..930b1dcc8f 100644
+--- a/port/cpl_aws.cpp
++++ b/port/cpl_aws.cpp
+@@ -730,6 +730,133 @@ static bool IsMachinePotentiallyEC2Instance()
+ #endif
+ }
+ 
++
++/************************************************************************/
++/*                   ReadAWSWebIdentityTokenFile()                      */
++/************************************************************************/
++
++static bool ReadAWSWebIdentityTokenFile(const std::string& osWebIdentityTokenFile,
++                                        CPLString& webIdentityToken)
++{
++    GByte *pabyOut = nullptr;
++    if( !VSIIngestFile( nullptr, osWebIdentityTokenFile.c_str(), &pabyOut, nullptr, -1 ) )
++        return false;
++
++    webIdentityToken = reinterpret_cast<char *>(pabyOut);
++    VSIFree(pabyOut);
++    return !webIdentityToken.empty();
++}
++
++/************************************************************************/
++/*          GetConfigurationFromAssumeRoleWithWebIdentity()             */
++/************************************************************************/
++
++bool VSIS3HandleHelper::GetConfigurationFromAssumeRoleWithWebIdentity(bool bForceRefresh,
++                                                                      const std::string& osPathForOption,
++                                                                      CPLString& osSecretAccessKey,
++                                                                      CPLString& osAccessKeyId,
++                                                                      CPLString& osSessionToken)
++{
++    CPLMutexHolder oHolder( &ghMutex );
++    if( !bForceRefresh )
++    {
++        time_t nCurTime;
++        time(&nCurTime);
++        // Try to reuse credentials if they are still valid, but
++        // keep one minute of margin...
++        if( !gosGlobalAccessKeyId.empty() && nCurTime < gnGlobalExpiration - 60 )
++        {
++            osAccessKeyId = gosGlobalAccessKeyId;
++            osSecretAccessKey = gosGlobalSecretAccessKey;
++            osSessionToken = gosGlobalSessionToken;
++            return true;
++        }
++    }
++
++    const CPLString roleArn = VSIGetCredential(osPathForOption.c_str(), "AWS_ROLE_ARN", "");
++    if( roleArn.empty() )
++    {
++        CPLDebug("AWS", "AWS_ROLE_ARN configuration option not defined");
++        return false;
++    }
++
++    const CPLString webIdentityTokenFile =  VSIGetCredential(osPathForOption.c_str(),
++                                                             "AWS_WEB_IDENTITY_TOKEN_FILE", "");
++    if( webIdentityTokenFile.empty() )
++    {
++        CPLDebug("AWS", "AWS_WEB_IDENTITY_TOKEN_FILE configuration option not defined");
++        return false;
++    }
++
++    const CPLString stsRegionalEndpoints = VSIGetCredential(osPathForOption.c_str(),
++                                                            "AWS_STS_REGIONAL_ENDPOINTS", "regional");
++
++    std::string osStsDefaultUrl;
++    if (stsRegionalEndpoints == "regional") {
++        const CPLString osRegion = VSIGetCredential(osPathForOption.c_str(), "AWS_REGION", "us-east-1");
++        osStsDefaultUrl = "https://sts." + osRegion + ".amazonaws.com";
++    } else {
++        osStsDefaultUrl = "https://sts.amazonaws.com";
++    }
++    const CPLString osStsRootUrl(
++        VSIGetCredential(osPathForOption.c_str(), "CPL_AWS_STS_ROOT_URL", osStsDefaultUrl.c_str()));
++
++    // Get token from web identity token file
++    CPLString webIdentityToken;
++    if(!ReadAWSWebIdentityTokenFile(webIdentityTokenFile, webIdentityToken) )
++    {
++        CPLDebug("AWS", "%s is empty", webIdentityTokenFile.c_str());
++        return false;
++    }
++
++    // Get credentials from sts AssumeRoleWithWebIdentity
++    std::string osExpiration;
++    {
++        const CPLString osSTS_asuume_role_with_web_identity_URL =
++            osStsRootUrl + "/?Action=AssumeRoleWithWebIdentity&RoleSessionName=gdal"
++            "&Version=2011-06-15&RoleArn=" + roleArn + "&WebIdentityToken=" + webIdentityToken;
++
++        CPLPushErrorHandler(CPLQuietErrorHandler);
++
++        CPLHTTPResult* psResult = CPLHTTPFetch( osSTS_asuume_role_with_web_identity_URL.c_str(), nullptr );
++        CPLPopErrorHandler();
++        if( psResult )
++        {
++            if( psResult->nStatus == 0 && psResult->pabyData != nullptr )
++            {
++                CPLXMLTreeCloser oTree(CPLParseXMLString(reinterpret_cast<char*>(psResult->pabyData)));
++                if( oTree )
++                {
++                    const auto psCredentials = CPLGetXMLNode(oTree.get(),
++                        "=AssumeRoleWithWebIdentityResponse.AssumeRoleWithWebIdentityResult.Credentials");
++                    if( psCredentials )
++                    {
++                        osAccessKeyId = CPLGetXMLValue(psCredentials, "AccessKeyId", "");
++                        osSecretAccessKey = CPLGetXMLValue(psCredentials, "SecretAccessKey", "");
++                        osSessionToken = CPLGetXMLValue(psCredentials, "SessionToken", "");
++                        osExpiration = CPLGetXMLValue(psCredentials, "Expiration", "");
++                    }
++                }
++            }
++            CPLHTTPDestroyResult(psResult);
++        }
++    }
++
++    GIntBig nExpirationUnix = 0;
++    if( !osAccessKeyId.empty() &&
++        !osSecretAccessKey.empty() &&
++        !osSessionToken.empty() &&
++        Iso8601ToUnixTime(osExpiration.c_str(), &nExpirationUnix) )
++    {
++        gosGlobalAccessKeyId = osAccessKeyId;
++        gosGlobalSecretAccessKey = osSecretAccessKey;
++        gosGlobalSessionToken = osSessionToken;
++        gnGlobalExpiration = nExpirationUnix;
++        CPLDebug("AWS", "Storing AIM credentials until %s", osExpiration.c_str());
++    }
++    return !osAccessKeyId.empty() && !osSecretAccessKey.empty() && !osSessionToken.empty();
++}
++
+ /************************************************************************/
+ /*                      GetConfigurationFromEC2()                       */
+ /************************************************************************/
+@@ -1436,6 +1563,19 @@ bool VSIS3HandleHelper::GetConfiguration(const std::string& osPathForOption,
+         return true;
+     }
+ 
++    if( CPLTestBool(CPLGetConfigOption("CPL_AWS_WEB_IDENTITY_ENABLE", "YES")) )
++    {
++        // WebIdentity method: use Web Identity Token
++        if( GetConfigurationFromAssumeRoleWithWebIdentity(/* bForceRefresh = */ false,
++                                                          osPathForOption,
++                                                          osSecretAccessKey, osAccessKeyId,
++                                                          osSessionToken) )
++        {
++            eCredentialsSource = AWSCredentialsSource::WEB_IDENTITY;
++            return true;
++        }
++    }
++
+     // Last method: use IAM role security credentials on EC2 instances
+     if( GetConfigurationFromEC2(/* bForceRefresh = */ false,
+                                 osPathForOption,
+@@ -1645,6 +1785,21 @@ void VSIS3HandleHelper::RefreshCredentials(const std::string& osPathForOption,
+             m_osSessionToken = osSessionToken;
+         }
+     }
++    else if( m_eCredentialsSource == AWSCredentialsSource::WEB_IDENTITY )
++    {
++        CPLString osSecretAccessKey, osAccessKeyId, osSessionToken;
++        CPLString osRegion;
++        if( GetConfigurationFromAssumeRoleWithWebIdentity(bForceRefresh,
++                                                          osPathForOption.c_str(),
++                                                          osSecretAccessKey,
++                                                          osAccessKeyId,
++                                                          osSessionToken) )
++        {
++            m_osSecretAccessKey = osSecretAccessKey;
++            m_osAccessKeyId = osAccessKeyId;
++            m_osSessionToken = osSessionToken;
++        }
++    }
+ }
+ 
+ /************************************************************************/
+diff --git a/port/cpl_aws.h b/port/cpl_aws.h
+index b6a1f01832..cca6077043 100644
+--- a/port/cpl_aws.h
++++ b/port/cpl_aws.h
+@@ -133,6 +133,8 @@ enum class AWSCredentialsSource
+ {
+     REGULAR,         // credentials from env variables or ~/.aws/crediential
+     EC2,             // credentials from EC2 private networking
++    WEB_IDENTITY,    // credentials from Web Identity Token
++                     // See https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
+     ASSUMED_ROLE     // credentials from an STS assumed role
+                      // See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-cli.html
+                      // and https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_request.html
+@@ -157,6 +159,12 @@ class VSIS3HandleHelper final: public IVSIS3LikeHandleHelper
+ 
+         void RebuildURL() override;
+ 
++        static bool GetConfigurationFromAssumeRoleWithWebIdentity(bool bForceRefresh,
++                                                                  const std::string& osPathForOption,
++                                                                  CPLString& osSecretAccessKey,
++                                                                  CPLString& osAccessKeyId,
++                                                                  CPLString& osSessionToken);
++
+         static bool GetConfigurationFromEC2(bool bForceRefresh,
+                                             const std::string& osPathForOption,
+                                             CPLString& osSecretAccessKey,
