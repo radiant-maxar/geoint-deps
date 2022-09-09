@@ -214,10 +214,10 @@ x-rpmbuild:
         rubygems_molinillo_version: 0.5.7
         test_unit_version: 3.3.4
         xmlrpc_version: 0.3.0
-        # Use the following to run the Ruby tests on a host with
-        # ZFS on Linux:
-        # with:
-        #   - zfs_host
+      # Use the following to run the Ruby tests on a host with
+      # ZFS on Linux:
+      # with:
+      #   - zfs_host
     rubygem-pg:
       image: rpmbuild-rubygem-pg
       version: &rubygem_pg_version 1.3.5-1
