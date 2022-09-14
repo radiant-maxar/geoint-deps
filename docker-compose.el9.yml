@@ -226,10 +226,10 @@ x-rpmbuild:
       version: &sqlite_pcre_version 2007.1.20-1
     step-ca:
       image: rpmbuild-smallstep
-      version: &step_ca_version 0.21.0-1
+      version: &step_ca_version 0.22.1-1
     step-cli:
       image: rpmbuild-smallstep
-      version: &step_cli_version 0.21.0-1
+      version: &step_cli_version 0.22.0-1
     uriparser:
       image: rpmbuild-uriparser
       version: &uriparser_version 0.9.6-1

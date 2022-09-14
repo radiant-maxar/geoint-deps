@@ -18,6 +18,8 @@ cd "${HOME}"
 %{__rm} -fr %{_builddir}/cli-%{version}
 %{__git} clone --single-branch -b v%{version} %{url} %{_builddir}/cli-%{version}
 cd %{_builddir}/cli-%{version}
+# XXX: ensure golangci-lint at latest version, remove when no longer needed.
+%{__sed} -i -e 's/v1\.48/latest/g' make/common.mk
 
 
 %build
