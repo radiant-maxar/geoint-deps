@@ -282,8 +282,6 @@ services:
       args:
         <<: *build_args_defaults
         postgres_version: *postgres_version
-        # PostgreSQL 15 is currently in beta, use testing repository.
-        testing: 1
       dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
     image: ${IMAGE_PREFIX}rpmbuild-pgdg
   # RPM images
