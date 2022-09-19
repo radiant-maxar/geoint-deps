@@ -170,11 +170,10 @@ x-rpmbuild:
       version: &passenger_version 6.0.14-1
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.3.0-0
+      version: &postgis_version 3.3.1-1
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
-        prerelease: beta2
         proj_min_version: *proj_min_version
         protobuf_min_version: *protobuf_min_version
         protobuf_c_min_version: *protobuf_c_min_version
@@ -283,8 +282,6 @@ services:
       args:
         <<: *build_args_defaults
         postgres_version: *postgres_version
-        # PostgreSQL 15 is currently in beta, use testing repository.
-        testing: 1
       dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
     image: ${IMAGE_PREFIX}rpmbuild-pgdg
   # RPM images

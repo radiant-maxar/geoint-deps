@@ -5,7 +5,7 @@ POSTGRES_VERSION="${1}"
 PGDG_KEY="${PGDG_KEY:-/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG}"
 PGDG_REPO="${PGDG_REPO:-/etc/yum.repos.d/pgdg-${POSTGRES_VERSION}-centos.repo}"
 PGDG_BASEURL="https://download.postgresql.org/pub/repos/yum"
-if [ "${PGDG_TESTING:-0}" = "1" ]; then
+if [ "${POSTGRES_VERSION}" -ge 15 ]; then
     PGDG_BASEURL="${PGDG_BASEURL}/testing"
 fi
 
