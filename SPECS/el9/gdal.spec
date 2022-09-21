@@ -22,10 +22,8 @@ Source0:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdal
 Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.zip
 Source2:        gdal.pom
 
-Patch0:         gdal-gtiff-fix.patch
-Patch1:         gdal-web-identity-token-fix.patch
-Patch2:         gdal-vsis3-write-fix.patch
-Patch3:         gdal-http-headers-option.patch
+Patch0:         gdal-web-identity-token-fix.patch
+Patch1:         gdal-http-headers-option.patch
 
 BuildRequires: automake
 BuildRequires: autoconf

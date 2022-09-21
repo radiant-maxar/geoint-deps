@@ -2,8 +2,8 @@ Backport of https://github.com/OSGeo/gdal/pull/6230
 
 diff --git a/autotest/gcore/vsicurl.py b/autotest/gcore/vsicurl.py
 index e6ea881e08..db0f5f7364 100755
---- a/gdalautotest-3.5.1/gcore/vsicurl.py
-+++ b/gdalautotest-3.5.1/gcore/vsicurl.py
+--- a/gdalautotest-3.5.2/gcore/vsicurl.py
++++ b/gdalautotest-3.5.2/gcore/vsicurl.py
 @@ -912,6 +912,41 @@ def test_vsicurl_planetary_computer_url_signing_collection():
  ###############################################################################
  

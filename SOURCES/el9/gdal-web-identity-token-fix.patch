@@ -1,9 +1,9 @@
 Backport of https://github.com/OSGeo/gdal/pull/6074
 
-diff --git a/gdalautotest-3.5.1/gcore/vsis3.py b/gdalautotest-3.5.1/gcore/vsis3.py
+diff --git a/gdalautotest-3.5.2/gcore/vsis3.py b/gdalautotest-3.5.2/gcore/vsis3.py
 index 6686f9a979..60053fcd29 100755
---- a/gdalautotest-3.5.1/gcore/vsis3.py
-+++ b/gdalautotest-3.5.1/gcore/vsis3.py
+--- a/gdalautotest-3.5.2/gcore/vsis3.py
++++ b/gdalautotest-3.5.2/gcore/vsis3.py
 @@ -32,6 +32,8 @@ import json
  import os.path
  import stat
