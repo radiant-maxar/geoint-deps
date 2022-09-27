@@ -123,11 +123,10 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     mapserver:
       image: rpmbuild-mapserver
-      version: &mapserver_version 8.0.0-0
+      version: &mapserver_version 8.0.0-1
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
-        prerelease: -rc1
         proj_min_version: *proj_min_version
     ogdi:
       image: rpmbuild-ogdi
