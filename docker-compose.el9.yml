@@ -95,7 +95,7 @@ x-rpmbuild:
       version: &journald-cloudwatch-logs_version 0.2.2-1
     libgeotiff:
       image: rpmbuild-libgeotiff
-      version: &libgeotiff_version 1.7.1-10
+      version: &libgeotiff_version 1.7.1-1
       defines:
         proj_min_version: *proj_min_version
     libgta:
