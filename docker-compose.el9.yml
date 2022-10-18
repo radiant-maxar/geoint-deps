@@ -118,6 +118,7 @@ x-rpmbuild:
       image: rpmbuild-mapnik
       version: &mapnik_version 3.1.0-1
       defines:
+        gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
         proj_min_version: *proj_min_version
