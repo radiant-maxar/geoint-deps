@@ -47,6 +47,7 @@ cat > "${PGDG_REPO}" <<EOF
 name=PostgreSQL ${POSTGRES_VERSION} \$releasever - \$basearch
 baseurl=${PGDG_BASEURL}/${POSTGRES_VERSION}/redhat/rhel-\$releasever-\$basearch
 enabled=1
+exclude=CGAL* geos* gdal* ogdi* ogr* osm* postgis* proj* SFCGAL*
 gpgcheck=1
 gpgkey=file://${PGDG_KEY}
 repo_gpgcheck=1
