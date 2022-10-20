@@ -5,7 +5,7 @@ POSTGRES_VERSION="${1}"
 PGDG_KEY="${PGDG_KEY:-/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG}"
 PGDG_REPO="${PGDG_REPO:-/etc/yum.repos.d/pgdg-${POSTGRES_VERSION}-centos.repo}"
 PGDG_BASEURL="https://download.postgresql.org/pub/repos/yum"
-if [ "${POSTGRES_VERSION}" -ge 15 ]; then
+if [ "${POSTGRES_VERSION}" -ge 16 ]; then
     PGDG_BASEURL="${PGDG_BASEURL}/testing"
 fi
 
@@ -47,6 +47,7 @@ cat > "${PGDG_REPO}" <<EOF
 name=PostgreSQL ${POSTGRES_VERSION} \$releasever - \$basearch
 baseurl=${PGDG_BASEURL}/${POSTGRES_VERSION}/redhat/rhel-\$releasever-\$basearch
 enabled=1
+exclude=CGAL* geos* gdal* ogdi* ogr* osm* postgis* proj* SFCGAL*
 gpgcheck=1
 gpgkey=file://${PGDG_KEY}
 repo_gpgcheck=1
