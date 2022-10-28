@@ -8,7 +8,7 @@ index 7fbc8ce0..8e666388 100644
      install(FILES default.style empty.style DESTINATION share/osm2pgsql)
 -    install(CODE "set(OSM2PGSQL_BINDIR ${CMAKE_INSTALL_FULL_BINDIR})
 -                  configure_file(${PROJECT_SOURCE_DIR}/scripts/osm2pgsql-replication ${CMAKE_INSTALL_FULL_BINDIR}/osm2pgsql-replication)")
-+    install(FILES scripts/osm2pgsql-replication DESTINATION bin)
++    install(PROGRAMS scripts/osm2pgsql-replication DESTINATION bin)
  endif()
 diff --git a/scripts/osm2pgsql-replication b/scripts/osm2pgsql-replication
 index e721da35..961e34bb 100755
