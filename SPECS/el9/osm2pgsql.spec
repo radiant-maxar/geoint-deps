@@ -15,7 +15,7 @@ Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
-Patch0:         osm2pgsql-replication-osm-server.patch
+Patch0:         osm2pgsql-replication.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
