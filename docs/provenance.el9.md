@@ -74,34 +74,11 @@ patches from [`SOURCES`](../SOURCES) starting with `gpsbabel` are from
 [Fedora's `gpsbabel` RPM](https://src.fedoraproject.org/rpms/gpsbabel/tree/master)
 repository and are [MIT licensed](./licenses/Fedora-LICENSE).
 
-## Google Noto Fonts
-
-The [Google Noto Fonts](https://github.com/googlefonts/noto-source) source
-archives are obtained directly from the project's GitHub page and are
-released under the Open Font License 1.1.
-
-The [`google-noto-fonts-extra.spec`](../SPECS/el9/lgoogle-noto-fonts-extra.spec) originates from
-[Fedora's `google-noto-fonts` RPM](https://src.fedoraproject.org/rpms/google-noto-fonts)
-and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
 ## g2clib
 
 The [g2clib](https://github.com/NOAA-EMC/NCEPLIBS-g2c) source archives are obtained directly from its [GitHub releases](https://github.com/NOAA-EMC/NCEPLIBS-g2c/releases).
 
 The [`g2clib.spec`](../SPECS/el9/g2clib.spec) file originates from [Fedora's `g2clib` RPM](https://src.fedoraproject.org/rpms/g2clib) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
-## Hanazono Fonts
-
-The [Hanazono Fonts](http://fonts.jp/hanazono/) source archives are obtained
-directly from the project's [OSDN downloads](https://osdn.net/projects/hanazono-font/releases/)
-and is released under the Hanazono Font License and the Open Font License 1.1.
-
-The following packaging files originate from
-[Fedora's `hanazono-fonts` RPM](https://src.fedoraproject.org/rpms/hanazono-fonts)
-repository and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`hanazono-fonts.spec`](../SPECS/el9/hanazono-fonts.spec)
-* [`hanazono-fonts-fontconfig.conf`](../SOURCES/el9/hanazono-fonts-fontconfig.conf)
 
 ## iniparser
 

@@ -73,20 +73,10 @@ x-rpmbuild:
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version 1.8.0-1
-    google-noto-fonts-extra:
-      image: rpmbuild-fonts
-      version: &google-noto-fonts-extra_version 20220418-1
-      defines:
-        commit: 523a250c35d417c217c580f0743e41d8ca4b7657
-      arch: noarch
     g2clib:
       image: rpmbuild-g2clib
       name: g2clib-devel
       version: &g2clib_version 1.6.4-1
-    hanazono-fonts:
-      image: rpmbuild-fonts
-      version: &hanazono-fonts_version 20170904-1
-      arch: noarch
     iniparser:
       image: rpmbuild-generic
       version: &iniparser_version 4.1-1
@@ -134,10 +124,13 @@ x-rpmbuild:
       version: &ogdi_version 4.1.0-1
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
-      version: &openstreetmap_carto_version 5.4.0-1
+      version: &openstreetmap_carto_version 5.6.1-1
       arch: noarch
       defines:
         data_natural_earth_version: 5.1.0
+        fonts_google_noto_cjk_git_ref: fcf3fdab7d4f10dde80f56526bd4376d21dacf0c
+        fonts_google_noto_git_ref: 2725c70baa8b0176c7577093ba1fc6179aa79478
+        fonts_hanazono_version: 20170904
     osmctools:
       image: rpmbuild-osmctools
       version: &osmctools_version 0.9-1
@@ -260,14 +253,6 @@ services:
     image: ${IMAGE_PREFIX}rpmbuild
     init: true
     user: nobody
-  rpmbuild-fonts:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: fontpackages-devel
-    image: ${IMAGE_PREFIX}rpmbuild-fonts
   rpmbuild-generic:
     <<: *service_defaults
     build:

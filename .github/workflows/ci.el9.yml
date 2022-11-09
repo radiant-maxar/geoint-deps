@@ -19,7 +19,6 @@ jobs:
       matrix:
         image:
           - rpmbuild
-          - rpmbuild-fonts
           - rpmbuild-generic
           - rpmbuild-pgdg
 
@@ -59,9 +58,7 @@ jobs:
           - FileGDBAPI
           - g2clib
           - geos
-          - google-noto-fonts-extra
           - gpsbabel
-          - hanazono-fonts
           - iniparser
           - journald-cloudwatch-logs
           - libgta
