@@ -19,11 +19,8 @@ License:        MIT
 URL:            https://www.gdal.org
 
 Source0:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdal-%{version}.tar.gz
-Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.zip
+Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.tar.gz
 Source2:        gdal.pom
-
-Patch0:         gdal-web-identity-token-fix.patch
-Patch1:         gdal-http-headers-option.patch
 
 BuildRequires: automake
 BuildRequires: autoconf
@@ -166,6 +163,9 @@ manipulating GDAL file format library
 %build
 %cmake \
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
+    -DGDAL_USE_POSTGRESQL:BOOL=ON \
+    -DPostgreSQL_INCLUDE_DIR=/usr/pgsql-%{postgres_version}/include \
+    -DPostgreSQL_LIBRARY=/usr/pgsql-%{postgres_version}/lib/libpq.so \
     -DUSE_CCACHE:BOOL=ON
 %cmake_build
 
@@ -264,16 +264,19 @@ export PYTEST="pytest -vv -p no:sugar --color=no"
 
 # Run tests with problematic cases deselected.  Some possible explanations:
 #  * ogr/ogr_fgdb: Known failures disabled on Ubuntu, but not EL.
-#  * ogr/ogr_gpkg: Unknown
 #  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
+#  * pyscripts/test_gdal2tiles.py: regressions with test file locations on EL.
 $PYTEST \
 --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19 \
 --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19bis \
 --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_20 \
 --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_21 \
---deselect ogr/ogr_gpkg.py::test_ogr_gpkg_15 \
---deselect ogr/ogr_pg.py::test_ogr_pg_14 \
---deselect ogr/ogr_pg.py::test_ogr_pg_70
+--deselect ogr/ogr_pg.py::test_ogr_pg_70 \
+--deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple \
+--deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_zoom_option \
+--deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_resampling_option \
+--deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_xyz \
+--deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_invalid_srs
 popd
 
 # Stop PostgreSQL
@@ -320,8 +323,7 @@ popd
 %files libs
 %license LICENSE.TXT
 %doc NEWS.md PROVENANCE.TXT COMMITTERS
-%{_libdir}/libgdal.so.31
-%{_libdir}/libgdal.so.31.*
+%{_libdir}/libgdal.so.*
 %{_datadir}/%{name}
 %dir %{_libdir}/gdalplugins
 %exclude %{_libdir}/gdalplugins/drivers.ini
