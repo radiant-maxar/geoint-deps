@@ -69,7 +69,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
-      version: &geos_version 3.11.0-1
+      version: &geos_version 3.11.1-1
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version 1.8.0-1
@@ -170,7 +170,7 @@ x-rpmbuild:
       version: &passenger_version 6.0.15-1
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.3.1-1
+      version: &postgis_version 3.3.2-1
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
