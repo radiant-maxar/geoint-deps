@@ -139,7 +139,7 @@ x-rpmbuild:
       version: &passenger_version 6.0.15-1
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.2.3-1
+      version: &postgis_version 3.2.4-1
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
