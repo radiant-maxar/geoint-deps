@@ -267,6 +267,9 @@ export PYTEST="pytest -vv -p no:sugar --color=no"
 #  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
 #  * pyscripts/test_gdal2tiles.py: regressions with test file locations on EL.
 $PYTEST \
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19 \
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19bis \
+--deselect ogr/ogr_fgdb.py::test_ogr_fgdb_20 \
 --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_21 \
 --deselect ogr/ogr_pg.py::test_ogr_pg_70 \
 --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple \
