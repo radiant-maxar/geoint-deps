@@ -1,20 +1,8 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7fbc8ce0..8e666388 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -337,6 +337,5 @@ include(GNUInstallDirs)
- if (ENABLE_INSTALL)
-     install(TARGETS osm2pgsql DESTINATION bin)
-     install(FILES default.style empty.style DESTINATION share/osm2pgsql)
--    install(CODE "set(OSM2PGSQL_BINDIR ${CMAKE_INSTALL_FULL_BINDIR})
--                  configure_file(${PROJECT_SOURCE_DIR}/scripts/osm2pgsql-replication ${CMAKE_INSTALL_FULL_BINDIR}/osm2pgsql-replication)")
-+    install(PROGRAMS scripts/osm2pgsql-replication DESTINATION bin)
- endif()
 diff --git a/scripts/osm2pgsql-replication b/scripts/osm2pgsql-replication
-index e721da35..961e34bb 100755
+index 94dbc3a3..5f6e32f6 100755
 --- a/scripts/osm2pgsql-replication
 +++ b/scripts/osm2pgsql-replication
-@@ -95,7 +95,7 @@ def table_exists(conn, table_name):
+@@ -95,7 +95,7 @@ def table_exists(conn, table_name, schema_name=None):
          return cur.rowcount > 0
  
  
@@ -41,7 +29,7 @@ index e721da35..961e34bb 100755
          if date is None:
              return 1
  
-@@ -470,6 +470,9 @@ def get_parser():
+@@ -472,6 +472,9 @@ def get_parser():
                            formatter_class=RawDescriptionHelpFormatter,
                            add_help=False)
      grp = cmd.add_argument_group('Replication source arguments')
