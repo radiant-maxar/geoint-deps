@@ -9,9 +9,11 @@ SOURCES/el?/*.asc
 SOURCES/el?/*.bz2
 SOURCES/el?/*.gem
 SOURCES/el?/*.gz
+SOURCES/el?/*.otf
 SOURCES/el?/*.pbf
 SOURCES/el?/*.pdf
 SOURCES/el?/*.sha256
 SOURCES/el?/*.tar.*
 SOURCES/el?/*.tgz
+SOURCES/el?/*.ttf
 SOURCES/el?/*.zip

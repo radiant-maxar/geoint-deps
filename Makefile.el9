@@ -47,9 +47,7 @@ FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
 G2CLIB_RPM := $(call rpm_file,g2clib)
 GDAL_RPM := $(call rpm_file,gdal)
 GEOS_RPM := $(call rpm_file,geos)
-GOOGLE_NOTO_RPM := $(call rpm_file,google-noto-fonts-extra)
 GPSBABEL_RPM := $(call rpm_file,gpsbabel)
-HANAZONO_RPM := $(call rpm_file,hanazono-fonts)
 INIPARSER_RPM := $(call rpm_file,iniparser)
 JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
@@ -86,7 +84,6 @@ WALG_RPM := $(call rpm_file,wal-g)
 # Build images and RPMs.
 RPMBUILD_BASE_IMAGES := \
 	rpmbuild \
-	rpmbuild-fonts \
 	rpmbuild-generic \
 	rpmbuild-pgdg
 RPMBUILD_RPMS := \
@@ -98,9 +95,7 @@ RPMBUILD_RPMS := \
 	g2clib \
 	gdal \
 	geos \
-	google-noto-fonts-extra \
 	gpsbabel \
-	hanazono-fonts \
 	iniparser \
 	journald-cloudwatch-logs \
 	libgeotiff \
@@ -232,9 +227,7 @@ gdal: $(ARPACK_RPM) $(CGAL_RPM) $(FILEGDBAPI_RPM) $(GEOS_RPM) $(GPSBABEL_RPM) $(
       $(ARMADILLO_RPM) $(LIBGEOTIFF_RPM) $(LIBKML_RPM) $(SFCGAL_RPM) \
       $(GDAL_RPM)
 geos: $(GEOS_RPM)
-google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
 gpsbabel: $(GPSBABEL_RPM)
-hanazono-fonts: rpmbuild-fonts $(HANAZONO_RPM)
 iniparser: $(INIPARSER_RPM)
 journald-cloudwatch-logs: $(JOURNALD_CLOUDWATCH_LOGS_RPM)
 libgeotiff: $(PROJ_RPM) \

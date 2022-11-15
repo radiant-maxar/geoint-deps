@@ -54,11 +54,9 @@ The [GEOS](https://trac.osgeo.org/geos) source archives are obtained
 directly from [OSGeo](https://download.osgeo.org/geos/) and licensed under the
 [GNU LGPL v2.1](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html).
 
-The following packaging files originate from [Fedora's `geos` RPM](https://src.fedoraproject.org/rpms/geos)
-and are released under the [Fedora license](./licenses/Fedora-LICENSE):
-
-* [`geos.spec`](../SPECS/el9/geos.spec)
-* [`geos_libsuffix.patch`](../SOURCES/el9/geos_libsuffix.patch)
+The [`geos.spec`](../SPECS/el9/geos.spec) originates from
+[Fedora's `geos` RPM](https://src.fedoraproject.org/rpms/geos)
+and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## GDAL
 
@@ -74,34 +72,11 @@ patches from [`SOURCES`](../SOURCES) starting with `gpsbabel` are from
 [Fedora's `gpsbabel` RPM](https://src.fedoraproject.org/rpms/gpsbabel/tree/master)
 repository and are [MIT licensed](./licenses/Fedora-LICENSE).
 
-## Google Noto Fonts
-
-The [Google Noto Fonts](https://github.com/googlefonts/noto-source) source
-archives are obtained directly from the project's GitHub page and are
-released under the Open Font License 1.1.
-
-The [`google-noto-fonts-extra.spec`](../SPECS/el9/lgoogle-noto-fonts-extra.spec) originates from
-[Fedora's `google-noto-fonts` RPM](https://src.fedoraproject.org/rpms/google-noto-fonts)
-and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
 ## g2clib
 
 The [g2clib](https://github.com/NOAA-EMC/NCEPLIBS-g2c) source archives are obtained directly from its [GitHub releases](https://github.com/NOAA-EMC/NCEPLIBS-g2c/releases).
 
 The [`g2clib.spec`](../SPECS/el9/g2clib.spec) file originates from [Fedora's `g2clib` RPM](https://src.fedoraproject.org/rpms/g2clib) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
-## Hanazono Fonts
-
-The [Hanazono Fonts](http://fonts.jp/hanazono/) source archives are obtained
-directly from the project's [OSDN downloads](https://osdn.net/projects/hanazono-font/releases/)
-and is released under the Hanazono Font License and the Open Font License 1.1.
-
-The following packaging files originate from
-[Fedora's `hanazono-fonts` RPM](https://src.fedoraproject.org/rpms/hanazono-fonts)
-repository and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`hanazono-fonts.spec`](../SPECS/el9/hanazono-fonts.spec)
-* [`hanazono-fonts-fontconfig.conf`](../SOURCES/el9/hanazono-fonts-fontconfig.conf)
 
 ## iniparser
 
@@ -140,9 +115,9 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch`](../SOURCES/el9/libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch)
 * [`libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch`](../SOURCES/el9/libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch)
 * [`libkml-0003-Fix-python-tests.patch`](../SOURCES/el9/libkml-0003-Fix-python-tests.patch)
-* [`libkml-fragile_test.patch`](../SOURCES/el9/libkml-fragile_test.patch)
 * [`libkml-dont-bytecompile.patch`](../SOURCES/el9/libkml-dont-bytecompile.patch)
-* [`minizip-1.3.0.tar.gz`](../SOURCES/el9/minizip-1.3.0.tar.gz)
+* [`libkml-fragile_test.patch`](../SOURCES/el9/libkml-fragile_test.patch)
+* [`minizip.tar.gz`](../SOURCES/el9/minizip.tar.gz)
 
 ## libosmium
 
@@ -171,13 +146,13 @@ The following packaging files originate from
 and are [MIT licensed](./licenses/Fedora-LICENSE):
 
 * [`mapnik.spec`](../SPECS/el9/mapnik.spec)
-* [`mapnik-viewer.desktop`](../SOURCES/el9/mapnik-viewer.desktop)
-* [`mapnik-build-viewer.patch`](../SOURCES/el9/mapnik-build-viewer.patch)
-* [`mapnik-system-sparsehash.patch`](../SOURCES/el9/mapnik-system-sparsehash.patch)
-* [`mapnik-visual-compare.patch`](../SOURCES/el9/mapnik-visual-compare.patch)
-* [`mapnik-rpath.patch`](../SOURCES/el9/mapnik-rpath.patch)
-* [`mapnik-proj.patch`](../SOURCES/el9/mapnik-proj.patch)
 * [`mapnik-build-json-fix.patch`](../SOURCES/el9/mapnik-build-json-fix.patch)
+* [`mapnik-build-viewer.patch`](../SOURCES/el9/mapnik-build-viewer.patch)
+* [`mapnik-proj.patch`](../SOURCES/el9/mapnik-proj.patch)
+* [`mapnik-rpath.patch`](../SOURCES/el9/mapnik-rpath.patch)
+* [`mapnik-system-sparsehash.patch`](../SOURCES/el9/mapnik-system-sparsehash.patch)
+* [`mapnik-viewer.desktop`](../SOURCES/el9/mapnik-viewer.desktop)
+* [`mapnik-visual-compare.patch`](../SOURCES/el9/mapnik-visual-compare.patch)
 
 ## MapServer
 
@@ -204,20 +179,19 @@ The [openstreetmap-carto](https://github.com/gravitystorm/openstreetmap-carto)
 provides cartographic styles for Mapnik tiles.  Source archives are
 obtained directly from GitHub and are
 [CC0 1.0 licensed](https://github.com/gravitystorm/openstreetmap-carto/blob/master/LICENSE.txt).
-Its data package contains archives that are public domain and
+
+Its data packages contain archives that are public domain and
 [ODbL](https://opendatacommons.org/licenses/odbl/) licensed.
+
+Its font packages contain files that are released under the [Hanazono Font
+License](http://fonts.jp/hanazono) and the
+[Open Font License 1.1](https://scripts.sil.org/OFL).
 
 ## osm2pgsql
 
 The [osm2pgsql](https://github.com/openstreetmap/osm2pgsql) source archives are
 obtained directly from GitHub and are
 [GPLv2 licensed](https://github.com/openstreetmap/osm2pgsql/blob/master/COPYING).
-Using the same license, the following patch files were derived from changesets in GitHub:
-
-* [`osm2pgsql-replication-analyze.patch`](../SOURCES/el9/osm2pgsql-replication-analyze.patch)
-* [`osm2pgsql-replication-older-python.patch`](../SOURCES/el9/osm2pgsql-replication-older-python.patch)
-* [`osm2pgsql-replication-prefix-argument.patch`](../SOURCES/el9/osm2pgsql-replication-prefix-argument.patch)
-* [`osm2pgsql-replication-status.patch`](../SOURCES/el9/osm2pgsql-replication-status.patch)
 
 The [`osm2pgsql.spec`](../SPECS/el9/osm2pgsql.spec) originates from
 [Fedora's `osm2pgsql` RPM](https://src.fedoraproject.org/rpms/osm2pgsql)
@@ -252,7 +226,7 @@ obtained directly from its [GitHub releases](https://github.com/openstreetmap/os
 project and was released under the
 [LGPLv3 and public domain licenses](https://github.com/openstreetmap/osmosis/blob/master/package/copying.txt).
 
-The [`osmosis-fix_launcher.patch`](../SOURCES/el9/osmosis-fix_launcher.patch) file
+The [`osmosis-fix_launchers.patch`](../SOURCES/el9/osmosis-fix_launchers.patch) file
 comes from [Debian's GIS Project](https://salsa.debian.org/debian-gis-team/osmosis/blob/master/debian/patches/01-fix_launcher.patch)
 and is licensed under the GPLv3.
 
@@ -279,20 +253,15 @@ directly from [its GitHub releases](https://github.com/OSGeo/PROJ/releases);
 its source code archives are [MIT licensed](https://github.com/OSGeo/PROJ/blob/master/COPYING),
 and its data archives are under [public domain, MIT, BSD, and Creative Commons licenses](https://github.com/OSGeo/PROJ-data#about-the-data-package).
 
-The following packaging files originate from
+The [`proj.spec`](../SPECS/el9/proj.spec) originates from
 [Fedora's `proj` RPM](https://src.fedoraproject.org/rpms/proj)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-* [`proj.spec`](../SPECS/el9/proj.spec)
-* [`proj-pkgconfig.patch`](../SOURCES/el9/proj-pkgconfig.patch)
+and is [MIT licensed](./licenses/Fedora-LICENSE).
 
 ## protobuf
 
-The following files originate from [Fedora's `protobuf` RPM](https://src.fedoraproject.org/rpms/protobuf)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-* [`protobuf.spec`](../SPECS/el9/protobuf.spec)
-* [`protobuf-3.14-disable-IoTest.LargeOutput.patch`](../SOURCES/el9/protobuf-3.14-disable-IoTest.LargeOutput.patch)
-* [`protobuf-ftdetect-proto.vim`](../SOURCES/el9/protobuf-ftdetect-proto.vim)
-* [`protobuf-init.el`](../SOURCES/el9/protobuf-init.el)
+The [`protobuf.spec`](../SPECS/el9/protobuf.spec) originates from
+[Fedora's `protobuf` RPM](https://src.fedoraproject.org/rpms/protobuf)
+and is [MIT licensed](./licenses/Fedora-LICENSE).
 
 ## protozero
 
@@ -313,7 +282,7 @@ source RPMs released under the [PostgreSQL license](./licenses/PostgreSQL-LICENS
 
 * [`postgis.spec`](../SPECS/el9/postgis.spec)
 * [`postgis-filter-requires-perl-Pg.sh`](../SOURCES/el9/postgis-filter-requires-perl-Pg.sh)
-* [`postgis-gdalfpic.patch`](../SOURCES/el9/postgis-gdalfpic.patch)
+* [`postgis-3.1-gdalfpic.patch`](../SOURCES/el9/postgis-3.1-gdalfpic.patch)
 
 Any portions of [Fedora's `postgis` RPM](https://src.fedoraproject.org/rpms/postgis/tree/master)
 that may appear in these files are [MIT licensed](./licenses/Fedora-LICENSE).
@@ -330,7 +299,7 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 
 * [`python3-osmium.spec`](../SPECS/el9/python3-osmium.spec)
 * [`python3-osmium-no-strip.patch`](../SOURCES/el9/python3-osmium-no-strip.patch)
-* [`python3-osmium-no-extras.patch`](../SOURCES/el9/python3-osmium-no-extras.patch)
+* [`python3-osmium-no-shapely.patch`](../SOURCES/el9/python3-osmium-no-shapely.patch)
 
 ## Rack
 
