@@ -164,8 +164,7 @@ manipulating GDAL file format library
 %cmake \
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
     -DGDAL_USE_POSTGRESQL:BOOL=ON \
-    -DPostgreSQL_INCLUDE_DIR=/usr/pgsql-%{postgres_version}/include \
-    -DPostgreSQL_LIBRARY=/usr/pgsql-%{postgres_version}/lib/libpq.so \
+    -DPostgreSQL_ROOT=/usr/pgsql-%{postgres_version} \
     -DUSE_CCACHE:BOOL=ON
 %cmake_build
 
