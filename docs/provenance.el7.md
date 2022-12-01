@@ -340,7 +340,6 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`ruby-2.7.2-disable-eaccess-tests.patch`](../SOURCES/el7/ruby-2.7.2-disable-eaccess-tests.patch)
 * [`ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch`](../SOURCES/el7/ruby-2.3.1-Rely-on-ldd-to-detect-glibc.patch)
 * [`ruby-2.7.0-Remove-RubyGems-dependency.patch`](../SOURCES/el7/ruby-2.7.0-Remove-RubyGems-dependency.patch)
-* [`ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch`](../SOURCES/el7/ruby-2.8.0-remove-unneeded-gem-require-for-ipaddr.patch)
 * [`ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch`](../SOURCES/el7/ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch)
 
 ## `rubygem-pg`
