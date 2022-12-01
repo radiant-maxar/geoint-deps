@@ -192,6 +192,7 @@ jobs:
         uses: radiant-maxar/geoint-actions/repository/create@v1.2
         with:
           el_version: ${{ env.EL_VERSION }}
+          repo_dirname: non-stable/${{ github.ref_name }}
 
       - name: Upload repository
         uses: radiant-maxar/geoint-actions/repository/upload@v1.2
@@ -199,4 +200,5 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           el_version: ${{ env.EL_VERSION }}
+          repo_dirname: non-stable/${{ github.ref_name }}
           s3_bucket: geoint-deps
