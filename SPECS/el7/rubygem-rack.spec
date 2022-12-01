@@ -21,6 +21,8 @@ Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 #   tar --owner 1000 --group 1000 --numeric-owner -czf rack-$VERSION-test.tar.gz test/
 #
 Source1: https://geoint-deps.s3.amazonaws.com/support-files/%{gem_name}-%{version}-test.tar.gz
+Patch0: rubygem-rack-cgi-fix.patch
+Patch1: rubygem-rack-spec-server.patch
 %endif
 
 BuildRequires: ruby
@@ -57,6 +59,13 @@ Documentation for %{name}.
 %prep
 %setup -q -c -T
 %gem_install -n %{SOURCE0}
+%if %{with tests}
+pushd .%{gem_instdir}
+%{__tar} xzf %{SOURCE1}
+%patch0 -p1
+%patch1 -p1
+popd
+%endif
 
 %build
 
@@ -88,19 +97,6 @@ done
 %if %{with tests}
 pushd .%{gem_instdir}
 
-%{__tar} xzf %{SOURCE1}
-
-# During the building on mock environment, the testing process id 1 is owned
-# by running user mockbuild's command STUBINIT, though it is owned by root user
-# on usual environment.
-# The server status does not return ":not_owned".
-sed -i '/^  it "check pid file presence and not owned process" do$/,/^  end$/ s/^/#/' \
-  test/spec_server.rb
-
-# Test wasn't updated for 2.2.3.1 security release.
-sed -i '/^  it "support -v option to get version" do$/,/^  end$/ s/^/#/' \
-  test/spec_server.rb
-
 # Get temporary PID file name and start memcached daemon.
 PID=%(mktemp)
 memcached -d -P "$PID"
@@ -124,6 +120,7 @@ popd
 %{gem_libdir}
 %{gem_instdir}/bin
 %exclude %{gem_cache}
+%exclude %{gem_instdir}/test
 %{gem_spec}
 
 %files doc
