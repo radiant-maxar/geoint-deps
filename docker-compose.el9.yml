@@ -199,13 +199,13 @@ x-rpmbuild:
         protozero_min_version: *protozero_min_version
     rack:
       image: rpmbuild-rack
-      version: &rack_version 2.2.3.1-1
+      version: &rack_version 2.2.4-1
       arch: noarch
       name: rubygem-rack
       spec_file: SPECS/rubygem-rack.spec
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
-      version: &rubygem_libxml_ruby_version 3.2.2-1
+      version: &rubygem_libxml_ruby_version 3.2.4-1
     sbt:
       image: rpmbuild-generic
       version: &sbt_version 1.7.2-1
