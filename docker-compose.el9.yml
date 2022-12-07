@@ -172,7 +172,7 @@ x-rpmbuild:
         protobuf_c_min_version: *protobuf_c_min_version
     proj:
       image: rpmbuild-proj
-      version: &proj_version 9.1.0-1
+      version: &proj_version 9.1.1-1
       defines:
         data_version: "1.11"
         googletest_version: 1.11.0
