@@ -168,6 +168,8 @@ Patch10: ruby-2.7.0-Remove-RubyGems-dependency.patch
 Patch19: ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch
 # Revert autoconf changes from 2.7.4 that cause regressions in JIT tests.
 Patch20: ruby-2.7.4-autoconf-revert.patch
+# [Bug #19187] Fix for tzdata-2022g
+Patch21: ruby-tz2022g.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
