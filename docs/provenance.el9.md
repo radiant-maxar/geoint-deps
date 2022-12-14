@@ -87,7 +87,7 @@ The [`iniparser.spec`](../SPECS/el9/iniparser.spec) file originates from [Fedora
 ## libgeotiff
 
 The [GeoTIFF](https://github.com/OSGeo/libgeotiff) library source archives are
-obtained directly from [OSGeo's GitHub](https://github.com/OSGeo/libgeotiff/releases/download)
+obtained directly from [OSGeo's GitHub](https://github.com/OSGeo/libgeotiff/releases/)
 and is mostly [MIT/X11](https://github.com/OSGeo/libgeotiff/blob/master/libgeotiff/LICENSE)
 licensed.
 
@@ -97,7 +97,7 @@ and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## libgta
 
-The [Generic Tagged Arrays (GTA)](https://marlam.de/gta/) library code archives are obtained directly from [the project's website](https://github.com/OSGeo/libgeotiff/releases/download) and are [LGPLv2+](https://github.com/marlam/gta-mirror/blob/master/libgta/COPYING) licensed.
+The [Generic Tagged Arrays (GTA)](https://marlam.de/gta/) library code archives are obtained directly from [the project's website](https://marlam.de/gta/download/) and are [LGPLv2+](https://github.com/marlam/gta-mirror/blob/master/libgta/COPYING) licensed.
 
 The [`libgta.spec`](../SPECS/el9/libgta.spec) originates from [Fedora's `libgta` RPM](https://src.fedoraproject.org/rpms/libgta) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
