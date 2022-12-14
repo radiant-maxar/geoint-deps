@@ -224,7 +224,7 @@ x-rpmbuild:
       version: &step_cli_version 0.23.0-1
     uriparser:
       image: rpmbuild-uriparser
-      version: &uriparser_version 0.9.6-1
+      version: &uriparser_version 0.9.7-1
     wal-g:
       image: rpmbuild-wal-g
       version: &walg_version 2.0.1-1
