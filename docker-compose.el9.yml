@@ -54,7 +54,7 @@ x-rpmbuild:
         _smp_ncpus_max: 4
     armadillo:
       image: rpmbuild-armadillo
-      version: &armadillo_version 11.4.1-1
+      version: &armadillo_version 11.4.2-1
     arpack:
       image: rpmbuild-arpack
       version: &arpack_version 3.8.0-1
