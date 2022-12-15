@@ -10,11 +10,6 @@ Source0:        https://github.com/NOAA-EMC/NCEPLIBS-g2c/archive/v%{version}/%{n
 # Patch from Wesley Ebisuzaki <wesley.ebisuzaki@noaa.gov> to fix sigfault
 # if simunpack() is called with 0 values to unpack
 Patch2:         g2clib-simunpack.patch
-# Fix build with Jasper 2
-Patch4:         g2clib-jasper2.patch
-# jasper3 now hides internal encoder / decoder. Use wrapper entry point
-# c.f. https://github.com/jasper-software/jasper/commit/5fe57ac5829ec31396e7eaab59a688da014660af
-Patch5:         g2clib-1.6.3-jasper3-use-wrapper-entry-point.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -63,9 +58,6 @@ developing applications that use %{name}.
 
 %install
 %cmake_install
-%{__install} -p -m0644 src/drstemplates.h %{buildroot}%{_includedir}
-%{__install} -p -m0644 src/gridtemplates.h %{buildroot}%{_includedir}
-%{__install} -p -m0644 src/pdstemplates.h %{buildroot}%{_includedir}
 %{__mkdir_p} %{buildroot}%{_rpmconfigdir}/macros.d
 echo %%g2clib %g2clib > %{buildroot}%{_rpmconfigdir}/macros.d/macros.g2clib
 
@@ -73,11 +65,8 @@ echo %%g2clib %g2clib > %{buildroot}%{_rpmconfigdir}/macros.d/macros.g2clib
 %files devel
 %license LICENSE.md
 %{_libdir}/cmake/%{g2clib}
-%{_libdir}/lib%{g2clib}.a
+%{_libdir}/lib%{g2clib}.so
 %{_includedir}/grib2.h
-%{_includedir}/drstemplates.h
-%{_includedir}/gridtemplates.h
-%{_includedir}/pdstemplates.h
 %{_rpmconfigdir}/macros.d/macros.g2clib
 
 

@@ -1,13 +1,13 @@
 diff --git a/src/simunpack.c b/src/simunpack.c
-index ac3607a..e9a5d68 100644
+index 3c5cb8c..c4d7817 100644
 --- a/src/simunpack.c
 +++ b/src/simunpack.c
-@@ -36,7 +36,7 @@ simunpack(unsigned char *cpack, g2int *idrstmpl, g2int ndpts, g2float *fld)
+@@ -35,7 +35,7 @@ simunpack(unsigned char *cpack, g2int *idrstmpl, g2int ndpts,
+     dscale = int_power(10.0, -idrstmpl[2]);
      nbits = idrstmpl[3];
-     itype = idrstmpl[4];
  
--    ifld=(g2int *)calloc(ndpts,sizeof(g2int));
-+    ifld=(g2int *)calloc(ndpts ? ndpts : 1,sizeof(g2int));
-     if ( ifld == 0 ) {
-         fprintf(stderr,"Could not allocate space in simunpack.\n  Data field NOT upacked.\n");
-         return(1);
+-    if (!(ifld = calloc(ndpts, sizeof(g2int))))
++    if (!(ifld = calloc(ndpts ? ndpts : 1, sizeof(g2int))))
+     {
+         fprintf(stderr, "Could not allocate space in simunpack.\n  "
+ 		"Data field NOT upacked.\n");

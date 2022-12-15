@@ -76,7 +76,7 @@ x-rpmbuild:
     g2clib:
       image: rpmbuild-g2clib
       name: g2clib-devel
-      version: &g2clib_version 1.6.4-1
+      version: &g2clib_version 1.7.0-1
     iniparser:
       image: rpmbuild-generic
       version: &iniparser_version 4.1-1
