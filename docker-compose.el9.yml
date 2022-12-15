@@ -174,7 +174,7 @@ x-rpmbuild:
       image: rpmbuild-proj
       version: &proj_version 9.1.1-1
       defines:
-        data_version: "1.11"
+        data_version: "1.12"
         googletest_version: 1.11.0
     protozero:
       image: rpmbuild-protozero
