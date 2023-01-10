@@ -42,9 +42,11 @@ Qt GUI interface for GPSBabel
 
 
 %build
+# LTO appears to cause some issues.
+# https://bugzilla.redhat.com/show_bug.cgi?id=2065758
+%define _lto_cflags %{nil}
 %cmake \
   -DGPSBABEL_WITH_ZLIB=pkgconfig \
-  -DGPS_BABEL_WITH_SHAPE_LIB=pkgconfig \
   -DGPSBABEL_WITH_SHAPELIB=pkgconfig \
   ..
 %cmake_build
@@ -76,6 +78,10 @@ desktop-file-install \
 %{__install} -m 0644 -p %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/
 
 %find_lang %{name} --with-qt --all-name
+
+
+%check
+%ctest
 
 
 %files
