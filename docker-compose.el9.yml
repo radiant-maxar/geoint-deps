@@ -70,9 +70,6 @@ x-rpmbuild:
     geos:
       image: rpmbuild-generic
       version: &geos_version 3.11.1-1
-    gpsbabel:
-      image: rpmbuild-gpsbabel
-      version: &gpsbabel_version 1.8.0-1
     g2clib:
       image: rpmbuild-g2clib
       name: g2clib-devel
@@ -304,7 +301,6 @@ services:
         cgal_version: *CGAL_version
         filegdbapi_version: *FileGDBAPI_version
         geos_version: *geos_version
-        gpsbabel_version: *gpsbabel_version
         g2clib_version: *g2clib_version
         libgeotiff_version: *libgeotiff_version
         libgta_version: *libgta_version
@@ -316,13 +312,6 @@ services:
         sfcgal_version: *SFCGAL_version
         uriparser_version: *uriparser_version
       dockerfile: docker/el9/Dockerfile.rpmbuild-gdal
-  rpmbuild-gpsbabel:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_GPSBABEL_PACKAGES}
   rpmbuild-g2clib:
     <<: *service_defaults
     build:

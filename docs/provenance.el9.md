@@ -64,14 +64,6 @@ The [GDAL](https://trac.osgeo.org/gdal) source archives are obtained directly fr
 
 The [`gdal.spec`](../SPECS/el9/gdal.spec) file originates from [Fedora's GDAL RPM](https://src.fedoraproject.org/rpms/gdal/tree/rawhide) repository (`rawhide` branch) and is [MIT licensed](./licenses/Fedora-LICENSE).
 
-## gpsbabel
-
-The [gpsbabel](https://www.gpsbabel.org/) source archive was obtained directly
-from their website.  The [`gpsbabel.spec`](../SPECS/el9/gpsbabel.spec) and all
-patches from [`SOURCES`](../SOURCES) starting with `gpsbabel` are from
-[Fedora's `gpsbabel` RPM](https://src.fedoraproject.org/rpms/gpsbabel/tree/master)
-repository and are [MIT licensed](./licenses/Fedora-LICENSE).
-
 ## g2clib
 
 The [g2clib](https://github.com/NOAA-EMC/NCEPLIBS-g2c) source archives are obtained directly from its [GitHub releases](https://github.com/NOAA-EMC/NCEPLIBS-g2c/releases).

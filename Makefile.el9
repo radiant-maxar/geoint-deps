@@ -47,7 +47,6 @@ FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
 G2CLIB_RPM := $(call rpm_file,g2clib)
 GDAL_RPM := $(call rpm_file,gdal)
 GEOS_RPM := $(call rpm_file,geos)
-GPSBABEL_RPM := $(call rpm_file,gpsbabel)
 INIPARSER_RPM := $(call rpm_file,iniparser)
 JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
@@ -95,7 +94,6 @@ RPMBUILD_RPMS := \
 	g2clib \
 	gdal \
 	geos \
-	gpsbabel \
 	iniparser \
 	journald-cloudwatch-logs \
 	libgeotiff \
@@ -166,7 +164,6 @@ distclean: .env
 	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/CGAL.spec) >> .env
 	echo RPMBUILD_G2CLIB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/g2clib.spec) >> .env
 	echo RPMBUILD_GDAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/gdal.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
-	echo RPMBUILD_GPSBABEL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/gpsbabel.spec) >> .env
 	echo RPMBUILD_JOURNALD_CLOUDWATCH_LOGS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/journald-cloudwatch-logs.spec) >> .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libkml.spec) >> .env
@@ -223,11 +220,10 @@ CGAL: $(CGAL_RPM)
 dumb-init: $(DUMB_INIT_RPM)
 FileGDBAPI: $(FILEGDBAPI_RPM)
 g2clib: $(G2CLIB_RPM)
-gdal: $(ARPACK_RPM) $(CGAL_RPM) $(FILEGDBAPI_RPM) $(GEOS_RPM) $(GPSBABEL_RPM) $(OGDI_RPM) $(PROJ_RPM) $(URIPARSER_RPM) \
+gdal: $(ARPACK_RPM) $(CGAL_RPM) $(FILEGDBAPI_RPM) $(GEOS_RPM) $(OGDI_RPM) $(PROJ_RPM) $(URIPARSER_RPM) \
       $(ARMADILLO_RPM) $(LIBGEOTIFF_RPM) $(LIBKML_RPM) $(SFCGAL_RPM) \
       $(GDAL_RPM)
 geos: $(GEOS_RPM)
-gpsbabel: $(GPSBABEL_RPM)
 iniparser: $(INIPARSER_RPM)
 journald-cloudwatch-logs: $(JOURNALD_CLOUDWATCH_LOGS_RPM)
 libgeotiff: $(PROJ_RPM) \

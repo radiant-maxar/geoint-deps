@@ -58,7 +58,6 @@ jobs:
           - FileGDBAPI
           - g2clib
           - geos
-          - gpsbabel
           - iniparser
           - journald-cloudwatch-logs
           - libgta

@@ -12,7 +12,6 @@ ARG arpack_version
 ARG cgal_version
 ARG filegdbapi_version
 ARG geos_version
-ARG gpsbabel_version
 ARG g2clib_version
 ARG libgeotiff_version
 ARG libgta_version
@@ -38,7 +37,6 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -102,7 +100,6 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     "/tmp/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/gpsbabel-${gpsbabel_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \

@@ -161,6 +161,9 @@ manipulating GDAL file format library
 
 
 %build
+# LTO appears to cause some issues.
+# https://bugzilla.redhat.com/show_bug.cgi?id=2065758
+%define _lto_cflags %{nil}
 %cmake \
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
     -DGDAL_USE_POSTGRESQL:BOOL=ON \
