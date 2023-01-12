@@ -54,6 +54,9 @@ developing applications that use %{name}.
 
 
 %build
+# LTO appears to cause some issues.
+# https://bugzilla.redhat.com/show_bug.cgi?id=2065758
+%define _lto_cflags %{nil}
 %cmake -DBUILD_HEADERS=OFF -DINSTALL_GDALCPP=ON
 %cmake_build
 
