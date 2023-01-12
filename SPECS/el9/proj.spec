@@ -1,6 +1,5 @@
 # The following macros are also required:
 # * data_version
-# * googletest_version
 
 Name:           proj
 # Also check whether there is a new proj-data release when upgrading!
@@ -13,15 +12,19 @@ URL:            https://proj.org
 Source0:        https://github.com/OSGeo/PROJ/releases/download/%{version}/proj-%{version}.tar.gz
 Source1:        https://github.com/OSGeo/PROJ/releases/download/%{version}/proj-%{version}.tar.gz.md5
 Source2:        https://github.com/OSGeo/PROJ-data/releases/download/%{data_version}.0/proj-data-%{data_version}.tar.gz
-Source3:        https://github.com/google/googletest/archive/release-%{googletest_version}.zip
 
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  gcc-c++
+BuildRequires:  gmock-devel
+BuildRequires:  gtest-devel
 BuildRequires:  make
 BuildRequires:  libtiff-devel
 BuildRequires:  sqlite-devel
 
+Obsoletes:      proj-datumgrid < 1.8-6.3.2.6
+
+Requires:       proj-data = %{version}-%{release}
 Requires:       sqlite
 
 %description
@@ -37,6 +40,13 @@ Obsoletes:      %{name}-static < 7.2.0
 
 %description devel
 This package contains libproj and the appropriate header files and man pages.
+
+%package data
+Summary:        Proj data files
+BuildArch:      noarch
+
+%description data
+Proj arch independent data files.
 
 
 %package data-europe
@@ -127,6 +137,8 @@ Summary:      %{countryname} datum grids for Proj\
 BuildArch:    noarch\
 # See README.DATA \
 License:      CC-BY and MIT and BSD and Public Domain \
+Requires:     proj-data = %{version}-%{release} \
+Supplements:  proj\
 \
 %description data-%{countrycode}\
 %{countryname} datum grids for Proj.\
@@ -145,40 +157,36 @@ License:      CC-BY and MIT and BSD and Public Domain \
 %data_subpkg -c de -n Germany
 %data_subpkg -c dk -n Denmark -e DK
 %data_subpkg -c es -n Spain
-%data_subpkg -c eur -n Nordic\ +\ Baltic -e NKG
+%data_subpkg -c eur -n %{quote:Nordic + Baltic} -e NKG
 %data_subpkg -c fi -n Finland
-%data_subpkg -c fo -n Faroe\ Island -e FO -s 1
+%data_subpkg -c fo -n %{quote:Faroe Island} -e FO -s 1
 %data_subpkg -c fr -n France
 %data_subpkg -c is -n Island -e ISL
 %data_subpkg -c jp -n Japan
 %data_subpkg -c mx -n Mexico
 %data_subpkg -c no -n Norway
-%data_subpkg -c nc -n New\ Caledonia
+%data_subpkg -c nc -n %{quote:New Caledonia}
 %data_subpkg -c nl -n Netherlands
-%data_subpkg -c nz -n New\ Zealand
+%data_subpkg -c nz -n %{quote:New Zealand}
 %data_subpkg -c pl -n Poland
 %data_subpkg -c pt -n Portugal
 %data_subpkg -c se -n Sweden
 %data_subpkg -c sk -n Slovakia
-%data_subpkg -c uk -n United\ Kingdom
-%data_subpkg -c us -n United\ States
-%data_subpkg -c za -n South\ Africa
+%data_subpkg -c uk -n %{quote:United Kingdom}
+%data_subpkg -c us -n %{quote:United States}
+%data_subpkg -c za -n %{quote:South Africa}
 
 
 %prep
 pushd %{_sourcedir}
 %{_bindir}/md5sum -c %{SOURCE1}
 popd
-
 %autosetup -p1
-
-# We download the googletest release, not CMake.
-%{__mkdir_p} build/googletest-download/googletest-prefix/src
-%{__cp} %{SOURCE3} build/googletest-download/googletest-prefix/src/release-%{googletest_version}.zip
 
 
 %build
-%cmake
+# Native build
+%cmake -DUSE_EXTERNAL_GTEST:BOOL=ON
 %cmake_build
 
 
@@ -191,15 +199,10 @@ popd
 
 
 %check
-# nkg test is flaky
-%ctest -- -E nkg
+%ctest
 
 
 %files
-%doc README.md
-%doc %{_docdir}/%{name}/AUTHORS
-%doc %{_docdir}/%{name}/NEWS
-%license %{_docdir}/%{name}/COPYING
 %{_bindir}/cct
 %{_bindir}/cs2cs
 %{_bindir}/geod
@@ -210,6 +213,12 @@ popd
 %{_bindir}/projinfo
 %{_bindir}/projsync
 %{_libdir}/libproj.so.25*
+
+%files data
+%doc README.md
+%doc %{_docdir}/%{name}/AUTHORS
+%doc %{_docdir}/%{name}/NEWS
+%license %{_docdir}/%{name}/COPYING
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/CH
 %{_datadir}/%{name}/GL27
