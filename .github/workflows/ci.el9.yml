@@ -61,6 +61,7 @@ jobs:
           - iniparser
           - journald-cloudwatch-logs
           - libosmium
+          - libpqxx
           - mapnik
           - mapserver
           - openstreetmap-carto

@@ -91,6 +91,12 @@ The [`libosmium.spec`](../SPECS/el9/libosmium.spec) originates from
 [Fedora's `libosmium` RPM](https://src.fedoraproject.org/rpms/libosmium)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
+## libpqxx
+
+The [libpqxx](https://github.com/jtv/libpqxx) source archives are obtained directly from its [GitHub releases](https://github.com/jtv/libpqxx/releases) and are [BSD licensed](https://github.com/jtv/libpqxx/blob/master/COPYING).
+
+The [`libpqxx.spec`](../SPECS/el9/libpqxx.spec) file originates from [Fedora's `libpqxx` RPM](https://src.fedoraproject.org/rpms/libpqxx) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
+
 ## Mapnik
 
 The [Mapnik](http://mapnik.org/) source and test data archives are obtained directly from

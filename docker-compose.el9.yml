@@ -89,6 +89,9 @@ x-rpmbuild:
       name: libosmium-devel
       defines:
         protozero_min_version: *protozero_min_version
+    libpqxx:
+      image: rpmbuild-libpqxx
+      version: &libpqxx_version 7.7.4-1
     mapnik:
       image: rpmbuild-mapnik
       version: &mapnik_version 3.1.0-1
@@ -305,6 +308,16 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-libpqxx:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBPQXX_PACKAGES}
+        postgres_version: *postgres_version
+        testing: 1
+      dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
     build:
