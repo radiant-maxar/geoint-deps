@@ -8,19 +8,14 @@ FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
 # versions, *including* the release iteration (e.g, '1.0.0-1') are
 # required arguments.
 ARG armadillo_version
-ARG arpack_version
 ARG cgal_version
 ARG filegdbapi_version
 ARG geos_version
 ARG g2clib_version
 ARG libgeotiff_version
-ARG libgta_version
-ARG libkml_version
-ARG ogdi_version
 ARG packages
 ARG proj_version
 ARG sfcgal_version
-ARG uriparser_version
 
 # Switch to root temporarily for dependency installs.
 USER root
@@ -33,19 +28,11 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-devel-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/libgta-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/noarch/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
@@ -79,8 +66,6 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/noarch/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-world-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-za-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-     RPMS/x86_64/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
-     RPMS/x86_64/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm \
      /tmp/
 
 # Install GDAL prerequisites first, before installing the package list
@@ -94,8 +79,6 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     "/tmp/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/arpack-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/arpack-devel-${arpack_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/armadillo-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/armadillo-devel-${armadillo_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
@@ -103,12 +86,6 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     "/tmp/g2clib-devel-${g2clib_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/libgeotiff-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/libgeotiff-devel-${libgeotiff_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/libgta-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/libgta-devel-${libgta_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/libkml-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/libkml-devel-${libkml_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/ogdi-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/ogdi-devel-${ogdi_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
@@ -142,8 +119,6 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     "/tmp/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-world-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-za-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
-    "/tmp/uriparser-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm" \
-    "/tmp/uriparser-devel-${uriparser_version}${RPMBUILD_DIST}.x86_64.rpm" \
     && \
     rm -f /tmp/*.rpm && \
     if [ -n "${packages}" ] ; then dnf -y install ${packages}; fi && \

@@ -52,7 +52,7 @@ jobs:
       fail-fast: false
       matrix:
         rpm:
-          - arpack
+          - armadillo
           - CGAL
           - dumb-init
           - FileGDBAPI
@@ -60,12 +60,9 @@ jobs:
           - geos
           - iniparser
           - journald-cloudwatch-logs
-          - libgta
           - libosmium
-          - libpqxx
           - mapnik
           - mapserver
-          - ogdi
           - openstreetmap-carto
           - osm2pgsql
           - osmctools
@@ -78,14 +75,12 @@ jobs:
           - protozero
           - pyosmium
           - python3-mapnik
-          - rack
           - rubygem-libxml-ruby
           - sbt
           - spawn-fcgi
           - sqlite-pcre
           - step-ca
           - step-cli
-          - uriparser
           - wal-g
 
     steps:
@@ -108,9 +103,7 @@ jobs:
       fail-fast: false
       matrix:
         rpm:
-          - armadillo
           - libgeotiff
-          - libkml
           - SFCGAL
 
     steps:
