@@ -55,9 +55,6 @@ x-rpmbuild:
     armadillo:
       image: rpmbuild-armadillo
       version: &armadillo_version 11.4.3-1
-    arpack:
-      image: rpmbuild-arpack
-      version: &arpack_version 3.8.0-1
     dumb-init:
       image: rpmbuild-generic
       version: 1.2.5-1
@@ -85,15 +82,6 @@ x-rpmbuild:
       version: &libgeotiff_version 1.7.1-10
       defines:
         proj_min_version: *proj_min_version
-    libgta:
-      image: rpmbuild-generic
-      version: &libgta_version 1.2.1-1
-    libpqxx:
-      image: rpmbuild-libpqxx
-      version: &libpqxx_version 7.7.4-1
-    libkml:
-      image: rpmbuild-libkml
-      version: &libkml_version 1.3.0-1
     libosmium:
       image: rpmbuild-libosmium
       version: &libosmium_version 2.18.0-1
@@ -101,6 +89,9 @@ x-rpmbuild:
       name: libosmium-devel
       defines:
         protozero_min_version: *protozero_min_version
+    libpqxx:
+      image: rpmbuild-libpqxx
+      version: &libpqxx_version 7.7.4-1
     mapnik:
       image: rpmbuild-mapnik
       version: &mapnik_version 3.1.0-1
@@ -116,9 +107,6 @@ x-rpmbuild:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
-    ogdi:
-      image: rpmbuild-ogdi
-      version: &ogdi_version 4.1.0-1
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
       version: &openstreetmap_carto_version 5.6.2-1
@@ -194,12 +182,6 @@ x-rpmbuild:
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
-    rack:
-      image: rpmbuild-rack
-      version: &rack_version 2.2.4-1
-      arch: noarch
-      name: rubygem-rack
-      spec_file: SPECS/rubygem-rack.spec
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
       version: &rubygem_libxml_ruby_version 3.2.4-1
@@ -219,9 +201,6 @@ x-rpmbuild:
     step-cli:
       image: rpmbuild-smallstep
       version: &step_cli_version 0.23.0-1
-    uriparser:
-      image: rpmbuild-uriparser
-      version: &uriparser_version 0.9.7-1
     wal-g:
       image: rpmbuild-wal-g
       version: &walg_version 2.0.1-1
@@ -273,16 +252,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        arpack_version: *arpack_version
         packages: ${RPMBUILD_ARMADILLO_PACKAGES}
-      dockerfile: docker/el9/Dockerfile.rpmbuild-armadillo
-  rpmbuild-arpack:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_ARPACK_PACKAGES}
   rpmbuild-cgal:
     <<: *service_defaults
     build:
@@ -296,21 +266,16 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        arpack_version: *arpack_version
         armadillo_version: *armadillo_version
         cgal_version: *CGAL_version
         filegdbapi_version: *FileGDBAPI_version
         geos_version: *geos_version
         g2clib_version: *g2clib_version
         libgeotiff_version: *libgeotiff_version
-        libgta_version: *libgta_version
-        libkml_version: *libkml_version
-        ogdi_version: *ogdi_version
         packages: ${RPMBUILD_GDAL_PACKAGES}
         proj_version: *proj_version
         rpmbuild_image: rpmbuild-pgdg
         sfcgal_version: *SFCGAL_version
-        uriparser_version: *uriparser_version
       dockerfile: docker/el9/Dockerfile.rpmbuild-gdal
   rpmbuild-g2clib:
     <<: *service_defaults
@@ -335,6 +300,14 @@ services:
         packages: ${RPMBUILD_LIBGEOTIFF_PACKAGES}
         proj_version: *proj_version
       dockerfile: docker/el9/Dockerfile.rpmbuild-libgeotiff
+  rpmbuild-libosmium:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
+      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-libpqxx:
     <<: *service_defaults
     build:
@@ -345,30 +318,6 @@ services:
         postgres_version: *postgres_version
         testing: 1
       dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
-  rpmbuild-libkml:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_LIBKML_PACKAGES}
-        uriparser_version: *uriparser_version
-      dockerfile: docker/el9/Dockerfile.rpmbuild-libkml
-  rpmbuild-libosmium:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
-      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
-  rpmbuild-ogdi:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_OGDI_PACKAGES}
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
     build:
@@ -479,19 +428,6 @@ services:
           PyPDF2
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
-  rpmbuild-rack:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        gem_packages: >-
-          memcache-client
-          minitest
-          minitest-sprint
-          minitest-global_expectations
-          webrick
-        packages: ${RPMBUILD_RACK_PACKAGES}
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults
     build:
@@ -526,13 +462,6 @@ services:
         <<: *build_args_defaults
         rpmbuild_image: rpmbuild-generic
       dockerfile: docker/el9/Dockerfile.rpmbuild-go
-  rpmbuild-uriparser:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_URIPARSER_PACKAGES}
   rpmbuild-wal-g:
     <<: *service_defaults
     build:

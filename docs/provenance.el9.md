@@ -20,12 +20,6 @@ portions of the GEOS, GDAL, and PostGIS `.spec` files and patches.  PGDG uses
 the  [PostgreSQL license](./licenses/PostgreSQL-LICENSE)
 ([source](https://download.postgresql.org/pub/README)).
 
-## arpack
-
-The [arpack](https://github.com/opencollab/arpack-ng) source archives are obtained directly from its [GitHub tags](https://github.com/opencollab/arpack-ng/tags).
-
-The [`arpack.spec`](../SPECS/el9/arpack.spec) file originates from [Fedora's `arpack` RPM](https://src.fedoraproject.org/rpms/arpack) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
 ## armadillo
 
 The [armadillo](https://arma.sourceforge.net/) source archives are obtained directly from [Sourceforge](https://sourceforge.net/projects/arma/files/).
@@ -87,30 +81,6 @@ The [`libgeotiff.spec`](../SPECS/el9/libgeotiff.spec) originates from
 [Fedora's `libgeotiff` RPM](https://src.fedoraproject.org/rpms/libgeotiff)
 and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
-## libgta
-
-The [Generic Tagged Arrays (GTA)](https://marlam.de/gta/) library code archives are obtained directly from [the project's website](https://marlam.de/gta/download/) and are [LGPLv2+](https://github.com/marlam/gta-mirror/blob/master/libgta/COPYING) licensed.
-
-The [`libgta.spec`](../SPECS/el9/libgta.spec) originates from [Fedora's `libgta` RPM](https://src.fedoraproject.org/rpms/libgta) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
-## libkml
-
-The [libkml](https://github.com/libkml/libkml) source archives were obtained
-directly from [GitHub](https://github.com/libkml/libkml/releases) and are
-[BSD](https://github.com/libkml/libkml/blob/master/LICENSE) licensed.
-
-The following packaging files originate from
-[Fedora's `libkml` RPM](https://src.fedoraproject.org/rpms/libkml.git)
-repository and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`libkml.spec`](../SPECS/el9/libkml.spec)
-* [`libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch`](../SOURCES/el9/libkml-0001-Fix-build-failure-due-to-failure-to-convert-pointer-.patch)
-* [`libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch`](../SOURCES/el9/libkml-0002-Fix-mistaken-use-of-std-cerr-instead-of-std-endl.patch)
-* [`libkml-0003-Fix-python-tests.patch`](../SOURCES/el9/libkml-0003-Fix-python-tests.patch)
-* [`libkml-dont-bytecompile.patch`](../SOURCES/el9/libkml-dont-bytecompile.patch)
-* [`libkml-fragile_test.patch`](../SOURCES/el9/libkml-fragile_test.patch)
-* [`minizip.tar.gz`](../SOURCES/el9/minizip.tar.gz)
-
 ## libosmium
 
 The [libosmium](http://osmcode.org/libosmium/) library source archives are
@@ -151,19 +121,6 @@ and are [MIT licensed](./licenses/Fedora-LICENSE):
 The [mapserver](https://github.com/MapServer/MapServer) source archives are obtained directly from its [GitHub releases](https://github.com/MapServer/MapServer/releases).
 
 The [`mapserver.spec`](../SPECS/el9/mapserver.spec) file originates from [Fedora's `mapserver` RPM](https://src.fedoraproject.org/rpms/mapserver) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
-## ogdi
-
-The [ogdi](http://ogdi.sourceforge.net/) source archives are obtained directly
-from [GitHub](https://github.com/libogdi/ogdi/releases) and are
-[BSD licensed](https://github.com/libogdi/ogdi/blob/master/LICENSE).
-
-The following packaging files originate from
-[Fedora's `ogdi` RPM](https://src.fedoraproject.org/rpms/ogdi)
-and are [MIT licensed](./licenses/Fedora-LICENSE):
-
-* [`ogdi.spec`](../SPECS/el9/mapnik.spec)
-* [`ogdi-4.1.0-sailer.patch`](../SOURCES/el9/ogdi-4.1.0-sailer.patch)
 
 ## openstreetmap-carto
 
@@ -293,15 +250,6 @@ repository and are [MIT licensed](./licenses/Fedora-LICENSE):
 * [`python3-osmium-no-strip.patch`](../SOURCES/el9/python3-osmium-no-strip.patch)
 * [`python3-osmium-no-shapely.patch`](../SOURCES/el9/python3-osmium-no-shapely.patch)
 
-## Rack
-
-[Rack](https://rack.github.io/) source archives are obtained
-directly from RubyGems  and are MIT/BSD licensed.
-
-The [`rubygem-rack.spec`](../SPECS/el9/rubygem-rack.spec) originates from
-[Fedora's `rubygem-rack` RPM](https://src.fedoraproject.org/rpms/rubygem-rack)
-and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
 ## rubygem-libxml-ruby
 
 The [libxml-ruby](https://github.com/xml4r/libxml-ruby) source is obtained directly from [RubyGems](https://rubygems.org) and are [MIT licensed](https://github.com/xml4r/libxml-ruby/blob/master/LICENSE).
@@ -332,12 +280,6 @@ its source code and spec file are considered public domain.
 ## Smallstep CA / CLI (`step-ca` / `step-cli`)
 
 The [Smallstep CLI](https://github.com/smallstep/cli) and [Smallstep CA](https://github.com/smallstep/certificates) source archives are obtained directly from their GitHub releases. Both are released under the Apache License 2.0: [certificates](https://github.com/smallstep/certificates/blob/master/LICENSE), [cli](https://github.com/smallstep/cli/blob/master/LICENSE).
-
-## uriparser
-
-The [uriparser](https://uriparser.github.io) library code archives are obtained directly from [GitHub](https://github.com/uriparser/uriparser/releases) and are [BSD licensed](https://github.com/uriparser/uriparser/blob/master/COPYING).
-
-The [`uriparser.spec`](../SPECS/el9/uriparser.spec) file originates from [Fedora's `uriparser` RPM](https://src.fedoraproject.org/rpms/uriparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
 ## wal-g
 
