@@ -54,7 +54,6 @@ jobs:
         rpm:
           - armadillo
           - CGAL
-          - dumb-init
           - FileGDBAPI
           - g2clib
           - geos

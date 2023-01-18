@@ -41,7 +41,6 @@ RPMBUILD_GID := $(shell id -g)
 # RPM files at desired versions.
 ARMADILLO_RPM := $(call rpm_file,armadillo)
 CGAL_RPM := $(call rpm_file,CGAL)
-DUMB_INIT_RPM := $(call rpm_file,dumb-init)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
 G2CLIB_RPM := $(call rpm_file,g2clib)
 GDAL_RPM := $(call rpm_file,gdal)
@@ -82,7 +81,6 @@ RPMBUILD_BASE_IMAGES := \
 RPMBUILD_RPMS := \
 	armadillo \
 	CGAL \
-	dumb-init \
 	FileGDBAPI \
 	g2clib \
 	gdal \
@@ -198,11 +196,10 @@ rpmbuild-pgdg: rpmbuild
 ## RPM targets
 armadillo: $(ARMADILLO_RPM)
 CGAL: $(CGAL_RPM)
-dumb-init: $(DUMB_INIT_RPM)
 FileGDBAPI: $(FILEGDBAPI_RPM)
 g2clib: $(G2CLIB_RPM)
-gdal: $(CGAL_RPM) $(FILEGDBAPI_RPM) $(GEOS_RPM) $(PROJ_RPM) \
-      $(ARMADILLO_RPM) $(LIBGEOTIFF_RPM) $(SFCGAL_RPM) \
+gdal: $(ARMADILLO_RPM) $(CGAL_RPM) $(FILEGDBAPI_RPM) $(G2CLIB_RPM) $(GEOS_RPM) $(PROJ_RPM) \
+      $(LIBGEOTIFF_RPM) $(SFCGAL_RPM) \
       $(GDAL_RPM)
 geos: $(GEOS_RPM)
 iniparser: $(INIPARSER_RPM)
