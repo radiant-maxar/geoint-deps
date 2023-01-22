@@ -81,7 +81,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     libosmium:
       image: rpmbuild-libosmium
-      version: &libosmium_version 2.18.0-1
+      version: &libosmium_version 2.19.0-1
       arch: noarch
       name: libosmium-devel
       defines:
