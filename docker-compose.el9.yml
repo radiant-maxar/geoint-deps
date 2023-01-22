@@ -128,7 +128,7 @@ x-rpmbuild:
       arch: noarch
     osmium-tool:
       image: rpmbuild-osmium-tool
-      version: &osmium-tool_version 1.14.0-1
+      version: &osmium-tool_version 1.15.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
