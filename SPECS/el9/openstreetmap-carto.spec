@@ -32,8 +32,6 @@ Source8:        https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_
 Source9:        https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSans/NotoSans-Bold.ttf
 Source10:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSans/NotoSans-Italic.ttf
 Source11:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSans/NotoSans-Regular.ttf
-Source12:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSansAdlam/NotoSansAdlam-Bold.ttf
-Source13:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSansAdlam/NotoSansAdlam-Regular.ttf
 Source14:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSansAdlamUnjoined/NotoSansAdlamUnjoined-Bold.ttf
 Source15:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSansAdlamUnjoined/NotoSansAdlamUnjoined-Regular.ttf
 Source16:       https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSansArabicUI/NotoSansArabicUI-Bold.ttf
