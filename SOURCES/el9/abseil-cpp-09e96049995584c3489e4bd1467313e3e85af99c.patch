@@ -1,0 +1,22 @@
+From 09e96049995584c3489e4bd1467313e3e85af99c Mon Sep 17 00:00:00 2001
+From: Bruno Pitrus <brunopitrus@hotmail.com>
+Date: Mon, 11 Jul 2022 18:27:39 +0200
+Subject: [PATCH] Do not leak -maes -msse4.1 into pkgconfig
+
+---
+ CMake/AbseilHelpers.cmake | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMake/AbseilHelpers.cmake b/CMake/AbseilHelpers.cmake
+index ebe9ddc87..9cd87c513 100644
+--- a/CMake/AbseilHelpers.cmake
++++ b/CMake/AbseilHelpers.cmake
+@@ -166,6 +166,8 @@ function(absl_cc_library)
+           set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+         elseif(${cflag} MATCHES "^(-W|/w[1234eo])")
+           # Don't impose our warnings on others.
++        elseif(${cflag} MATCHES "^-m")
++          # Don't impose CPU instruction requirements on others, as the code performs feature detection on runtime.
+         else()
+           set(PC_CFLAGS "${PC_CFLAGS} ${cflag}")
+         endif()

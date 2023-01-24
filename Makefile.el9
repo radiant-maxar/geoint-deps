@@ -39,6 +39,7 @@ RPMBUILD_UID := $(shell id -u)
 RPMBUILD_GID := $(shell id -g)
 
 # RPM files at desired versions.
+ABSEIL_CPP_RPM := $(call rpm_file,abseil-cpp)
 ARMADILLO_RPM := $(call rpm_file,armadillo)
 CGAL_RPM := $(call rpm_file,CGAL)
 FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
@@ -77,6 +78,7 @@ RPMBUILD_BASE_IMAGES := \
 	rpmbuild-generic \
 	rpmbuild-pgdg
 RPMBUILD_RPMS := \
+	abseil-cpp \
 	armadillo \
 	CGAL \
 	FileGDBAPI \
@@ -141,6 +143,7 @@ distclean: .env
 	echo IMAGE_PREFIX=$(IMAGE_PREFIX) >> .env
 	echo RPMBUILD_GID=$(RPMBUILD_GID) >> .env
 	echo RPMBUILD_UID=$(RPMBUILD_UID) >> .env
+	echo RPMBUILD_ABSEIL_CPP_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/abseil-cpp.spec) >> .env
 	echo RPMBUILD_ARMADILLO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/armadillo.spec) >> .env
 	echo RPMBUILD_CGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/CGAL.spec) >> .env
 	echo RPMBUILD_G2CLIB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/g2clib.spec) >> .env
@@ -190,6 +193,7 @@ rpmbuild-pgdg: rpmbuild
 
 
 ## RPM targets
+abseil-cpp: $(ABSEIL_CPP_RPM)
 armadillo: $(ARMADILLO_RPM)
 CGAL: $(CGAL_RPM)
 FileGDBAPI: $(FILEGDBAPI_RPM)

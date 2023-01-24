@@ -52,6 +52,11 @@ x-rpmbuild:
       defines:
         # Too many build processes can exhaust RAM.
         _smp_ncpus_max: 4
+    abseil-cpp:
+      image: rpmbuild-abseil-cpp
+      version: &abseil_cpp_version 20220623.1-2
+      defines:
+        lib_version: 2206.0.0
     armadillo:
       image: rpmbuild-armadillo
       version: &armadillo_version 12.2.0-1
@@ -231,6 +236,13 @@ services:
       dockerfile: docker/el9/Dockerfile.rpmbuild-pgdg
     image: ${IMAGE_PREFIX}rpmbuild-pgdg
   # RPM images
+  rpmbuild-abseil-cpp:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_ABSEIL_CPP_PACKAGES}
   rpmbuild-armadillo:
     <<: *service_defaults
     build:
