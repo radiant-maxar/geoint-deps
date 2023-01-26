@@ -1,6 +1,6 @@
-# Based on https://src.fedoraproject.org/rpms/passenger.git
+# Based on http://pkgs.fedoraproject.org/cgit/rubygem-passenger.git/tree/
 
-%global bundled_boost_version 1.69.0
+%global bundled_boost_version 1.80.0
 
 %global passenger_datadir %{_datadir}/passenger
 %global passenger_libdir %{_libdir}/passenger
@@ -22,10 +22,9 @@
 # 'minimum' lacks httpd_t.
 # 'sandbox' is only for the policycoreutils-sandbox tool.
 #
-# 'strict' is omitted because Passenger's policy essentially introduces a way
-# for the web server to run PassengerAgent (and subprocesses) in the unconfined
-# domain, which is philosophically incompatible with the idea of the strict
-# policy
+# 'strict' is omitted because Passenger’s policy essentially introduces a way for
+# the web server to run PassengerAgent (and subprocesses) in the unconfined domain,
+# which is philosophically incompatible with the idea of the strict policy
 #
 # REMINDER: if you change this list, don't forget to update the 'triggerin'
 # sections.
@@ -54,6 +53,7 @@ Source101: apache-passenger-module.conf
 # Configuration file at /usr/lib/tmpfiles.d/passenger.conf
 Source102: passenger.tmpfiles
 
+Requires: procps-ng
 Requires: rubygems
 # XXX: Needed to run passenger standalone
 Requires: rubygem(rack)
@@ -75,6 +75,19 @@ BuildRequires: rubygem-rake
 BuildRequires: rubygem-rack
 BuildRequires: zlib-devel
 
+%if 0%{?rhel} >= 9 || 0%{?fedora} >= 34
+BuildRequires: g++
+%endif
+%if 0%{?rhel} >= 6 || 0%{?fedora} >= 12
+BuildRequires: libcurl-devel
+%else
+BuildRequires: curl-devel
+%endif
+%if 0%{?rhel} >= 8 || 0%{?fedora} >= 28
+BuildRequires: /usr/bin/pathfix.py
+BuildRequires: python3-devel
+%endif
+
 # Phusion Passenger includes bundled software (boost, libev, jsoncpp) at the
 # place: src/cxx_supportlib/vendor-modified
 Provides: bundled(boost)  = %{bundled_boost_version}
@@ -83,12 +96,14 @@ Obsoletes: rubygem-passenger < %{version}-%{release}
 Provides:  rubygem-passenger = %{version}-%{release}
 Provides:  rubygem-passenger%{?_isa} = %{version}-%{release}
 
+
 %description
 Phusion Passenger® is a web server and application server, designed to be fast,
 robust and lightweight. It takes a lot of complexity out of deploying web apps,
 adds powerful enterprise-grade features that are useful in production,
 and makes administration much easier and less complex. It supports Ruby,
 Python, Node.js and Meteor.
+
 
 %package -n mod_passenger
 Summary: Apache Module for Phusion Passenger
@@ -97,8 +112,10 @@ Requires: httpd-mmn = %{_httpd_mmn}
 Requires: %{name}%{?_isa} = %{version}-%{release}
 License: Boost and BSD and BSD with advertising and MIT and zlib
 
+
 %description -n mod_passenger
 This package contains the pluggable Apache server module for Phusion Passenger®.
+
 
 %package devel
 Summary: Phusion Passenger development files
@@ -106,11 +123,11 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 Provides: bundled(boost-devel) = %{bundled_boost_version}
 License: Boost and BSD and BSD with advertising and GPL+ and MIT and zlib
 
+
 %description devel
-This package contains development files for Phusion Passenger®. Installing
-this package allows it to compile native extensions for non-standard Ruby
-interpreters, and allows Passenger Standalone to use a different Nginx
-core version.
+This package contains development files for Phusion Passenger®. Installing this
+package allows it to compile native extensions for non-standard Ruby interpreters,
+and allows Passenger Standalone to use a different Nginx core version.
 
 
 %prep
@@ -118,11 +135,12 @@ core version.
 
 
 %build
-%configure || true
-export EXTRA_CFLAGS="${CFLAGS}"
-export EXTRA_CXXFLAGS="${CXXFLAGS}"
-export EXTRA_LDFLAGS="${LDFLAGS}"
+export EXTRA_CFLAGS="${CFLAGS:-%optflags} -Wno-deprecated"
+export EXTRA_CXXFLAGS="${CXXFLAGS:-%optflags} -Wno-deprecated"
 
+# Remove default optimization flags and use Phusion Passenger's recommended optimization flags.
+export EXTRA_CFLAGS=`echo "$EXTRA_CFLAGS" | sed 's|-O2||g'`
+export EXTRA_CXXFLAGS=`echo "$EXTRA_CXXFLAGS" | sed 's|-O2||g'`
 export OPTIMIZE=yes
 
 export CACHING=false
@@ -161,6 +179,9 @@ export LC_ALL=en_US.UTF-8
 # Install Apache config.
 %{__mkdir_p} %{buildroot}%{_httpd_confdir} %{buildroot}%{_httpd_modconfdir}
 %{__sed} -e 's|@PASSENGERROOT@|%{passenger_ruby_libdir}/phusion_passenger/locations.ini|g' %{SOURCE100} > passenger.conf
+%if !(0%{?rhel} >= 7 || 0%{?fedora} >= 19)
+    %{__sed} -i -e '/^# *Require all granted/d' passenger.conf
+%endif
 
 touch -r %{SOURCE100} passenger.conf
 %{__install} -pm 0644 passenger.conf %{buildroot}%{_httpd_confdir}/passenger.conf
@@ -184,22 +205,11 @@ touch -r %{SOURCE101} %{buildroot}%{_httpd_modconfdir}/10-passenger.conf
 %{__cp} man/*.1 %{buildroot}%{_mandir}/man1
 %{__cp} man/*.8 %{buildroot}%{_mandir}/man8
 
-# Fix Python and Ruby scripts with shebang which are not executable
+# Fix Python scripts with shebang which are not executable
+%if 0%{?rhel} >= 8 || 0%{?fedora} >= 28
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}%{passenger_datadir}/helper-scripts/wsgi-loader.py
+%endif
 %{__chmod} +x %{buildroot}%{passenger_datadir}/helper-scripts/wsgi-loader.py
-%{__chmod} +x %{buildroot}%{passenger_datadir}/helper-scripts/download_binaries/extconf.rb
-%{__chmod} +x %{buildroot}%{passenger_datadir}/helper-scripts/rack-loader.rb
-%{__chmod} +x %{buildroot}%{passenger_datadir}/helper-scripts/rack-preloader.rb
-
-# Remove empty release.txt and template file
-%{__rm} -f %{buildroot}%{_datadir}/%{name}/release.txt
-%{__rm} -f %{buildroot}%{_datadir}/%{name}/templates/config/installation_utils/user_support_binaries_dir_not_writable.txt.erb
-
-%{__rm} -f %{buildroot}%{_bindir}/passenger-install-*-module
-
-# Fix shebang
-find %{buildroot}%{_bindir}  %{buildroot}%{_datadir}/passenger/helper-scripts/ -type f | xargs sed -i 's|^#!/usr/bin/env ruby$|#!/usr/bin/ruby|'
-sed -i 's|^#!/usr/bin/env python$|#!/usr/bin/python3|' %{buildroot}%{_datadir}/passenger/helper-scripts/wsgi-loader.py
-#epel8: /usr/libexec/platform-python
 
 
 %files
@@ -214,6 +224,7 @@ sed -i 's|^#!/usr/bin/env python$|#!/usr/bin/python3|' %{buildroot}%{_datadir}/p
 %{passenger_datadir}/node
 %{passenger_datadir}/*.types
 %{passenger_datadir}/*.crt
+%{passenger_datadir}/*.txt
 %{passenger_datadir}/*.pem
 %{passenger_datadir}/*.p12
 %dir %{_localstatedir}/log/passenger-analytics
@@ -226,12 +237,14 @@ sed -i 's|^#!/usr/bin/env python$|#!/usr/bin/python3|' %{buildroot}%{_datadir}/p
 %{ruby_vendorarchdir}/passenger_native_support.so
 %exclude %{_docdir}
 
+
 %files devel
 %{passenger_datadir}/ngx_http_passenger_module
 %{passenger_datadir}/ruby_extension_source
 %{passenger_datadir}/include
 %{_libdir}/%{name}/common
 %exclude %{_libdir}/%{name}/nginx_dynamic
+
 
 %files -n mod_passenger
 %config(noreplace) %{_httpd_modconfdir}/*.conf
