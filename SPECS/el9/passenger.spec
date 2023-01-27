@@ -78,11 +78,6 @@ BuildRequires: zlib-devel
 %if 0%{?rhel} >= 9 || 0%{?fedora} >= 34
 BuildRequires: g++
 %endif
-%if 0%{?rhel} >= 6 || 0%{?fedora} >= 12
-BuildRequires: libcurl-devel
-%else
-BuildRequires: curl-devel
-%endif
 %if 0%{?rhel} >= 8 || 0%{?fedora} >= 28
 BuildRequires: /usr/bin/pathfix.py
 BuildRequires: python3-devel
