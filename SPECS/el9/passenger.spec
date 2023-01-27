@@ -75,9 +75,6 @@ BuildRequires: rubygem-rake
 BuildRequires: rubygem-rack
 BuildRequires: zlib-devel
 
-%if 0%{?rhel} >= 9 || 0%{?fedora} >= 34
-BuildRequires: g++
-%endif
 %if 0%{?rhel} >= 8 || 0%{?fedora} >= 28
 BuildRequires: /usr/bin/pathfix.py
 BuildRequires: python3-devel
