@@ -56,14 +56,15 @@ RUN --mount=type=cache,target=/var/cache/dnf \
       glibc-langpack-en \
       less \
       libtool \
-      make \
       m4 \
+      make \
       pinentry \
       redhat-rpm-config \
       rpm-build \
       rpm-sign \
       rpmdevtools \
       rpmlint \
+      rsync \
       unzip \
       vim \
       which \
