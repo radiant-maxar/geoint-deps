@@ -183,7 +183,7 @@ x-rpmbuild:
       version: &rubygem_libxml_ruby_version 4.0.0-1
     sbt:
       image: rpmbuild-generic
-      version: &sbt_version 1.8.0-1
+      version: &sbt_version 1.8.2-1
       arch: noarch
     spawn-fcgi:
       image: rpmbuild-generic
