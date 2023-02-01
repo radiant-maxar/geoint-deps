@@ -55,11 +55,9 @@ is your need, this is a good library to consider.
 %doc %{gem_instdir}/%{gem_name}.gemspec
 %doc %{gem_instdir}/script
 %doc %{gem_instdir}/test
-%doc %{gem_instdir}/MANIFEST
 %doc %{gem_instdir}/Rakefile
 %license %{gem_instdir}/LICENSE
 %dir %{gem_instdir}
-%{gem_instdir}/setup.rb
 %{gem_extdir_mri}
 %{gem_libdir}
 %exclude %{gem_cache}
