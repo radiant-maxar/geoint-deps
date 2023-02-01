@@ -29,7 +29,7 @@ processes, which can be local or remote.
 
 
 %files
-%doc AUTHORS COPYING NEWS README
+%doc AUTHORS COPYING NEWS README.md
 %{_bindir}/spawn-fcgi
 %{_mandir}/man1/spawn-fcgi.1*
 
