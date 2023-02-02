@@ -101,6 +101,11 @@ getent passwd %{step_ca_user} >/dev/null || \
         %{step_ca_user}
 
 
+%check
+export CI=true
+%{__make} test
+
+
 %files
 %doc CHANGELOG.md README.md
 %license LICENSE

@@ -31,6 +31,11 @@ cd %{_builddir}/cli-%{version}
 %{__install} -p bin/step %{buildroot}%{_bindir}
 
 
+%check
+export CI=true
+%{__make} test
+
+
 %files
 %doc CHANGELOG.md README.md
 %license LICENSE
