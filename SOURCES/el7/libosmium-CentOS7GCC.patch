@@ -1,11 +1,5 @@
-commit 1b011a96081023e98d58216261c95c64c44f4624
-Author: David Hummel <6109326+hummeltech@users.noreply.github.com>
-Date:   Thu Jan 27 11:58:08 2022 -0700
-
-    Fixing build errors
-
 diff --git a/include/osmium/dynamic_handler.hpp b/include/osmium/dynamic_handler.hpp
-index 6c2a5378..df380fe4 100644
+index 73f2ac54..17e270c5 100644
 --- a/include/osmium/dynamic_handler.hpp
 +++ b/include/osmium/dynamic_handler.hpp
 @@ -130,7 +130,11 @@ auto _name_##_dispatch(THandler& handler, const osmium::_type_& object, long) ->
@@ -21,7 +15,7 @@ index 6c2a5378..df380fe4 100644
                  ~HandlerWrapper() noexcept override = default;
  
 diff --git a/include/osmium/index/detail/vector_map.hpp b/include/osmium/index/detail/vector_map.hpp
-index fd643144..6b830cfc 100644
+index d9ee56db..1f859f38 100644
 --- a/include/osmium/index/detail/vector_map.hpp
 +++ b/include/osmium/index/detail/vector_map.hpp
 @@ -69,7 +69,11 @@ namespace osmium {
@@ -49,7 +43,7 @@ index fd643144..6b830cfc 100644
                  ~VectorBasedSparseMap() noexcept override = default;
  
 diff --git a/include/osmium/index/detail/vector_multimap.hpp b/include/osmium/index/detail/vector_multimap.hpp
-index 3b479620..08f8bec3 100644
+index ab272618..7bf3eba3 100644
 --- a/include/osmium/index/detail/vector_multimap.hpp
 +++ b/include/osmium/index/detail/vector_multimap.hpp
 @@ -79,7 +79,11 @@ namespace osmium {
@@ -64,8 +58,39 @@ index 3b479620..08f8bec3 100644
  
                  ~VectorBasedSparseMultimap() noexcept override = default;
  
+diff --git a/include/osmium/index/id_set.hpp b/include/osmium/index/id_set.hpp
+index c2f44c59..152ebf2e 100644
+--- a/include/osmium/index/id_set.hpp
++++ b/include/osmium/index/id_set.hpp
+@@ -272,10 +272,11 @@ namespace osmium {
+             }
+ 
+             IdSetDense(IdSetDense&&) noexcept = default;
+-
+-            // This should really be noexcept, but GCC 4.8 doesn't like it.
+-            // NOLINTNEXTLINE(hicpp-noexcept-move, performance-noexcept-move-constructor)
++#ifdef OSMIUM_MOVE_EXCEPT
+             IdSetDense& operator=(IdSetDense&&) = default;
++#else
++            IdSetDense& operator=(IdSetDense&&) noexcept = default;
++#endif
+ 
+             ~IdSetDense() noexcept override = default;
+ 
+@@ -389,7 +390,11 @@ namespace osmium {
+             IdSetSmall& operator=(const IdSetSmall&) = default;
+ 
+             IdSetSmall(IdSetSmall&&) noexcept = default;
++#ifdef OSMIUM_MOVE_EXCEPT
++            IdSetSmall& operator=(IdSetSmall&&) = default;
++#else
+             IdSetSmall& operator=(IdSetSmall&&) noexcept = default;
++#endif
+ 
+             ~IdSetSmall() noexcept override = default;
+ 
 diff --git a/include/osmium/util/compatibility.hpp b/include/osmium/util/compatibility.hpp
-index bce554fb..617bbd15 100644
+index c37ef586..67b844d1 100644
 --- a/include/osmium/util/compatibility.hpp
 +++ b/include/osmium/util/compatibility.hpp
 @@ -33,6 +33,16 @@ DEALINGS IN THE SOFTWARE.
@@ -82,6 +107,6 @@ index bce554fb..617bbd15 100644
 +# endif
 +#endif
 +
- // Workarounds for MSVC which doesn't support [[noreturn]]
- // This is not needed any more, but kept here for the time being, because
- // older versions of osmium-tool need it.
+ // [[deprecated]] is only available in C++14, use this for the time being
+ #ifdef __GNUC__
+ # define OSMIUM_DEPRECATED __attribute__((deprecated))
