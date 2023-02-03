@@ -15,15 +15,15 @@ Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
-Patch0:         osm2pgsql-replication-osm-server.patch
+Patch0:         osm2pgsql-replication.patch
 
-BuildRequires:  boost-devel
+BuildRequires:  boost169-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  cmake3
-BuildRequires:  expat-devel
 # A newer C++ toolchain and libosmium 2.17.0+ are required to compile 1.5.0+.
 BuildRequires:  devtoolset-9-gcc
 BuildRequires:  devtoolset-9-gcc-c++
+BuildRequires:  expat-devel
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
 BuildRequires:  libtool
 BuildRequires:  libxml2-devel
@@ -71,10 +71,14 @@ it to the database.
 pushd build
 %cmake3 .. -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE=Release \
+    -DBOOST_INCLUDEDIR:PATH=%{_includedir}/boost169 \
+    -DBOOST_LIBRARYDIR:PATH=%{_libdir}/boost169 \
     -DBUILD_SHARED_LIBS:BOOL=ON \
     -DBUILD_TESTS:BOOL=ON \
     -DEXTERNAL_LIBOSMIUM:BOOL=ON \
     -DEXTERNAL_PROTOZERO:BOOL=ON \
+    -DPostgreSQL_INCLUDE_DIR:PATH=$(pg_config --includedir) \
+    -DPostgreSQL_LIBRARY:PATH=$(pg_config --libdir)/libpq.so \
     -DWITH_LUAJIT:BOOL=ON
 %cmake3_build
 popd
@@ -84,10 +88,10 @@ popd
 pushd build
 %if %{with db_tests}
 export PGDATA="${HOME}/pgdata"
-pg_ctl -s stop || true
+%{_bindir}/pg_ctl -m fast -s stop || true
 %{__rm} -fr ${PGDATA} /tmp/psql-tablespace
 # Create PostgreSQL database.
-initdb --encoding UTF-8 --locale en_US.UTF-8
+%{_bindir}/initdb --encoding UTF-8 --locale en_US.UTF-8
 
 # Tune the database.
 echo "fsync = off
@@ -95,11 +99,11 @@ shared_buffers = 1GB
 listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
 
 # Start PostgreSQL
-pg_ctl start
+%{_bindir}/pg_ctl start
 
 # Create testing tablespace required by the osm2pgsql tests.
 %{__mkdir_p} /tmp/psql-tablespace
-psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tablespace'"
+%{_bindir}/psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tablespace'"
 
 # Set the SMP flags so only one process is used for the tests, otherwise database
 # connections will be exhausted resulting in test failures.
@@ -109,7 +113,7 @@ psql -d postgres -c "CREATE TABLESPACE tablespacetest LOCATION '/tmp/psql-tables
 %ctest3
 
 # Stop PostgreSQL
-pg_ctl -s stop
+%{_bindir}/pg_ctl -m fast -s stop
 %else
 # Run tests that don't require a database.
 %ctest3 -L NoDB

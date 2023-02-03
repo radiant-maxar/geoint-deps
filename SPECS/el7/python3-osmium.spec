@@ -13,22 +13,21 @@ URL:            https://osmcode.org/pyosmium/
 Source0:        https://github.com/osmcode/pyosmium/archive/v%{version}/pyosmium-%{version}.tar.gz
 Source1:        https://github.com/pybind/pybind11/archive/v%{pybind11_version}/pybind11-%{pybind11_version}.tar.gz
 # Disable stripping
-Patch1:         python3-osmium-no-strip.patch
+Patch0:         python3-osmium-no-strip.patch
+# Don't require Shapely/GEOS for tests.
+Patch1:         python3-osmium-no-shapely.patch
 # Disable link time optimization (LTO).
 Patch2:         python3-osmium-no-extras.patch
-# Don't require Shapely/GEOS for tests.
-Patch3:         python3-osmium-no-shapely.patch
 
 BuildRequires:  boost-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
-BuildRequires:  lz4-devel
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
+BuildRequires:  lz4-devel
 BuildRequires:  protozero-devel >= %{protozero_min_version}
 BuildRequires:  python3-devel
-BuildRequires:  python36-nose
-BuildRequires:  python36-pip
+BuildRequires:  python3-pip
 BuildRequires:  python36-requests
 BuildRequires:  zlib-devel
 

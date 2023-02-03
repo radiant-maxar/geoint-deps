@@ -62,7 +62,6 @@ it to the database.
 
 %prep
 %autosetup -p1
-%{__mkdir_p} build
 
 
 %build

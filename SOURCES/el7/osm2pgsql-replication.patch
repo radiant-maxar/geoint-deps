@@ -1,9 +1,9 @@
 diff --git a/scripts/osm2pgsql-replication b/scripts/osm2pgsql-replication
-index 8a35e386..33f2be9d 100755
+index 94dbc3a3..5f6e32f6 100755
 --- a/scripts/osm2pgsql-replication
 +++ b/scripts/osm2pgsql-replication
-@@ -79,7 +79,7 @@ def connect(args):
-                            host=args.host, port=args.port)
+@@ -95,7 +95,7 @@ def table_exists(conn, table_name, schema_name=None):
+         return cur.rowcount > 0
  
  
 -def compute_database_date(conn, prefix):
@@ -11,7 +11,7 @@ index 8a35e386..33f2be9d 100755
      """ Determine the date of the database from the newest object in the
          database.
      """
-@@ -95,7 +95,7 @@ def compute_database_date(conn, prefix):
+@@ -112,7 +112,7 @@ def compute_database_date(conn, prefix):
  
      LOG.debug("Using way id %d for timestamp lookup", osmid)
      # Get the way from the API to find the timestamp when it was created.
@@ -20,8 +20,8 @@ index 8a35e386..33f2be9d 100755
      headers = {"User-Agent" : "osm2pgsql-update",
                 "Accept" : "application/json"}
      with urlrequest.urlopen(urlrequest.Request(url, headers=headers)) as response:
-@@ -274,7 +274,7 @@ def init(conn, args):
-     this with the '--server' parameter.
+@@ -290,7 +290,7 @@ def init(conn, args):
+     this with the `--server` parameter.
      """
      if args.osm_file is None:
 -        date = compute_database_date(conn, args.prefix)
@@ -29,7 +29,7 @@ index 8a35e386..33f2be9d 100755
          if date is None:
              return 1
  
-@@ -450,6 +450,9 @@ def get_parser():
+@@ -472,6 +472,9 @@ def get_parser():
                            formatter_class=RawDescriptionHelpFormatter,
                            add_help=False)
      grp = cmd.add_argument_group('Replication source arguments')

@@ -20,10 +20,10 @@ BuildRequires:  bzip2-devel
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
-BuildRequires:  make
+BuildRequires:  lz4-devel
 BuildRequires:  protozero-devel >= %{protozero_min_version}
-BuildRequires:  python3-pybind11
 BuildRequires:  python3-devel
+BuildRequires:  python3-pybind11
 BuildRequires:  python3-pytest
 BuildRequires:  python3-requests
 BuildRequires:  zlib-devel
