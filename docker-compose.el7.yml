@@ -160,7 +160,7 @@ x-rpmbuild:
       image: rpmbuild-protobuf-c
       version: &protobuf-c_version 1.4.1-1
       defines:
-        protobuf_c_min_version: *protobuf_c_min_version
+        protobuf_min_version: *protobuf_min_version
     protozero:
       image: rpmbuild-protozero
       version: &protozero_version 1.7.1-1

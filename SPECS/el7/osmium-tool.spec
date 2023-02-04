@@ -29,7 +29,7 @@ based on the Osmium library
 %prep
 %autosetup -p 1
 %{__sed} -i -e "s/-O3 -g//" CMakeLists.txt
-%{__mkdir_p} build
+%{__mkdir} build
 
 %build
 pushd build

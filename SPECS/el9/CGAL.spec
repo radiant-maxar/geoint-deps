@@ -54,21 +54,15 @@ CGAL algorithms.
 
 %prep
 %autosetup -p1 -n %{name}-%{version}
-%{__mkdir} build
 
 
 %build
-%{__mkdir_p} build
-pushd build
-%cmake -DCGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE=ON -DCGAL_INSTALL_LIB_DIR=%{_lib} -DCGAL_INSTALL_DOC_DIR= ..
+%cmake -DCGAL_DO_NOT_WARN_ABOUT_CMAKE_BUILD_TYPE=ON -DCGAL_INSTALL_LIB_DIR=%{_lib} -DCGAL_INSTALL_DOC_DIR=
 %cmake_build
-popd
 
 
 %install
-pushd build
 %cmake_install
-popd
 
 # Install demos and examples
 %{__mkdir_p} %{buildroot}%{_datadir}/CGAL

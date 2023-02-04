@@ -58,7 +58,7 @@ PostgreSQL plugin to support logical replication of OpenStreetMap API databases.
 
 %prep
 %autosetup -p1 -n %{name}-%{commit}
-%{__mkdir_p} build
+%{__mkdir} build
 
 
 %build
