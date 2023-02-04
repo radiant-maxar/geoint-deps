@@ -30,7 +30,7 @@ x-rpmbuild:
   minimum_versions:
     gdal: &gdal_min_version 3.2.0
     geos: &geos_min_version 3.9.0
-    libosmium: &libosmium_min_version 2.17.0
+    libosmium: &libosmium_min_version 2.18.0
     postgis_min_version: &postgis_min_version 3.1.0
     proj: &proj_min_version 7.2.0
     protobuf-c: &protobuf_c_min_version 1.3.0
@@ -122,13 +122,13 @@ x-rpmbuild:
       arch: noarch
     osmium-tool:
       image: rpmbuild-osmium-tool
-      version: &osmium-tool_version 1.13.2-1
+      version: &osmium-tool_version 1.15.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
     osm2pgsql:
       image: rpmbuild-osm2pgsql
-      version: &osm2pgsql_version 1.6.0-1
+      version: &osm2pgsql_version 1.8.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         proj_min_version: *proj_min_version
@@ -160,7 +160,7 @@ x-rpmbuild:
       image: rpmbuild-protobuf-c
       version: &protobuf-c_version 1.4.1-1
       defines:
-        protobuf_c_min_version: *protobuf_c_min_version
+        protobuf_min_version: *protobuf_min_version
     protozero:
       image: rpmbuild-protozero
       version: &protozero_version 1.7.1-1
@@ -176,11 +176,11 @@ x-rpmbuild:
         commit: 7da019cf9eb12af8f8aa88b7d75789dfcd1e901b
     python3-osmium:
       image: rpmbuild-pyosmium
-      version: &pyosmium_version 3.5.0-1
+      version: &pyosmium_version 3.6.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
-        pybind11_version: 2.10.1
+        pybind11_version: 2.10.3
     rack:
       image: rpmbuild-rack
       version: &rack_version 2.2.4-1

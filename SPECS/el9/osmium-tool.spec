@@ -11,9 +11,13 @@ License:        GPLv3
 URL:            http://osmcode.org/osmium/
 Source0:        https://github.com/osmcode/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
+BuildRequires:  boost-devel
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libosmium-devel >= %{libosmium_min_version}
+BuildRequires:  man-db
+BuildRequires:  pandoc
 BuildRequires:  protozero-devel >= %{protozero_min_version}
 
 %description
@@ -45,6 +49,8 @@ based on the Osmium library
 %doc README.md CHANGELOG.md
 %license LICENSE.txt
 %{_bindir}/osmium
+%{_mandir}/man1/osmium*.1.gz
+%{_mandir}/man5/osmium*.5.gz
 %dir %{_datadir}/zsh
 %dir %{_datadir}/zsh/site-functions
 %{_datadir}/zsh/site-functions/_osmium

@@ -52,7 +52,7 @@ Protobufs protoc program.
 
 
 %prep
-%autosetup -p 1 -n %{name}-%{version}
+%autosetup -p 1
 %{__mkdir} build
 
 

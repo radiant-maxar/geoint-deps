@@ -31,7 +31,6 @@ BuildRequires: cmake3
 # A newer C++ toolchain is required to compile.
 BuildRequires: devtoolset-9-gcc
 BuildRequires: devtoolset-9-gcc-c++
-BuildRequires: gcc-c++
 BuildRequires: make
 
 %description

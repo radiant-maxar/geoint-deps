@@ -50,7 +50,6 @@ developing applications that use %{name}.
 %prep
 %autosetup -p1
 %{__sed} -i -e 's/-O3 -g//' CMakeLists.txt
-%{__mkdir} build
 
 
 %build
