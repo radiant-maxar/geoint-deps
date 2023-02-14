@@ -74,7 +74,6 @@ jobs:
           - proj
           - protozero
           - pyosmium
-          - python3-mapnik
           - rubygem-libxml-ruby
           - sbt
           - spawn-fcgi

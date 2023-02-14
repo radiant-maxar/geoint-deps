@@ -63,7 +63,6 @@ POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
 PROTOZERO_RPM := $(call rpm_file,protozero)
 PYOSMIUM_RPM := $(call rpm_file,python3-osmium)
-PYTHON_MAPNIK_RPM := $(call rpm_file,python3-mapnik)
 RUBYGEM_LIBXML_RUBY_RPM := $(call rpm_file,rubygem-libxml-ruby)
 SBT_RPM := $(call rpm_file,sbt,noarch)
 SFCGAL_RPM := $(call rpm_file,SFCGAL)
@@ -103,7 +102,6 @@ RPMBUILD_RPMS := \
 	proj \
 	protozero \
 	pyosmium \
-	python3-mapnik \
 	rubygem-libxml-ruby \
 	sbt \
 	SFCGAL \
@@ -165,7 +163,6 @@ distclean: .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/proj.spec) >> .env
 	echo RPMBUILD_PROTOZERO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/protozero.spec) >> .env
 	echo RPMBUILD_PYOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/python3-osmium.spec) >> .env
-	echo RPMBUILD_PYTHON_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/python3-mapnik.spec) >> .env
 	echo RPMBUILD_RUBYGEM_LIBXML_RUBY_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/rubygem-libxml-ruby.spec) >> .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite-pcre.spec) >> .env
@@ -221,7 +218,6 @@ postgis: $(POSTGIS_RPM)
 proj: $(PROJ_RPM)
 protozero: $(PROTOZERO_RPM)
 pyosmium: $(PYOSMIUM_RPM)
-python3-mapnik: $(PYTHON_MAPNIK_RPM)
 rubygem-libxml-ruby: $(RUBYGEM_LIBXML_RUBY_RPM)
 sbt: $(SBT_RPM)
 SFCGAL: $(CGAL_RPM) \

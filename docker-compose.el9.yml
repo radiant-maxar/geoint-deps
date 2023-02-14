@@ -164,14 +164,6 @@ x-rpmbuild:
       name: protozero-devel
       defines:
         protobuf_min_version: *protobuf_min_version
-    python3-mapnik:
-      image: rpmbuild-python3-mapnik
-      version: &python-mapnik_version 3.0.23-1
-      defines:
-        # Have to specify git commit, project doesn't consistently use tags.
-        commit: 7da019cf9eb12af8f8aa88b7d75789dfcd1e901b
-        testcommit: dd0c41c3f9f5dc98291a727af00bb42734d2a8c0
-        visualcommit: 1f20cf257f35224d3c139a6015b1cf70814b0d24
     python3-osmium:
       image: rpmbuild-pyosmium
       version: &pyosmium_version 3.6.0-1
@@ -412,18 +404,6 @@ services:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PYOSMIUM_PACKAGES}
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
-  rpmbuild-python3-mapnik:
-    <<: *service_defaults
-    build:
-      <<: *build_defaults
-      args:
-        <<: *build_args_defaults
-        packages: ${RPMBUILD_PYTHON_MAPNIK_PACKAGES}
-        python_packages: >-
-          nose
-          PyPDF2
-        rpmbuild_image: rpmbuild-pgdg
-      dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults
     build:
