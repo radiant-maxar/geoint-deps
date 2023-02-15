@@ -38,11 +38,7 @@ cd %{_builddir}/certificates-%{version}
  %{buildroot}%{_unitdir}
 %{__install} -d -m 0700 %{buildroot}%{step_ca_home}
 %{__install} -p \
- bin/step-awskms-init \
  bin/step-ca \
- bin/step-cloudkms-init \
- bin/step-pkcs11-init \
- bin/step-yubikey-init \
  %{buildroot}%{_bindir}
 
 # Environment file.
@@ -119,11 +115,7 @@ export CI=true
 %files
 %doc CHANGELOG.md README.md
 %license LICENSE
-%{_bindir}/step-awskms-init
 %{_bindir}/step-ca
-%{_bindir}/step-cloudkms-init
-%{_bindir}/step-pkcs11-init
-%{_bindir}/step-yubikey-init
 %{_unitdir}/step-ca.service
 %config(noreplace) %{_sysconfdir}/sysconfig/step-ca
 %defattr(-, %{step_ca_user}, %{step_ca_group}, -)
