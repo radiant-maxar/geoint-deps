@@ -34,13 +34,17 @@ cd %{_builddir}/certificates-%{version}
 %install
 %{__install} -d -m 0755 \
  %{buildroot}%{_bindir} \
- %{buildroot}%{_rundir}/step-ca \
  %{buildroot}%{_sysconfdir}/sysconfig \
- %{buildroot}%{_unitdir}
-%{__install} -d -m 0700 %{buildroot}%{step_ca_home}
+ %{buildroot}%{_unitdir} \
+ %{buildroot}%{_usr}/lib/tmpfiles.d
+%{__install} -d -m 0750 \
+ %{buildroot}%{step_ca_home} \
+ %{buildroot}%{_rundir}/step-ca
 %{__install} -p \
  bin/step-ca \
  %{buildroot}%{_bindir}
+echo "d %{_rundir}/%{name} 0750 %{step_ca_user} %{step_ca_group} -" > \
+     %{buildroot}%{_usr}/lib/tmpfiles.d/step-ca.conf
 
 # Environment file.
 cat <<EOF > %{buildroot}%{_sysconfdir}/sysconfig/step-ca
@@ -57,7 +61,7 @@ After=basic.target network.target
 User=%{step_ca_user}
 Group=%{step_ca_group}
 EnvironmentFile=%{_sysconfdir}/sysconfig/step-ca
-ExecStart=%{_bindir}/step-ca --pidfile "%{_rundir}/step-ca/step-ca.pid" "\${STEPPATH}/config/ca.json"
+ExecStart=%{_bindir}/step-ca "\${STEPPATH}/config/ca.json"
 KillMode=process
 Restart=on-failure
 RestartSec=30s
@@ -118,6 +122,7 @@ export CI=true
 %license LICENSE
 %{_bindir}/step-ca
 %{_unitdir}/step-ca.service
+%{_usr}/lib/tmpfiles.d/step-ca.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/step-ca
 %defattr(-, %{step_ca_user}, %{step_ca_group}, -)
 %dir %{_rundir}/step-ca
