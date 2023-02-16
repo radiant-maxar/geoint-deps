@@ -34,6 +34,7 @@ cd %{_builddir}/certificates-%{version}
 %install
 %{__install} -d -m 0755 \
  %{buildroot}%{_bindir} \
+ %{buildroot}%{_rundir}/step-ca \
  %{buildroot}%{_sysconfdir}/sysconfig \
  %{buildroot}%{_unitdir}
 %{__install} -d -m 0700 %{buildroot}%{step_ca_home}
@@ -56,7 +57,7 @@ After=basic.target network.target
 User=%{step_ca_user}
 Group=%{step_ca_group}
 EnvironmentFile=%{_sysconfdir}/sysconfig/step-ca
-ExecStart=%{_bindir}/step-ca "\${STEPPATH}/config/ca.json"
+ExecStart=%{_bindir}/step-ca --pidfile "%{_rundir}/step-ca/step-ca.pid" "\${STEPPATH}/config/ca.json"
 KillMode=process
 Restart=on-failure
 RestartSec=30s
@@ -119,6 +120,7 @@ export CI=true
 %{_unitdir}/step-ca.service
 %config(noreplace) %{_sysconfdir}/sysconfig/step-ca
 %defattr(-, %{step_ca_user}, %{step_ca_group}, -)
+%dir %{_rundir}/step-ca
 %dir %{step_ca_home}
 
 
