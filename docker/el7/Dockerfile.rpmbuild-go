@@ -3,8 +3,8 @@ ARG rpmbuild_image=rpmbuild-generic
 ARG rpmbuild_image_prefix
 # hadolint ignore=DL3007
 FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
-ARG go_version=1.19.5
-ARG go_checksum=36519702ae2fd573c9869461990ae550c8c0d955cd28d2827a6b159fda81ff95
+ARG go_version=1.20.1
+ARG go_checksum=000a5b1fca4f75895f78befeb2eecf10bfff3c428597f3f1e69133b63b911b02
 ARG packages
 
 ENV GOPATH=${RPMBUILD_HOME}/go
