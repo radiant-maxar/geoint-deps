@@ -64,12 +64,6 @@ The [g2clib](https://github.com/NOAA-EMC/NCEPLIBS-g2c) source archives are obtai
 
 The [`g2clib.spec`](../SPECS/el9/g2clib.spec) file originates from [Fedora's `g2clib` RPM](https://src.fedoraproject.org/rpms/g2clib) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 
-## iniparser
-
-The [iniparser](https://github.com/ndevilla/iniparser) source archives are obtained directly from its [GitHub tags](https://github.com/ndevilla/iniparser/tags).
-
-The [`iniparser.spec`](../SPECS/el9/iniparser.spec) file originates from [Fedora's `iniparser` RPM](https://src.fedoraproject.org/rpms/iniparser) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
-
 ## libgeotiff
 
 The [GeoTIFF](https://github.com/OSGeo/libgeotiff) library source archives are
@@ -267,7 +261,7 @@ is released under the [LGPLv2 license](https://gitlab.com/Oslandia/SFCGAL/-/blob
 
 ## spawn-fcgi
 
-The [spawn-fcgi](https://redmine.lighttpd.net/projects/spawn-fcgi/) source archives are obtained directly from the [Lighttpd website](https://github.com/ndevilla/iniparser/tags) and are BSD licensed.
+The [spawn-fcgi](https://redmine.lighttpd.net/projects/spawn-fcgi/) source archives are obtained directly from the [Lighttpd website](http://download.lighttpd.net/spawn-fcgi) and are BSD licensed.
 
 The [`spawn-fcgi.spec`](../SPECS/el9/spawn-fcgi.spec) file originates from [Fedora's `spawn-fcgi` RPM](https://src.fedoraproject.org/rpms/spawn-fcgi) and is released under the [Fedora license](./licenses/Fedora-LICENSE).
 

@@ -57,7 +57,6 @@ jobs:
           - FileGDBAPI
           - g2clib
           - geos
-          - iniparser
           - journald-cloudwatch-logs
           - libosmium
           - libpqxx
