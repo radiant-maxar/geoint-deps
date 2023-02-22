@@ -68,9 +68,6 @@ x-rpmbuild:
       image: rpmbuild-g2clib
       name: g2clib-devel
       version: &g2clib_version 1.7.0-1
-    iniparser:
-      image: rpmbuild-generic
-      version: &iniparser_version 4.1-1
     journald-cloudwatch-logs:
       image: rpmbuild-journald-cloudwatch-logs
       version: &journald-cloudwatch-logs_version 0.2.3-1
