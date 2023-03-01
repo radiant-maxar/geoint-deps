@@ -21,8 +21,6 @@ Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 #   tar --owner 1000 --group 1000 --numeric-owner -czf rack-$VERSION-test.tar.gz test/
 #
 Source1: https://geoint-deps.s3.amazonaws.com/support-files/%{gem_name}-%{version}-test.tar.gz
-Patch0: rubygem-rack-cgi-fix.patch
-Patch1: rubygem-rack-spec-server.patch
 %endif
 
 BuildRequires: ruby
@@ -62,8 +60,6 @@ Documentation for %{name}.
 %if %{with tests}
 pushd .%{gem_instdir}
 %{__tar} xzf %{SOURCE1}
-%patch0 -p1
-%patch1 -p1
 popd
 %endif
 
