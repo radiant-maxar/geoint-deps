@@ -177,7 +177,7 @@ x-rpmbuild:
         pybind11_version: 2.10.3
     rack:
       image: rpmbuild-rack
-      version: &rack_version 2.2.4-1
+      version: &rack_version 2.2.6.2-1
       arch: noarch
       name: rubygem-rack
       spec_file: SPECS/rubygem-rack.spec
