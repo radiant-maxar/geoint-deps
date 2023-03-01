@@ -1,7 +1,7 @@
 diff --git a/ext/extconf.rb b/ext/extconf.rb
 --- a/ext/extconf.rb
 +++ b/ext/extconf.rb
-@@ -33,13 +33,6 @@
+@@ -52,13 +52,6 @@
  	else
  		incdir, libdir = dir_config 'pg'
  		dlldir = libdir

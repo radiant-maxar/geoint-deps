@@ -14,7 +14,7 @@ URL: https://github.com/ged/ruby-pg
 Source0: https://github.com/ged/ruby-pg/archive/v%{version}/ruby-pg-%{version}.tar.gz
 # Disable RPATH.
 # https://github.com/ged/ruby-pg/issues/183
-Patch0: rubygem-pg-remove-rpath.patch
+Patch0: rubygem-pg-1.3.0-remove-rpath.patch
 
 BuildRequires: gcc
 BuildRequires: make
@@ -32,7 +32,7 @@ Requires:      rubygem(bigdecimal)
 
 %description
 This is the extension library to access a PostgreSQL database from Ruby.
-This library works with PostgreSQL 9.1 and later.
+This library works with PostgreSQL 9.3 and later.
 
 
 %prep
