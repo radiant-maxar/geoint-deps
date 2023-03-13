@@ -151,7 +151,7 @@ x-rpmbuild:
         protobuf_c_min_version: *protobuf_c_min_version
     proj:
       image: rpmbuild-proj
-      version: &proj_version 9.2.0-2
+      version: &proj_version 9.2.0-1
       defines:
         data_version: "1.13"
     protozero:
