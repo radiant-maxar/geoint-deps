@@ -2,7 +2,16 @@
 name: Build & Push (EL7)
 
 on:
-  - push
+  push:
+    paths:
+      - .dockerignore
+      - .github/workflows/ci.el7.yml
+      - Makefile.el7
+      - SOURCES/el7/**
+      - SPECS/el7/**
+      - docker-compose.el7.yml
+      - docker/el7/**
+      - scripts/**
 
 env:
   DOCKER_BUILDKIT: 1
