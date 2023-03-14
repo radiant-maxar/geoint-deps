@@ -30,11 +30,12 @@ COPY RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/noarch/proj-data-nl-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-no-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-north-america-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
-     RPMS/noarch/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-nz-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-pl-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-pt-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-se-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-si-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-sk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-uk-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
@@ -70,11 +71,12 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     "/tmp/proj-data-nl-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-no-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-north-america-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
-    "/tmp/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-nz-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-oceania-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-pl-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-pt-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-se-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-si-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-sk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-uk-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-us-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \

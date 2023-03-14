@@ -69,6 +69,7 @@ Requires:       proj-data-nl
 Requires:       proj-data-pl
 Requires:       proj-data-pt
 Requires:       proj-data-se
+Requires:       proj-data-si
 Requires:       proj-data-sk
 Requires:       proj-data-uk
 
@@ -164,13 +165,14 @@ Supplements:  proj\
 %data_subpkg -c is -n Island -e ISL
 %data_subpkg -c jp -n Japan
 %data_subpkg -c mx -n Mexico
-%data_subpkg -c no -n Norway
 %data_subpkg -c nc -n %{quote:New Caledonia}
 %data_subpkg -c nl -n Netherlands
+%data_subpkg -c no -n Norway
 %data_subpkg -c nz -n %{quote:New Zealand}
 %data_subpkg -c pl -n Poland
 %data_subpkg -c pt -n Portugal
 %data_subpkg -c se -n Sweden
+%data_subpkg -c si -n Slovenia
 %data_subpkg -c sk -n Slovakia
 %data_subpkg -c uk -n %{quote:United Kingdom}
 %data_subpkg -c us -n %{quote:United States}
