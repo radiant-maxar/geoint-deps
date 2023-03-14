@@ -66,7 +66,7 @@ and user documentation (API reference guide).
 
 
 %files
-%{_libdir}/libarmadillo.so.11*
+%{_libdir}/libarmadillo.so.12*
 %license LICENSE.txt NOTICE.txt
 
 %files devel
