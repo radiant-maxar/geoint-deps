@@ -2,7 +2,16 @@
 name: Build & Push (EL9)
 
 on:
-  - push
+  push:
+    paths:
+      - .dockerignore
+      - .github/workflows/ci.el9.yml
+      - Makefile.el9
+      - SOURCES/el9/**
+      - SPECS/el9/**
+      - docker-compose.el9.yml
+      - docker/el9/**
+      - scripts/**
 
 env:
   DOCKER_BUILDKIT: 1
