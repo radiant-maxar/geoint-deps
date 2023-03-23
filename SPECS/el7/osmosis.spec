@@ -7,7 +7,7 @@ License:        LGPLv3 and Public Domain
 URL:            https://github.com/openstreetmap/osmosis
 
 BuildArch:      noarch
-Requires:       java-1.8.0-openjdk
+Requires:       java-openjdk
 
 Source0:        https://github.com/openstreetmap/osmosis/releases/download/%{version}/osmosis-%{version}.tgz
 
