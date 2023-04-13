@@ -1160,7 +1160,7 @@ MSPECOPTS="$MSPECOPTS -P 'File.utime allows Time instances in the far future to 
 %{gem_dir}/specifications/default/strscan-1.0.3.gemspec
 %{gem_dir}/specifications/default/timeout-0.1.0.gemspec
 %{gem_dir}/specifications/default/tracer-0.1.0.gemspec
-%{gem_dir}/specifications/default/uri-0.10.0.gemspec
+%{gem_dir}/specifications/default/uri-0.10.0.2.gemspec
 %{gem_dir}/specifications/default/webrick-1.6.1.gemspec
 %{gem_dir}/specifications/default/yaml-0.1.0.gemspec
 %{gem_dir}/specifications/default/zlib-1.1.0.gemspec
