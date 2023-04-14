@@ -226,10 +226,10 @@ x-rpmbuild:
       version: &sqlite_pcre_version 2007.1.20-1
     step-ca:
       image: rpmbuild-smallstep
-      version: &step_ca_version 0.23.2-1
+      version: &step_ca_version 0.24.0-1
     step-cli:
       image: rpmbuild-smallstep
-      version: &step_cli_version 0.23.2-1
+      version: &step_cli_version 0.24.1-1
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version 2020.3-1
@@ -547,6 +547,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
+        packages: ${RPMBUILD_STEP_CA_PACKAGES}
         rpmbuild_image: rpmbuild-generic
       dockerfile: docker/el7/Dockerfile.rpmbuild-go
   rpmbuild-tbb:

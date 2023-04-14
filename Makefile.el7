@@ -186,6 +186,7 @@ distclean: .env
 	echo RPMBUILD_SFCGAL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/SFCGAL.spec) >> .env
 	echo RPMBUILD_SQLITE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite.spec) >> .env
 	echo RPMBUILD_SQLITE_PCRE_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/sqlite-pcre.spec) >> .env
+	echo RPMBUILD_STEP_CA_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/step-ca.spec) >> .env
 	echo RPMBUILD_TBB_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/tbb.spec) >> .env
 	echo RPMBUILD_WALG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/wal-g.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 
