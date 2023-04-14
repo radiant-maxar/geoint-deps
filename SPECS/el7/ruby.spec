@@ -168,8 +168,6 @@ Patch10: ruby-2.7.0-Remove-RubyGems-dependency.patch
 Patch19: ruby-2.7.1-Timeout-the-test_bug_reporter_add-witout-raising-err.patch
 # Revert autoconf changes from 2.7.4 that cause regressions in JIT tests.
 Patch20: ruby-2.7.4-autoconf-revert.patch
-# [Bug #19187] Fix for tzdata-2022g
-Patch21: ruby-tzdata-2022g.patch
 
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: ruby(rubygems) >= %{rubygems_version}
@@ -577,7 +575,6 @@ rm -rf ext/fiddle/libffi*
 %patch10 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
 
 # Provide an example of usage of the tapset:
 cp -a %{SOURCE3} .
@@ -1163,7 +1160,7 @@ MSPECOPTS="$MSPECOPTS -P 'File.utime allows Time instances in the far future to 
 %{gem_dir}/specifications/default/strscan-1.0.3.gemspec
 %{gem_dir}/specifications/default/timeout-0.1.0.gemspec
 %{gem_dir}/specifications/default/tracer-0.1.0.gemspec
-%{gem_dir}/specifications/default/uri-0.10.0.gemspec
+%{gem_dir}/specifications/default/uri-0.10.0.2.gemspec
 %{gem_dir}/specifications/default/webrick-1.6.1.gemspec
 %{gem_dir}/specifications/default/yaml-0.1.0.gemspec
 %{gem_dir}/specifications/default/zlib-1.1.0.gemspec

@@ -183,7 +183,7 @@ x-rpmbuild:
       spec_file: SPECS/rubygem-rack.spec
     ruby:
       image: rpmbuild-ruby
-      version: &ruby_version 2.7.7-1
+      version: &ruby_version 2.7.8-1
       defines: &ruby_bundled_versions
         bundler_version: 2.1.4
         bundler_connection_pool_version: 2.2.2
