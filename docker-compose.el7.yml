@@ -547,6 +547,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
+        packages: ${RPMBUILD_STEP_CA_PACKAGES}
         rpmbuild_image: rpmbuild-generic
       dockerfile: docker/el7/Dockerfile.rpmbuild-go
   rpmbuild-tbb:

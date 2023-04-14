@@ -12,6 +12,9 @@ License:        ASL 2.0
 URL:            https://github.com/smallstep/certificates
 Source0:        https://github.com/smallstep/certificates/archive/v%{version}/certificates-%{version}.tar.gz
 
+BuildRequires:  git
+BuildRequires:  openssl-devel
+
 
 %description
 A private certificate authority (X.509 & SSH) & ACME server for secure automated certificate management, so you can use TLS everywhere & SSO for SSH.
