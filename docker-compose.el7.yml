@@ -48,6 +48,9 @@ x-rpmbuild:
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version 1.3.10-1
+    caddy:
+      image: rpmbuild-caddy
+      version: &caddy_version 2.6.4-1
     dumb-init:
       image: rpmbuild-generic
       version: 1.2.5-1
@@ -286,6 +289,14 @@ services:
       dockerfile: docker/el7/Dockerfile.rpmbuild-pgdg
     image: ${IMAGE_PREFIX}rpmbuild-pgdg
   # RPM images
+  rpmbuild-caddy:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el7/Dockerfile.rpmbuild-go
   rpmbuild-cgal:
     <<: *service_defaults
     build:
