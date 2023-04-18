@@ -117,6 +117,7 @@ EOF
 
 
 %post
+%{_sbindir}/setcap cap_net_bind_service=+ep %{_bindir}/step-ca
 if test -f /.dockerenv; then exit 0; fi
 %systemd_post %{name}.service
 
