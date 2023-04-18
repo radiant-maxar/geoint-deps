@@ -55,7 +55,7 @@ STEPPATH=%{_sharedstatedir}/step-ca
 EOF
 
 # Unit file.
-cat <<EOF > %{buildroot}%{_unitdir}/step-ca.service
+cat <<EOF > %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=step-ca
 After=basic.target network.target
@@ -86,23 +86,38 @@ EOF
 
 
 %pre
-getent group %{step_ca_group} >/dev/null || \
-    groupadd \
+%{_bindir}/getent group %{step_ca_group} >/dev/null || \
+    %{_sbindir}/groupadd \
         --force \
         --gid %{step_ca_gid} \
         --system \
         %{step_ca_group}
 
-getent passwd %{step_ca_user} >/dev/null || \
-    useradd \
+%{_bindir}/getent passwd %{step_ca_user} >/dev/null || \
+    %{_sbindir}/useradd \
         --uid %{step_ca_uid} \
         --gid %{step_ca_group} \
         --comment "Smallstep CA User" \
-        --shell /sbin/nologin \
+        --shell %{_sbindir}/nologin \
         --home-dir %{step_ca_home} \
         --no-create-home \
         --system \
         %{step_ca_user}
+
+
+%post
+if test -f /.dockerenv; then exit 0; fi
+%systemd_post %{name}.service
+
+
+%preun
+if test -f /.dockerenv; then exit 0; fi
+%systemd_preun %{name}.service
+
+
+%postun
+if test -f /.dockerenv; then exit 0; fi
+%systemd_postun %{name}.service
 
 
 %check
@@ -114,7 +129,7 @@ export CI=true
 %doc CHANGELOG.md README.md
 %license LICENSE
 %{_bindir}/step-ca
-%{_unitdir}/step-ca.service
+%{_unitdir}/%{name}.service
 %{_usr}/lib/tmpfiles.d/step-ca.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/step-ca
 %defattr(-, %{step_ca_user}, %{step_ca_group}, -)

@@ -185,10 +185,10 @@ x-rpmbuild:
       version: &sqlite_pcre_version 2007.1.20-1
     step-ca:
       image: rpmbuild-smallstep
-      version: &step_ca_version 0.24.0-1
+      version: &step_ca_version 0.24.1-1
     step-cli:
       image: rpmbuild-smallstep
-      version: &step_cli_version 0.24.1-1
+      version: &step_cli_version 0.24.3-1
     wal-g:
       image: rpmbuild-wal-g
       version: &walg_version 2.0.1-1
