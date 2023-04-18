@@ -57,7 +57,7 @@ touch %{buildroot}%{_sysconfdir}/sysconfig/caddy \
 chmod 0750 %{buildroot}%{_sysconfdir}/sysconfig/caddy
 
 # Unit files.
-cat <<EOF > %{buildroot}%{_unitdir}/caddy.service
+cat <<EOF > %{buildroot}%{_unitdir}/%{name}.service
 [Unit]
 Description=Caddy
 Documentation=https://caddyserver.com/docs/
@@ -82,7 +82,7 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 WantedBy=multi-user.target
 EOF
 
-cat <<EOF > %{buildroot}%{_unitdir}/caddy-api.service
+cat <<EOF > %{buildroot}%{_unitdir}/%{name}-api.service
 [Unit]
 Description=Caddy
 Documentation=https://caddyserver.com/docs/
@@ -117,14 +117,14 @@ go test -v
 
 %pre
 %{_bindir}/getent group %{caddy_group} >/dev/null || \
-    groupadd \
+    %{_sbindir}/groupadd \
         --force \
         --gid %{caddy_gid} \
         --system \
         %{caddy_group}
 
 %{_bindir}/getent passwd %{caddy_user} >/dev/null || \
-    useradd \
+    %{_sbindir}/useradd \
         --uid %{caddy_uid} \
         --gid %{caddy_group} \
         --comment "Caddy web user" \
@@ -137,14 +137,29 @@ go test -v
 
 %post
 %{_sbindir}/setcap cap_net_bind_service=+ep %{_bindir}/caddy
+if test -f /.dockerenv; then exit 0; fi
+%systemd_post %{name}.service
+%systemd_post %{name}-api.service
+
+
+%preun
+if test -f /.dockerenv; then exit 0; fi
+%systemd_preun %{name}.service
+%systemd_preun %{name}-api.service
+
+
+%postun
+if test -f /.dockerenv; then exit 0; fi
+%systemd_postun %{name}.service
+%systemd_postun %{name}-api.service
 
 
 %files
 %doc AUTHORS README.md
 %license LICENSE
 %{_bindir}/caddy
-%{_unitdir}/caddy.service
-%{_unitdir}/caddy-api.service
+%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}-api.service
 %{_usr}/lib/tmpfiles.d/caddy.conf
 %defattr(-, root, %{caddy_group}, -)
 %config(noreplace) %{caddy_config}/Caddyfile
