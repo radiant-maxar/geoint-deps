@@ -31,6 +31,8 @@ cd %{_builddir}/caddy-%{version}
 
 
 %build
+export CGO_CFLAGS="%{optflags}"
+export CGO_LDFLAGS="%{?build_ldflags}"
 %{__mkdir_p} caddy@%{version}
 %{__install} cmd/caddy/main.go caddy@%{version}
 pushd caddy@%{version}
@@ -116,6 +118,8 @@ EOF
 
 
 %check
+export CGO_CFLAGS="%{optflags}"
+export CGO_LDFLAGS="%{?build_ldflags}"
 go get -v
 pushd cmd/caddy
 go build -v
