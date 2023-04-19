@@ -1,5 +1,6 @@
 %global caddy_config %{_sysconfdir}/caddy
 %global caddy_home %{_sharedstatedir}/caddy
+%global caddy_run %{_rundir}/caddy
 %global caddy_user caddy
 %global caddy_group %{caddy_user}
 %global caddy_uid 517
@@ -14,6 +15,7 @@ URL:            https://github.com/caddyserver/caddy
 Source0:        https://github.com/caddyserver/caddy/archive/v%{version}/caddy-%{version}.tar.gz
 
 BuildRequires:  git
+
 
 %description
 Caddy is a powerful, extensible platform to serve your sites, services, and apps, written in Go.
@@ -45,16 +47,21 @@ popd
  %{buildroot}%{_usr}/lib/tmpfiles.d
 %{__install} -d -m 0750 \
  %{buildroot}%{caddy_home} \
- %{buildroot}%{_rundir}/caddy \
+ %{buildroot}%{caddy_run} \
  %{buildroot}%{caddy_config}
 %{__install} -p caddy@%{version}/caddy %{buildroot}%{_bindir}
-echo "d %{_rundir}/%{name} 0750 %{caddy_user} %{caddy_group} -" > \
+echo "d %{caddy_run} 0750 %{caddy_user} %{caddy_group} -" > \
      %{buildroot}%{_usr}/lib/tmpfiles.d/caddy.conf
 
 # Configuration files.
-touch %{buildroot}%{_sysconfdir}/sysconfig/caddy \
-      %{buildroot}%{caddy_config}/Caddyfile
-chmod 0750 %{buildroot}%{_sysconfdir}/sysconfig/caddy
+echo "{}" > %{buildroot}%{caddy_config}/config.json
+touch %{buildroot}%{caddy_config}/Caddyfile
+
+# Environment file.
+cat <<EOF > %{buildroot}%{_sysconfdir}/sysconfig/%{name}
+CADDY_CONFIG_FILE=%{caddy_config}/Caddyfile
+EOF
+chmod 0750 %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 # Unit files.
 cat <<EOF > %{buildroot}%{_unitdir}/%{name}.service
@@ -68,9 +75,9 @@ Requires=network-online.target
 Type=notify
 User=%{caddy_user}
 Group=%{caddy_group}
-EnvironmentFile=%{_sysconfdir}/sysconfig/caddy
-ExecStart=%{_bindir}/caddy run --environ --config %{caddy_config}/Caddyfile
-ExecReload=%{_bindir}/caddy reload --config %{caddy_config}/Caddyfile --force
+EnvironmentFile=%{_sysconfdir}/sysconfig/%{name}
+ExecStart=%{_bindir}/caddy run --environ --config \${CADDY_CONFIG_FILE}
+ExecReload=%{_bindir}/caddy reload --config \${CADDY_CONFIG_FILE} --force
 TimeoutStopSec=5s
 LimitNOFILE=1048576
 LimitNPROC=512
@@ -93,7 +100,7 @@ Requires=network-online.target
 Type=notify
 User=%{caddy_user}
 Group=%{caddy_group}
-EnvironmentFile=%{_sysconfdir}/sysconfig/caddy
+EnvironmentFile=%{_sysconfdir}/sysconfig/%{name}
 ExecStart=%{_bindir}/caddy run --environ --resume
 TimeoutStopSec=5s
 LimitNOFILE=1048576
@@ -163,9 +170,10 @@ if test -f /.dockerenv; then exit 0; fi
 %{_usr}/lib/tmpfiles.d/caddy.conf
 %defattr(-, root, %{caddy_group}, -)
 %config(noreplace) %{caddy_config}/Caddyfile
-%config(noreplace) %{_sysconfdir}/sysconfig/caddy
+%config(noreplace) %{caddy_config}/config.json
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %defattr(-, %{caddy_user}, %{caddy_group}, -)
-%dir %{_rundir}/caddy
+%dir %{caddy_run}
 %dir %{caddy_home}
 
 
