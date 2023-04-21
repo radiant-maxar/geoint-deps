@@ -36,8 +36,10 @@ RUN --mount=type=cache,target=/var/cache/dnf \
         --setopt=keepcache=1 \
         --setopt=baseos.repo_gpgcheck=1 \
         --setopt=appstream.repo_gpgcheck=1 \
-        --setopt=crb.enabled=1 \
-        --setopt=crb.repo_gpgcheck=1 && \
+        --setopt=crb.repo_gpgcheck=1 \
+        --setopt=extras-common.repo_gpgcheck=1 \
+        --setopt=crb.enabled=1  \
+    && \
     dnf -q -y update && \
     dnf --setopt=tsflags='' reinstall -y tzdata && \
     dnf -q -y install \

@@ -62,6 +62,7 @@ jobs:
       matrix:
         rpm:
           - armadillo
+          - caddy
           - CGAL
           - FileGDBAPI
           - g2clib

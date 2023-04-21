@@ -48,6 +48,9 @@ x-rpmbuild:
     SFCGAL:
       image: rpmbuild-sfcgal
       version: &SFCGAL_version 1.3.10-1
+    caddy:
+      image: rpmbuild-caddy
+      version: &caddy_version 2.6.4-1
     dumb-init:
       image: rpmbuild-generic
       version: 1.2.5-1
@@ -226,10 +229,10 @@ x-rpmbuild:
       version: &sqlite_pcre_version 2007.1.20-1
     step-ca:
       image: rpmbuild-smallstep
-      version: &step_ca_version 0.24.0-1
+      version: &step_ca_version 0.24.1-1
     step-cli:
       image: rpmbuild-smallstep
-      version: &step_cli_version 0.24.1-1
+      version: &step_cli_version 0.24.3-1
     tbb:
       image: rpmbuild-tbb
       version: &tbb_version 2020.3-1
@@ -286,6 +289,14 @@ services:
       dockerfile: docker/el7/Dockerfile.rpmbuild-pgdg
     image: ${IMAGE_PREFIX}rpmbuild-pgdg
   # RPM images
+  rpmbuild-caddy:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el7/Dockerfile.rpmbuild-go
   rpmbuild-cgal:
     <<: *service_defaults
     build:

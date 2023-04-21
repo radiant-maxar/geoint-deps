@@ -55,6 +55,9 @@ x-rpmbuild:
     armadillo:
       image: rpmbuild-armadillo
       version: &armadillo_version 12.2.0-1
+    caddy:
+      image: rpmbuild-caddy
+      version: &caddy_version 2.6.4-1
     gdal:
       image: rpmbuild-gdal
       version: &gdal_version 3.6.3-1
@@ -182,10 +185,10 @@ x-rpmbuild:
       version: &sqlite_pcre_version 2007.1.20-1
     step-ca:
       image: rpmbuild-smallstep
-      version: &step_ca_version 0.24.0-1
+      version: &step_ca_version 0.24.1-1
     step-cli:
       image: rpmbuild-smallstep
-      version: &step_cli_version 0.24.1-1
+      version: &step_cli_version 0.24.3-1
     wal-g:
       image: rpmbuild-wal-g
       version: &walg_version 2.0.1-1
@@ -238,6 +241,14 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_ARMADILLO_PACKAGES}
+  rpmbuild-caddy:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        rpmbuild_image: rpmbuild-generic
+      dockerfile: docker/el9/Dockerfile.rpmbuild-go
   rpmbuild-cgal:
     <<: *service_defaults
     build:
