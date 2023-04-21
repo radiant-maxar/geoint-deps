@@ -13,7 +13,7 @@ Summary:        Fast and extensible multi-platform HTTP/1-2-3 web server with au
 License:        ASL 2.0 and MIT and BSD
 URL:            https://github.com/caddyserver/caddy
 Source0:        https://github.com/caddyserver/caddy/archive/v%{version}/caddy-%{version}.tar.gz
-Source1:        caddy-no-binary-mods.patch
+Patch0:         caddy-no-binary-mods.patch
 
 BuildRequires:  git
 BuildRequires:  systemd-rpm-macros
@@ -24,12 +24,12 @@ Caddy is a powerful, extensible platform to serve your sites, services, and apps
 
 
 %prep
-%autosetup
+%autosetup -N
 cd "${HOME}"
 %{__rm} -fr %{_builddir}/caddy-%{version}
 %{__git} clone --single-branch -b v%{version} %{url} %{_builddir}/caddy-%{version}
 cd %{_builddir}/caddy-%{version}
-%{__patch} -p1 < %{SOURCE1}
+%autopatch -p1
 
 
 %build
