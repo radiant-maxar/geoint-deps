@@ -194,7 +194,7 @@ rm -rf mapscript/perl/mapscript_wrap.c
 
 
 %files
-%doc README.rst
+%doc README.md
 %{_bindir}/coshp
 %{_bindir}/legend
 %{_bindir}/map2img
@@ -209,17 +209,17 @@ rm -rf mapscript/perl/mapscript_wrap.c
 %{_datadir}/%{name}
 
 %files libs
-%doc README.rst
+%doc README.md
 %{_libdir}/libmapserver.so.*
 
 %files devel
-%doc README.rst
+%doc README.md
 %{_libdir}/libmapserver.so
 %{_libdir}/cmake/%{name}
 %{_includedir}/%{name}
 
 %files perl
-%doc README.rst
+%doc README.md
 %doc mapscript/perl/examples
 %dir %{perl_vendorarch}/auto/mapscript
 %{perl_vendorarch}/auto/mapscript/*
