@@ -28,7 +28,7 @@ diff --git a/gdalautotest-3.6.4/osr/osr_proj4.py b/gdalautotest-3.6.4/osr/osr_pr
 index f5d14e65290..5c511a9fb1e 100755
 --- a/gdalautotest-3.6.4/osr/osr_proj4.py
 +++ b/gdalautotest-3.6.4/osr/osr_proj4.py
-@@ -229,6 +229,11 @@ def test_osr_proj4_10():
+@@ -242,6 +242,11 @@ def test_osr_proj4_10():
          "Unknown based on WGS84 ellipsoid using towgs84=0,0,0,0,0,0,0",
          "Unknown_based_on_WGS84_ellipsoid",
      )
