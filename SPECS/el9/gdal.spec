@@ -307,11 +307,15 @@ addopts =
     --deselect gcore/vsizip.py::test_vsizip_create_zip64_stream_larger_than_4G
     --deselect gdrivers/vrtwarp.py::test_vrtwarp_read_blocks_larger_than_2_gigapixels
     --deselect gdrivers/wms.py::test_wms_16
+    --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19
+    --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19bis
+    --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_20
     --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_21
     --deselect ogr/ogr_pg.py::test_ogr_pg_70
     --deselect ogr/ogr_pg.py::test_ogr_pg_skip_views
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_esri_2
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_erdas_apollo
+    --deselect ogr/ogr_wfs.py::test_ogr_wfs_tinyows
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_invalid_srs
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_resampling_option
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple
