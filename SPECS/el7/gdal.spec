@@ -597,6 +597,7 @@ pushd gdalautotest-%{testversion}
   #  * gdrivers/gdalhttp.py: test_http_4 takes way too long
   #  * gdrivers/pdf.py: disabled tests cause segfaults on EL platforms;
   #      most likely due to old poppler library
+  #  * ogr/ogr_cloudant.py: disable due to broken network resources
   #  * ogr/ogr_gmlas: FGDB expat conflict with libxml
   #  * ogr/ogr_gpkg: newer SQLite
   #  * ogr/ogr_mvt: newer protobuf library
@@ -613,6 +614,11 @@ pushd gdalautotest-%{testversion}
     --deselect gdrivers/pdf.py::test_pdf_jp2_auto_compression \
     --deselect gdrivers/pdf.py::test_pdf_jp2openjpeg_compression \
     --deselect gdrivers/pdf.py::test_pdf_jpeg2000_compression \
+    --deselect ogr/ogr_cloudant.py::test_ogr_cloudant_GetFeatureCount \
+    --deselect ogr/ogr_cloudant.py::test_ogr_cloudant_GetNextFeature \
+    --deselect ogr/ogr_cloudant.py::test_ogr_cloudant_GetSpatialRef \
+    --deselect ogr/ogr_cloudant.py::test_ogr_cloudant_GetExtent \
+    --deselect ogr/ogr_cloudant.py::test_ogr_cloudant_SetSpatialFilter \
     --deselect ogr/ogr_geojson.py::test_ogr_geojson_57 \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_basic \
     --deselect ogr/ogr_gmlas.py::test_ogr_gmlas_writer_check_xml_read_back \
