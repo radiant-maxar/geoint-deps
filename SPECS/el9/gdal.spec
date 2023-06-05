@@ -76,9 +76,11 @@ BuildRequires: postgresql%{postgres_version}-devel
 BuildRequires: postgresql%{postgres_version}-server
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python3-devel
+BuildRequires: python3-filelock
 BuildRequires: python3-lxml
 BuildRequires: python3-numpy
 BuildRequires: python3-pip
+BuildRequires: python3-psutil
 BuildRequires: python3-pytest
 BuildRequires: python3-setuptools
 BuildRequires: python3-wheel
@@ -240,49 +242,102 @@ touch -r NEWS.md %{buildroot}%{_bindir}/%{name}-config
 
 %check
 %if %{run_tests}
+# Run CMake tests.
+%ctest
+
+# Create and start PostgreSQL database for running GDAL autotest suite.
 export PGDATA="${HOME}/pgdata"
 %{_bindir}/pg_ctl -m fast -s stop || true
 %{__rm} -fr ${PGDATA}
-# Create PostgreSQL database.
 %{_bindir}/initdb --encoding UTF-8 --locale en_US.UTF-8
-
-# Tune the database.
 echo "fsync = off
 shared_buffers = 1GB
 listen_addresses = '127.0.0.1'" >> "${PGDATA}/postgresql.conf"
-
-# Start and setup to use PostgreSQL *without* PostGIS.
-export PG_USE_POSTGIS=NO
 %{_bindir}/pg_ctl -s start
 %{_bindir}/createdb autotest
 
 pushd gdalautotest-%{testversion}
-# Export test environment variables.
-export PYTHONPATH=%{buildroot}%{python3_sitearch}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
-export GDAL_DATA=%{buildroot}%{_datadir}/gdal
-export GDAL_DRIVER_PATH=%{buildroot}%{_libdir}/gdalplugins
 
-# Enable these tests on demand
-export GDAL_RUN_SLOW_TESTS=1
-export PYTEST="pytest -vv -p no:sugar --color=no"
-#export GDAL_DOWNLOAD_TEST_DATA=1
+# Remove this test due to conflicts with EL TIFF library:
+#  RuntimeError: /vsimem/test.tif: MissingRequired:TIFF directory is missing required "StripOffsets" field
+%{__rm} -v test_random_tiff.py
 
-# Run tests with problematic cases deselected.  Some possible explanations:
+# Reasons for deselected test cases:
+#  * gcore/tiff_{ovr,write}.py: Slow.
+#  * gcore/vsi{curl,zip}.py: Incorrect datasource paths.
+#  * gdrivers/vrtwarp.py: Slow.
+#  * gdrivers/wms.py: Brittle URL.
 #  * ogr/ogr_fgdb: Known failures disabled on Ubuntu, but not EL.
-#  * ogr/ogr_pg: trying to use PostGIS when it's not supposed to
-#  * pyscripts/test_gdal2tiles.py: regressions with test file locations on EL.
-$PYTEST \
---deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19 \
---deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19bis \
---deselect ogr/ogr_fgdb.py::test_ogr_fgdb_20 \
---deselect ogr/ogr_fgdb.py::test_ogr_fgdb_21 \
---deselect ogr/ogr_pg.py::test_ogr_pg_70 \
---deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple \
---deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_zoom_option \
---deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_resampling_option \
---deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_xyz \
---deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_invalid_srs
+#  * ogr/ogr_pg: Trying to use PostGIS when it's not supposed to
+#  * ogr/ogr_wfs.py: Slow tests and brittle URLs.
+#  * pyscripts/test_gdal2tiles.py: Regressions with test file locations on EL.
+#  * pyscripts/test_gdal_ls_py.py: Slow.
+
+# Create pytest.ini
+%{_bindir}/cat > pytest.ini <<EOF
+[pytest]
+python_files = *.py
+testpaths = ogr gcore gdrivers osr alg gnm utilities pyscripts
+norecursedirs = ogr/data gdrivers/data cpp
+log_file = autotest.log
+log_file_level = INFO
+gdal_version = %{version}
+
+markers =
+    require_curl: Skip test(s) if curl support is absent
+    require_creation_option: Skip test(s) if required creation option is not available
+    require_driver: Skip test(s) if driver isn't present
+    require_geos: Skip test(s) if required GEOS version is not available
+    require_proj: Skip test(s) if required PROJ version is not available
+    require_run_on_demand: Skip test(s) if RUN_ON_DEMAND environment variable is not set
+    slow: Skip test(s) if GDAL_RUN_SLOW_TESTS environment variable is not set
+
+# Make sure that all markers are declared above, and deselect problematic test cases.
+addopts =
+    -vv
+    -p no:sugar
+    --color=no
+    --strict-markers
+    --deselect gcore/tiff_ovr.py::test_tiff_ovr_46
+    --deselect gcore/tiff_write.py::test_tiff_write_deflate_4GB
+    --deselect gcore/vsicurl.py::test_vsicurl_1
+    --deselect gcore/vsicurl.py::test_vsicurl_4
+    --deselect gcore/vsicurl.py::test_vsicurl_5
+    --deselect gcore/vsicurl.py::test_vsicurl_7
+    --deselect gcore/vsizip.py::test_vsizip_create_zip64_stream_larger_than_4G
+    --deselect gdrivers/vrtwarp.py::test_vrtwarp_read_blocks_larger_than_2_gigapixels
+    --deselect gdrivers/wms.py::test_wms_16
+    --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_21
+    --deselect ogr/ogr_pg.py::test_ogr_pg_70
+    --deselect ogr/ogr_pg.py::test_ogr_pg_skip_views
+    --deselect ogr/ogr_wfs.py::test_ogr_wfs_esri_2
+    --deselect ogr/ogr_wfs.py::test_ogr_wfs_erdas_apollo
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_invalid_srs
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_resampling_option
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_xyz
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_zoom_option
+    --deselect pyscripts/test_gdal_ls_py.py::test_gdal_ls_py_8
+EOF
+
+# Export test environment variables.
+export CI=YES
+export GDAL_DATA=%{buildroot}%{_datadir}/gdal
+export GDAL_DOWNLOAD_TEST_DATA=NO
+export GDAL_DRIVER_PATH=%{buildroot}%{_libdir}/gdalplugins
+export GDAL_RUN_SLOW_TESTS=YES
+export GDAL_ENABLE_DEPRECATED_DRIVER_DODS=YES
+export GDAL_ENABLE_DEPRECATED_DRIVER_JDEM=YES
+export GDAL_ENABLE_DEPRECATED_DRIVER_ZMAP=YES
+export GDAL_ENABLE_DEPRECATED_DRIVER_OGR_DODS=YES
+export GDAL_ENABLE_DEPRECATED_DRIVER_TIGER=YES
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:%{buildroot}%{_libdir}
+export PG_USE_POSTGIS=NO
+export PROJ_NETWORK=OFF
+export PYTHONPATH=%{buildroot}%{python3_sitearch}
+
+# Run autotests with pytest.
+pytest
 popd
 
 # Stop PostgreSQL
@@ -291,40 +346,42 @@ popd
 
 
 %files
-%{_bindir}/gdallocationinfo
 %{_bindir}/gdal_contour
 %{_bindir}/gdal_create
+%{_bindir}/gdal_grid
 %{_bindir}/gdal_rasterize
 %{_bindir}/gdal_translate
-%{_bindir}/gdaladdo
-%{_bindir}/gdalinfo
-%{_bindir}/gdaldem
-%{_bindir}/gdalbuildvrt
-%{_bindir}/gdaltindex
-%{_bindir}/gdalwarp
-%{_bindir}/gdal_grid
-%{_bindir}/gdalenhance
-%{_bindir}/gdalmanage
-%{_bindir}/gdalsrsinfo
-%{_bindir}/gdaltransform
-%{_bindir}/nearblack
 %{_bindir}/gdal_viewshed
+%{_bindir}/gdaladdo
+%{_bindir}/gdalbuildvrt
+%{_bindir}/gdaldem
+%{_bindir}/gdalenhance
+%{_bindir}/gdalinfo
+%{_bindir}/gdallocationinfo
+%{_bindir}/gdalmanage
 %{_bindir}/gdalmdiminfo
 %{_bindir}/gdalmdimtranslate
-%{_bindir}/ogr*
+%{_bindir}/gdalsrsinfo
+%{_bindir}/gdaltindex
+%{_bindir}/gdaltransform
+%{_bindir}/gdalwarp
 %{_bindir}/gnmanalyse
 %{_bindir}/gnmmanage
+%{_bindir}/nearblack
+%{_bindir}/ogr*
+%{_bindir}/sozip
 %{_datadir}/bash-completion/completions/*
-%{_mandir}/man1/gdal*.1*
-%exclude %{_mandir}/man1/gdal-config.1*
-%exclude %{_mandir}/man1/gdal2tiles.1*
 %exclude %{_mandir}/man1/gdal_fillnodata.1*
 %exclude %{_mandir}/man1/gdal_merge.1*
 %exclude %{_mandir}/man1/gdal_retile.1*
 %exclude %{_mandir}/man1/gdal_sieve.1*
+%exclude %{_mandir}/man1/gdal-config.1*
+%exclude %{_mandir}/man1/gdal2tiles.1*
+%{_mandir}/man1/gdal*.1*
 %{_mandir}/man1/nearblack.1*
 %{_mandir}/man1/ogr*.1*
 %{_mandir}/man1/gnm*.1.*
+%{_mandir}/man1/sozip.1.*
 
 %files libs
 %license LICENSE.TXT
@@ -357,13 +414,13 @@ popd
 
 %files python-tools
 %{_bindir}/*.py
-%{_mandir}/man1/pct2rgb.1*
-%{_mandir}/man1/rgb2pct.1*
-%{_mandir}/man1/gdal2tiles.1*
 %{_mandir}/man1/gdal_fillnodata.1*
 %{_mandir}/man1/gdal_merge.1*
 %{_mandir}/man1/gdal_retile.1*
 %{_mandir}/man1/gdal_sieve.1*
+%{_mandir}/man1/gdal2tiles.1*
+%{_mandir}/man1/pct2rgb.1*
+%{_mandir}/man1/rgb2pct.1*
 
 
 %changelog

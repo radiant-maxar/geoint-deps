@@ -8,10 +8,10 @@ Subject: [PATCH] autotest/osr: make it work with latest PROJ master
  autotest/osr/osr_proj4.py | 5 +++++
  2 files changed, 10 insertions(+)
 
-diff --git a/gdalautotest-3.6.4/osr/osr_compd.py b/gdalautotest-3.6.4/osr/osr_compd.py
+diff --git a/gdalautotest-3.7.0/osr/osr_compd.py b/gdalautotest-3.7.0/osr/osr_compd.py
 index 4a55a946d03..15144941b60 100755
---- a/gdalautotest-3.6.4/osr/osr_compd.py
-+++ b/gdalautotest-3.6.4/osr/osr_compd.py
+--- a/gdalautotest-3.7.0/osr/osr_compd.py
++++ b/gdalautotest-3.7.0/osr/osr_compd.py
 @@ -267,6 +267,11 @@ def test_osr_compd_6():
          "Unknown based on GRS80 ellipsoid using towgs84=0,0,0,0,0,0,0",
          "Unknown_based_on_GRS80_ellipsoid",
@@ -24,11 +24,11 @@ index 4a55a946d03..15144941b60 100755
      wkt = wkt.replace(
          "unknown using geoidgrids=g2003conus.gtx,g2003alaska.gtx,g2003h01.gtx,g2003p01.gtx",
          "unknown",
-diff --git a/gdalautotest-3.6.4/osr/osr_proj4.py b/gdalautotest-3.6.4/osr/osr_proj4.py
+diff --git a/gdalautotest-3.7.0/osr/osr_proj4.py b/gdalautotest-3.7.0/osr/osr_proj4.py
 index f5d14e65290..5c511a9fb1e 100755
---- a/gdalautotest-3.6.4/osr/osr_proj4.py
-+++ b/gdalautotest-3.6.4/osr/osr_proj4.py
-@@ -242,6 +242,11 @@ def test_osr_proj4_10():
+--- a/gdalautotest-3.7.0/osr/osr_proj4.py
++++ b/gdalautotest-3.7.0/osr/osr_proj4.py
+@@ -229,6 +229,11 @@ def test_osr_proj4_10():
          "Unknown based on WGS84 ellipsoid using towgs84=0,0,0,0,0,0,0",
          "Unknown_based_on_WGS84_ellipsoid",
      )
