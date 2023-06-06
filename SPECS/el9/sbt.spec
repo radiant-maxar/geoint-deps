@@ -14,8 +14,8 @@ Source3:        sbt.gpg
 
 
 Requires:       apache-ivy
-Requires:       java-11-openjdk
-Requires:       java-11-openjdk-devel
+Requires:       java-devel-openjdk
+Requires:       java-openjdk
 
 
 %description
