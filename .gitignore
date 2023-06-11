@@ -9,6 +9,7 @@ SOURCES/el?/*.asc
 SOURCES/el?/*.bz2
 SOURCES/el?/*.gem
 SOURCES/el?/*.gz
+SOURCES/el?/*.[jw]ar
 SOURCES/el?/*.otf
 SOURCES/el?/*.pbf
 SOURCES/el?/*.pdf
