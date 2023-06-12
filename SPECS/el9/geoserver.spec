@@ -283,10 +283,10 @@ GEOSERVER_ENCODING="\${GEOSERVER_ENCODING:-UTF-8}"
 export GEOSERVER_ENCODING
 
 # Necessary to load GDAL via JNI
-LD_LIBRARY_PATH="\${LD_LIBRARY_PATH:-%{_usr}/lib/java/gdal:%{_libdir}}"
+LD_LIBRARY_PATH="\${GEOSERVER_LD_LIBRARY_PATH:-%{_usr}/lib/java/gdal:%{_libdir}}"
 export LD_LIBRARY_PATH
 
-PROXY_BASE_URL="\${PROXY_BASE_URL:-http://localhost:8080/geoserver}"
+PROXY_BASE_URL="\${GEOSERVER_PROXY_BASE_URL:-http://localhost:8080/geoserver}"
 export PROXY_BASE_URL
 
 JDK_JAVA_OPTIONS="\${JDK_JAVA_OPTIONS} \\
