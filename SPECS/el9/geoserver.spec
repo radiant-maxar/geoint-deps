@@ -19,7 +19,7 @@ Version:        %{rpmbuild_version}
 Release:        %{rpmbuild_release}%{?dist}
 Summary:        GeoServer is an open source server for sharing geospatial data.
 
-License:        ASL 1.1, ASL 2.0, EPL, EPSG, GeoTools, HSQL, GPLv2, GPLv3, LGPL-2.1, OGC, and W3C
+License:        Apache-1.1 AND Apache-2.0 AND BSD-3Clause AND EPL-2.0 AND EPSG AND GeoTools AND HSQL AND GPLv2 AND GPLv3 AND LGPL-2.1 AND LGPL-3.0 AND MIT AND OGC-1.0 AND W3C
 URL:            https://geoserver.org
 
 BuildArch:      noarch
@@ -105,7 +105,7 @@ Source114:      %{geoserver_community_url}-webp-plugin.zip
 
 %description
 GeoServer is an open source software server written in Java that allows users to share and edit geospatial data.
-Designed for interoperability, it publishes data from any major spatial data source using open standards.
+Designed for interoperability AND it publishes data from any major spatial data source using open standards.
 
 
 %package data
@@ -128,7 +128,7 @@ GeoFence is a GeoServer plugin that allows far more advanced security configurat
 
 %package geonode
 Summary:       GeoServer GeoNode Extension
-License:       ASL 1.1, ASL 2.0, GPLv2, and GPLv3
+License:       AGPL-3.0-only AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND GPLv2 AND GPLv3 AND LGPL-2.1 AND LGPL-3.0 AND MIT
 Requires:      geoserver-geofence = %{version}-%{release}
 Requires:      geoserver-oracle = %{version}-%{release}
 
@@ -138,7 +138,7 @@ Requires:      geoserver-oracle = %{version}-%{release}
 
 %package oracle
 Summary:       GeoServer Oracle Extension
-License:       LGPL-2.1 and Oracle FUTC
+License:       LGPL-2.1 AND OracleFUTC
 Requires:      geoserver = %{version}-%{release}
 
 %description oracle
