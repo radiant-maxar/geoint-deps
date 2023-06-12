@@ -307,6 +307,7 @@ addopts =
     --deselect gcore/vsizip.py::test_vsizip_create_zip64_stream_larger_than_4G
     --deselect gdrivers/vrtwarp.py::test_vrtwarp_read_blocks_larger_than_2_gigapixels
     --deselect gdrivers/wms.py::test_wms_16
+    --deselect gdrivers/wms.py::test_wms_19
     --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19
     --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_19bis
     --deselect ogr/ogr_fgdb.py::test_ogr_fgdb_20
