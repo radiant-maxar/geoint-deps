@@ -13,7 +13,6 @@ Source2:        https://github.com/sbt/sbt/releases/download/v%{version}/sbt-%{v
 Source3:        sbt.gpg
 
 
-Requires:       apache-ivy
 Requires:       java-devel-openjdk
 Requires:       java-openjdk
 

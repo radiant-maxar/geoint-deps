@@ -46,6 +46,8 @@ FILEGDBAPI_RPM := $(call rpm_file,FileGDBAPI)
 G2CLIB_RPM := $(call rpm_file,g2clib)
 GDAL_RPM := $(call rpm_file,gdal)
 GEOS_RPM := $(call rpm_file,geos)
+GEOSERVER_RPM := $(call rpm_file,geoserver)
+GEOSERVER_GEONODE_DATA_RPM := $(call rpm_file,geoserver-geonode-data)
 JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
@@ -85,6 +87,8 @@ RPMBUILD_RPMS := \
 	g2clib \
 	gdal \
 	geos \
+	geoserver \
+	geoserver-geonode-data \
 	journald-cloudwatch-logs \
 	libgeotiff \
 	libosmium \
@@ -201,6 +205,8 @@ gdal: $(ARMADILLO_RPM) $(CGAL_RPM) $(FILEGDBAPI_RPM) $(G2CLIB_RPM) $(GEOS_RPM) $
       $(LIBGEOTIFF_RPM) $(SFCGAL_RPM) \
       $(GDAL_RPM)
 geos: $(GEOS_RPM)
+geoserver: $(GEOSERVER_RPM)
+geoserver-geonode-data: $(GEOSERVER_GEONODE_DATA_RPM)
 journald-cloudwatch-logs: $(JOURNALD_CLOUDWATCH_LOGS_RPM)
 libgeotiff: $(PROJ_RPM) \
             $(LIBGEOTIFF_RPM)
