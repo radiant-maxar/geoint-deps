@@ -72,7 +72,7 @@ x-rpmbuild:
       defines:
         gdal_version: *gdal_version
       image: rpmbuild-generic
-      version: &geoserver_version 2.23.1-1
+      version: &geoserver_version 2.23.1-2
     geoserver-geonode-data:
       arch: noarch
       defines:

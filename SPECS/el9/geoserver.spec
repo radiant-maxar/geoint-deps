@@ -234,6 +234,23 @@ for plugin in app-schema authkey backup-restore charts control-flow css dxf exce
     %{__sed} -i -e "s|plugins/${plugin}|%{geoserver_webapp}/WEB-INF/lib|g" geoserver-libs.txt
     %{__install} plugins/${plugin}/*.jar %{buildroot}%{geoserver_webapp}/WEB-INF/lib
 done
+
+# Remove duplicate cglib.
+%{__rm} -v \
+ plugins/geofence/cglib-nodep-2.2.jar \
+ plugins/geonode/WEB-INF/lib/cglib-nodep-2.2.jar
+%{__install} plugins/geonode/WEB-INF/lib/cglib-2.2.jar %{buildroot}%{geoserver_webapp}/WEB-INF/lib
+echo %{geoserver_webapp}/WEB-INF/lib/cglib-2.2.jar >> geoserver-libs.txt
+
+# Want all geofence library jars in main package (e.g., hibernate and PostGIS libraries).
+%{_bindir}/find plugins/geofence -type f ! -name \*geofence\*.jar -print \
+ -exec %{__install} -m 0644 {} %{buildroot}%{geoserver_webapp}/WEB-INF/lib \; >> geoserver-libs.txt
+%{__sed} -i -e "s|plugins/geofence|%{geoserver_webapp}/WEB-INF/lib|g" geoserver-libs.txt
+%{__install} %{SOURCE61} %{SOURCE62} %{buildroot}%{geoserver_webapp}/WEB-INF/lib
+echo "%{geoserver_webapp}/WEB-INF/lib/$(basename %{SOURCE61})" >> geoserver-libs.txt
+echo "%{geoserver_webapp}/WEB-INF/lib/$(basename %{SOURCE62})" >> geoserver-libs.txt
+
+# Ensure only unique entries in filelist.
 %{_bindir}/sort geoserver-libs.txt | %{_bindir}/uniq > geoserver-libs-uniq.txt
 
 # Package Oracle separately due to licensing.
@@ -253,9 +270,6 @@ popd
 %{_bindir}/find plugins/geofence -type f -name \*.jar >> geoserver-geofence-libs.txt
 %{__sed} -i -e "s|plugins/geofence|%{geoserver_webapp}/WEB-INF/lib|g" geoserver-geofence-libs.txt
 %{__install} plugins/geofence/*.jar %{buildroot}%{geoserver_webapp}/WEB-INF/lib
-%{__install} %{SOURCE61} %{SOURCE62} %{buildroot}%{geoserver_webapp}/WEB-INF/lib
-echo "%{geoserver_webapp}/WEB-INF/lib/$(basename %{SOURCE61})" >> geoserver-geofence-libs.txt
-echo "%{geoserver_webapp}/WEB-INF/lib/$(basename %{SOURCE62})" >> geoserver-geofence-libs.txt
 
 # Package GeoNode's GeoServer files separately.
 pushd plugins/geonode/WEB-INF/lib
@@ -291,6 +305,8 @@ export PROXY_BASE_URL
 
 JDK_JAVA_OPTIONS="\${JDK_JAVA_OPTIONS} \\
 -Dfile.encoding=UTF8 \\
+-Dgeofence.dir=\${GEOSERVER_DATA_DIR}/geofence \\
+-Dgeofence-ovr=file:\${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties \\
 -Dgeoserver.xframe.shouldSetPolicy=\${GEOSERVER_XFRAME_OPTIONS:-true} \\
 -Dgwc.context.suffix=gwc \\
 -Djava.awt.headless=true \\
