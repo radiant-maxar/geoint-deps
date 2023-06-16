@@ -129,7 +129,6 @@ GeoFence is a GeoServer plugin that allows far more advanced security configurat
 %package geonode
 Summary:       GeoServer GeoNode Extension
 License:       AGPL-3.0-only AND Apache-1.1 AND Apache-2.0 AND BSD-2-Clause AND GPLv2 AND GPLv3 AND LGPL-2.1 AND LGPL-3.0 AND MIT
-Requires:      geoserver-geofence = %{version}-%{release}
 Requires:      geoserver-oracle = %{version}-%{release}
 
 %description geonode
