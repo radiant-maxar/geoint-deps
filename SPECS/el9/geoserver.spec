@@ -92,14 +92,10 @@ Source101:      %{geoserver_community_url}-gdal-wps-plugin.zip
 Source102:      %{geoserver_community_url}-geopkg-plugin.zip
 Source103:      %{geoserver_community_url}-ogr-datastore-plugin.zip
 Source104:      %{geoserver_community_url}-s3-geotiff-plugin.zip
-Source105:      %{geoserver_community_url}-saml-plugin.zip
-Source106:      %{geoserver_community_url}-sec-keycloak-plugin.zip
 Source107:      %{geoserver_community_url}-sec-oauth2-geonode-plugin.zip
 Source108:      %{geoserver_community_url}-sec-oauth2-github-plugin.zip
 Source109:      %{geoserver_community_url}-sec-oauth2-google-plugin.zip
 Source110:      %{geoserver_community_url}-sec-oauth2-openid-connect-plugin.zip
-Source111:      %{geoserver_community_url}-taskmanager-core-plugin.zip
-Source112:      %{geoserver_community_url}-taskmanager-s3-plugin.zip
 Source113:      %{geoserver_community_url}-vsi-plugin.zip
 Source114:      %{geoserver_community_url}-webp-plugin.zip
 
@@ -146,12 +142,13 @@ Requires:      geoserver = %{version}-%{release}
 
 %prep
 %autosetup -c
-for plugin in app-schema authkey backup-restore charts control-flow css dxf excel feature-pregeneralized gdal geofence geopkg geonode h2 imagemap importer mapml mbstyle monitor mysql oauth2 params-extractor printing pyramid querylayer saml s3-geotiff sldservice sqlserver taskmanager vectortiles web-resource webp wmts-multi-dimensional wps xslt ysld; do
+for plugin in app-schema authkey backup-restore charts control-flow css dxf excel feature-pregeneralized gdal geofence geopkg geonode h2 imagemap importer mapml mbstyle monitor mysql oauth2 params-extractor printing pyramid querylayer saml s3-geotiff sldservice sqlserver vectortiles web-resource webp wmts-multi-dimensional wps xslt ysld; do
     %{__mkdir_p} plugins/${plugin}
 done
 %{__unzip} %{SOURCE1}  -d plugins/app-schema
 %{__unzip} %{SOURCE2}  -d plugins/authkey
 %{__unzip} %{SOURCE99}  -d plugins/backup-restore
+%{__rm} -v plugins/backup-restore/gt-jdbc*.jar
 %{__unzip} %{SOURCE4}  -d plugins/charts
 %{__unzip} %{SOURCE5}  -d plugins/control-flow
 %{__unzip} %{SOURCE6}  -d plugins/css
@@ -182,17 +179,13 @@ done
 %{__unzip} %{SOURCE38} -d plugins/printing
 %{__unzip} %{SOURCE39} -d plugins/pyramid
 %{__unzip} %{SOURCE40} -d plugins/querylayer
-%{__unzip} %{SOURCE106} -d plugins/oauth2
 %{__unzip} -o %{SOURCE107} -d plugins/oauth2
 %{__unzip} -o %{SOURCE108} -d plugins/oauth2
 %{__unzip} -o %{SOURCE109} -d plugins/oauth2
 %{__unzip} -o %{SOURCE110} -d plugins/oauth2
-%{__unzip} %{SOURCE105} -d plugins/saml
 %{__unzip} %{SOURCE104} -d plugins/s3-geotiff
 %{__unzip} %{SOURCE41} -d plugins/sldservice
 %{__unzip} %{SOURCE42} -d plugins/sqlserver
-%{__unzip} %{SOURCE111} -d plugins/taskmanager
-%{__unzip} -o %{SOURCE112} -d plugins/taskmanager
 %{__unzip} %{SOURCE43} -d plugins/vectortiles
 %{__unzip} %{SOURCE45} -d plugins/web-resource
 %{__unzip} %{SOURCE114} -d plugins/webp
@@ -219,6 +212,9 @@ done
 %{_bindir}/find %{buildroot} -type f -name \*spring-security-\*5.7.8\*.jar -print -delete
 %{__install} -m 0644 %{SOURCE67} %{buildroot}%{geoserver_webapp}/WEB-INF/lib
 
+# Want Hibernate and PostGIS jars in main package.
+%{__install} %{SOURCE61} %{SOURCE62} %{buildroot}%{geoserver_webapp}/WEB-INF/lib
+
 # Install GeoServer data into separate location.
 %{__mv} -v %{buildroot}%{geoserver_webapp}/data %{buildroot}%{geoserver_data}
 %{_bindir}/touch %{buildroot}%{geoserver_data}/data/s3.properties
@@ -226,28 +222,13 @@ done
 %{_bindir}/find %{buildroot}%{geoserver_webapp}/WEB-INF/lib -type f -name \*.jar > geoserver-libs.txt
 %{__sed} -i -e 's|%{buildroot}||g' geoserver-libs.txt
 
-for plugin in app-schema authkey backup-restore charts control-flow css dxf excel feature-pregeneralized gdal geopkg h2 imagemap importer mapml mbstyle monitor mysql oauth2 params-extractor printing pyramid querylayer saml s3-geotiff sldservice sqlserver vectortiles web-resource webp wmts-multi-dimensional wps xslt ysld; do
+for plugin in app-schema authkey backup-restore charts control-flow css dxf excel feature-pregeneralized gdal geopkg h2 imagemap importer mapml mbstyle monitor mysql oauth2 params-extractor printing pyramid querylayer s3-geotiff sldservice sqlserver vectortiles web-resource webp wmts-multi-dimensional wps xslt ysld; do
     # Rename any jars with "SNAPSHOT" versions in their names.
     %{_bindir}/find plugins/${plugin} -type f -name \*%{geoserver_major_minor}-SNAPSHOT.jar -exec %{__python3} -c "import os; os.rename('{}', '{}'.replace('%{geoserver_major_minor}-SNAPSHOT', '%{version}'))" \;
     %{_bindir}/find plugins/${plugin} -type f -name \*.jar >> geoserver-libs.txt
     %{__sed} -i -e "s|plugins/${plugin}|%{geoserver_webapp}/WEB-INF/lib|g" geoserver-libs.txt
     %{__install} plugins/${plugin}/*.jar %{buildroot}%{geoserver_webapp}/WEB-INF/lib
 done
-
-# Remove duplicate cglib.
-%{__rm} -v \
- plugins/geofence/cglib-nodep-2.2.jar \
- plugins/geonode/WEB-INF/lib/cglib-nodep-2.2.jar
-%{__install} plugins/geonode/WEB-INF/lib/cglib-2.2.jar %{buildroot}%{geoserver_webapp}/WEB-INF/lib
-echo %{geoserver_webapp}/WEB-INF/lib/cglib-2.2.jar >> geoserver-libs.txt
-
-# Want all geofence library jars in main package (e.g., hibernate and PostGIS libraries).
-%{_bindir}/find plugins/geofence -type f ! -name \*geofence\*.jar -print \
- -exec %{__install} -m 0644 {} %{buildroot}%{geoserver_webapp}/WEB-INF/lib \; >> geoserver-libs.txt
-%{__sed} -i -e "s|plugins/geofence|%{geoserver_webapp}/WEB-INF/lib|g" geoserver-libs.txt
-%{__install} %{SOURCE61} %{SOURCE62} %{buildroot}%{geoserver_webapp}/WEB-INF/lib
-echo "%{geoserver_webapp}/WEB-INF/lib/$(basename %{SOURCE61})" >> geoserver-libs.txt
-echo "%{geoserver_webapp}/WEB-INF/lib/$(basename %{SOURCE62})" >> geoserver-libs.txt
 
 # Ensure only unique entries in filelist.
 %{_bindir}/sort geoserver-libs.txt | %{_bindir}/uniq > geoserver-libs-uniq.txt
@@ -304,8 +285,6 @@ export PROXY_BASE_URL
 
 JDK_JAVA_OPTIONS="\${JDK_JAVA_OPTIONS} \\
 -Dfile.encoding=UTF8 \\
--Dgeofence.dir=\${GEOSERVER_DATA_DIR}/geofence \\
--Dgeofence-ovr=file:\${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties \\
 -Dgeoserver.xframe.shouldSetPolicy=\${GEOSERVER_XFRAME_OPTIONS:-true} \\
 -Dgwc.context.suffix=gwc \\
 -Djava.awt.headless=true \\
@@ -349,6 +328,12 @@ JDK_JAVA_OPTIONS="\${JDK_JAVA_OPTIONS} \\
 export JDK_JAVA_OPTIONS
 EOF
 
+cat >> %{buildroot}%{tomcat_confd}/geoserver-geofence.conf <<EOF
+JDK_JAVA_OPTIONS="\${JDK_JAVA_OPTIONS} \\
+-Dgeofence.dir=\${GEOSERVER_DATA_DIR}/geofence \\
+-Dgeofence-ovr=file:\${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties
+export JDK_JAVA_OPTIONS
+EOF
 
 %post
 # Copy in GDAL jar to a versioned location.
@@ -381,6 +366,7 @@ EOF
 %files -f geoserver-geofence-libs.txt geofence
 %doc plugins/geofence/NOTICE.html
 %license plugins/geofence/GPL.html
+%{tomcat_confd}/geoserver-geofence.conf
 
 %files -f geoserver-geonode-libs.txt geonode
 
