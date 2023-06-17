@@ -34,7 +34,7 @@ Source2:       https://repo1.maven.org/maven2/org/postgis/postgis-jdbc/1.3.3/pos
 Source3:       https://repo1.maven.org/maven2/org/springframework/security/spring-security-config/5.7.7/spring-security-config-5.7.7.jar
 Source4:       https://repo1.maven.org/maven2/org/springframework/security/spring-security-core/5.7.7/spring-security-core-5.7.7.jar
 Source5:       https://repo1.maven.org/maven2/org/springframework/security/spring-security-crypto/5.7.7/spring-security-crypto-5.7.7.jar
-Source6:       https://repo1.maven.org/maven2/org/springframework/security/spring-ecurity-web/5.7.7/spring-security-web-5.7.7.jar
+Source6:       https://repo1.maven.org/maven2/org/springframework/security/spring-security-web/5.7.7/spring-security-web-5.7.7.jar
 Source7:       https://repo1.maven.org/maven2/org/springframework/security/spring-security-ldap/5.7.7/spring-security-ldap-5.7.7.jar
 
 
