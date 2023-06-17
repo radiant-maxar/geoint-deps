@@ -68,7 +68,7 @@ jobs:
           - g2clib
           - geos
           - geoserver
-          - geoserver-geonode-data
+          - geoserver-geonode
           - journald-cloudwatch-logs
           - libosmium
           - libpqxx
