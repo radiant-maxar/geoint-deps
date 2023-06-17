@@ -331,7 +331,7 @@ EOF
 cat >> %{buildroot}%{tomcat_confd}/geoserver-geofence.conf <<EOF
 JDK_JAVA_OPTIONS="\${JDK_JAVA_OPTIONS} \\
 -Dgeofence.dir=\${GEOSERVER_DATA_DIR}/geofence \\
--Dgeofence-ovr=file:\${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties
+-Dgeofence-ovr=file:\${GEOSERVER_DATA_DIR}/geofence/geofence-datasource-ovr.properties"
 export JDK_JAVA_OPTIONS
 EOF
 
