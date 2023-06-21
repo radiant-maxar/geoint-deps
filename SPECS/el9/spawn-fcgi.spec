@@ -5,7 +5,7 @@ Release:        %{rpmbuild_release}%{?dist}
 
 License:        BSD
 URL:            https://redmine.lighttpd.net/projects/spawn-fcgi/
-Source0:        http://download.lighttpd.net/spawn-fcgi/releases-1.6.x/spawn-fcgi-%{version}.tar.gz
+Source0:        https://github.com/lighttpd/spawn-fcgi/archive/refs/tags/spawn-fcgi-%{version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  make
@@ -16,10 +16,11 @@ processes, which can be local or remote.
 
 
 %prep
-%autosetup
+%autosetup -n spawn-fcgi-spawn-fcgi-%{version}
 
 
 %build
+./autogen.sh
 %configure
 %make_build
 
