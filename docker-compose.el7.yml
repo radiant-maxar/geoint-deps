@@ -216,7 +216,7 @@ x-rpmbuild:
       version: &rubygem_pg_version 1.3.5-1
     rubygem-libxml-ruby:
       image: rpmbuild-rubygem-libxml-ruby
-      version: &rubygem_libxml_ruby_version 4.0.0-1
+      version: &rubygem_libxml_ruby_version 4.1.1-1
     sbt:
       image: rpmbuild-generic
       version: &sbt_version 1.9.0-1
