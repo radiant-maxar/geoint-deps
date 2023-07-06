@@ -8,7 +8,7 @@ URL:            https://redmine.lighttpd.net/projects/spawn-fcgi/
 Source0:        https://github.com/lighttpd/spawn-fcgi/archive/refs/tags/spawn-fcgi-%{version}.tar.gz
 
 BuildRequires:  gcc
-BuildRequires:  make
+BuildRequires:  cmake
 
 %description
 This package contains the spawn-fcgi program used for spawning FastCGI
@@ -20,13 +20,14 @@ processes, which can be local or remote.
 
 
 %build
-./autogen.sh
-%configure
-%make_build
+%cmake \
+    -DBUILD_EXTRA_WARNINGS:BOOL=ON \
+    -DCMAKE_BUILD_TYPE:STRING=Release
+%cmake_build
 
 
 %install
-%make_install
+%cmake_install
 
 
 %files
