@@ -131,7 +131,7 @@ Source109:      https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_
 Source110:      https://github.com/notofonts/noto-fonts/raw/%{fonts_google_noto_git_ref}/hinted/ttf/NotoSerifTibetan/NotoSerifTibetan-Regular.ttf
 
 Source111:      https://fonts.google.com/download?family=Noto%20Emoji#/NotoEmoji.zip
-Source112:      https://osdn.net/projects/hanazono-font/downloads/68253/hanazono-%{fonts_hanazono_version}.zip
+Source112:      https://geoint-deps.s3.amazonaws.com/support-files/hanazono-%{fonts_hanazono_version}.zip
 
 BuildArch:      noarch
 
