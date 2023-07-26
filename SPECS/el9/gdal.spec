@@ -22,10 +22,6 @@ Source0:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdal
 Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.tar.gz
 Source2:        gdal.pom
 
-# Patch: autotest/osr: make it work with latest PROJ master
-# https://github.com/OSGeo/gdal/commit/f21d487e74bfa5eb3ea65d4ee200e66a6624648f
-Patch0:         gdal-proj-9.2.1.patch
-
 BuildRequires: automake
 BuildRequires: autoconf
 BuildRequires: ant
