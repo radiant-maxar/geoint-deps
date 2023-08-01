@@ -42,6 +42,7 @@ Requires:       google-noto-cjk-fonts
 Requires:       google-noto-emoji-color-fonts
 Requires:       google-noto-emoji-fonts
 Requires:       google-noto-fonts-common
+Requires:       google-noto-fonts-extra
 Requires:       google-noto-kufi-arabic-fonts
 Requires:       google-noto-naskh-arabic-fonts
 Requires:       google-noto-naskh-arabic-ui-fonts
@@ -154,6 +155,9 @@ Requires:       google-noto-serif-georgian-fonts
 Requires:       google-noto-serif-khmer-fonts
 Requires:       google-noto-serif-lao-fonts
 Requires:       google-noto-serif-thai-fonts
+Requires:       hanazono-fonts
+Requires:       %{name}-data-fossgis = %{version}-%{release}
+Requires:       %{name}-data-natural-earth = %{version}-%{release}
 Requires:       python3-psycopg2
 Requires:       python36-PyYAML
 Requires:       python36-requests
