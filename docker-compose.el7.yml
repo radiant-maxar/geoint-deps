@@ -106,7 +106,7 @@ x-rpmbuild:
       version: &ogdi_version 4.1.0-1
     openstreetmap-carto:
       image: rpmbuild-openstreetmap-carto
-      version: &openstreetmap_carto_version 5.4.0-3
+      version: &openstreetmap_carto_version 5.4.0-4
       arch: noarch
       defines:
         data_natural_earth_version: 5.1.0
