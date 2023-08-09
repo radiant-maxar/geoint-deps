@@ -10,7 +10,7 @@ Summary: Japanese Mincho-typeface TrueType font
 
 License: Hanazono Font License & OFL 1.1
 URL:     http://fonts.jp/hanazono/
-Source0: https://osdn.net/projects/hanazono-font/downloads/68253/%{archivename}.zip
+Source0: https://geoint-deps.s3.amazonaws.com/support-files/%{archivename}.zip
 Source1: %{name}-fontconfig.conf
 
 BuildArch: noarch
