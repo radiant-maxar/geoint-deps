@@ -14,8 +14,8 @@ License:        ASL 2.0 and MIT and BSD
 URL:            https://github.com/caddyserver/caddy
 Source0:        https://github.com/caddyserver/caddy/archive/v%{version}/caddy-%{version}.tar.gz
 Patch0:         caddy-no-binary-mods.patch
-
-BuildRequires:  git
+# Needed until > v2.7.3 (https://github.com/caddyserver/caddy/commit/6cdcc2a78208b1d30b37fb06780160fcad48aab4.patch)
+Patch1:         caddy-quic-go-with-go-1.21.patch
 
 
 %description
@@ -23,24 +23,17 @@ Caddy is a powerful, extensible platform to serve your sites, services, and apps
 
 
 %prep
-%autosetup -N
-cd "${HOME}"
-%{__rm} -fr %{_builddir}/caddy-%{version}
-%{__git} clone --single-branch -b v%{version} %{url} %{_builddir}/caddy-%{version}
-cd %{_builddir}/caddy-%{version}
-%autopatch -p1
+%autosetup -p1
 
 
 %build
 export CGO_CFLAGS="%{optflags}"
 export CGO_LDFLAGS="%{?build_ldflags}"
-%{__mkdir_p} caddy@%{version}
-%{__install} cmd/caddy/main.go caddy@%{version}
-pushd caddy@%{version}
-go mod init caddy
-go get -v
-go build -v
-popd
+go build \
+ -ldflags '-X github.com/caddyserver/caddy/v2.CustomVersion=v%{version}' \
+ -o cmd/caddy/caddy \
+ -v \
+ ./cmd/caddy
 
 
 %install
@@ -53,7 +46,7 @@ popd
  %{buildroot}%{caddy_home} \
  %{buildroot}%{caddy_run} \
  %{buildroot}%{caddy_config}
-%{__install} -p caddy@%{version}/caddy %{buildroot}%{_bindir}
+%{__install} -p cmd/caddy/caddy %{buildroot}%{_bindir}
 echo "d %{caddy_run} 0750 %{caddy_user} %{caddy_group} -" > \
      %{buildroot}%{_usr}/lib/tmpfiles.d/caddy.conf
 
@@ -121,11 +114,11 @@ EOF
 %check
 export CGO_CFLAGS="%{optflags}"
 export CGO_LDFLAGS="%{?build_ldflags}"
-go get -v
-pushd cmd/caddy
-go build -v
-popd
-go test -v
+go test -v ./...
+# Test version number
+if [ "$(cmd/caddy/caddy version)" != "v%{version}" ]; then
+    exit 1
+fi
 
 
 %pre
