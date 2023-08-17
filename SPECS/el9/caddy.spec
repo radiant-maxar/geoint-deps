@@ -17,6 +17,8 @@ Patch0:         caddy-no-binary-mods.patch
 # Needed until > v2.7.3 (https://github.com/caddyserver/caddy/commit/6cdcc2a78208b1d30b37fb06780160fcad48aab4.patch)
 Patch1:         caddy-quic-go-with-go-1.21.patch
 
+BuildRequires:  systemd-rpm-macros
+
 
 %description
 Caddy is a powerful, extensible platform to serve your sites, services, and apps, written in Go.
