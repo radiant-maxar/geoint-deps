@@ -1,5 +1,6 @@
 # The following macros are also required:
 # * libosmium_min_version
+# * nlohmann_json_version
 # * postgis_min_version
 # * postgres_version
 # * proj_min_version
@@ -15,8 +16,10 @@ Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 License:        GPLv2+
 URL:            https://github.com/openstreetmap/osm2pgsql
 Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+Source1:        https://github.com/nlohmann/json/releases/download/v%{nlohmann_json_version}/json.hpp
 Patch0:         osm2pgsql-replication.patch
 
+BuildRequires:  argparse-manpage
 BuildRequires:  boost169-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  cmake3
@@ -29,6 +32,7 @@ BuildRequires:  libtool
 BuildRequires:  libxml2-devel
 BuildRequires:  lua-devel
 BuildRequires:  luajit-devel
+BuildRequires:  pandoc
 BuildRequires:  postgresql%{postgres_version}-devel
 BuildRequires:  proj-devel >= %{proj_min_version}
 BuildRequires:  protobuf-c-devel >= %{protobuf_c_min_version}
@@ -50,7 +54,7 @@ geospatial analysis.
 
 %package replication
 Summary:        Update an osm2pgsql database with changes from a OSM replication server.
-Requires:	%{name} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       python3-osmium
 Requires:       python3-psycopg2
 
@@ -63,20 +67,22 @@ it to the database.
 
 %prep
 %autosetup -p1
-%{__mkdir} build
+%{__mkdir} build nlohmann
+%{__mv} %{SOURCE1} nlohmann
 
 
 %build
 . /opt/rh/devtoolset-9/enable
 pushd build
 %cmake3 .. -G "Unix Makefiles" \
-    -DCMAKE_BUILD_TYPE=Release \
     -DBOOST_INCLUDEDIR:PATH=%{_includedir}/boost169 \
     -DBOOST_LIBRARYDIR:PATH=%{_libdir}/boost169 \
     -DBUILD_SHARED_LIBS:BOOL=ON \
     -DBUILD_TESTS:BOOL=ON \
+    -DCMAKE_BUILD_TYPE=Release \
     -DEXTERNAL_LIBOSMIUM:BOOL=ON \
     -DEXTERNAL_PROTOZERO:BOOL=ON \
+    -DNLOHMANN_INCLUDE_DIR=.. \
     -DPostgreSQL_INCLUDE_DIR:PATH=$(pg_config --includedir) \
     -DPostgreSQL_LIBRARY:PATH=$(pg_config --libdir)/libpq.so \
     -DWITH_LUAJIT:BOOL=ON
