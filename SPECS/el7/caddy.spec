@@ -14,8 +14,6 @@ License:        ASL 2.0 and MIT and BSD
 URL:            https://github.com/caddyserver/caddy
 Source0:        https://github.com/caddyserver/caddy/archive/v%{version}/caddy-%{version}.tar.gz
 Patch0:         caddy-no-binary-mods.patch
-# Needed until > v2.7.3 (https://github.com/caddyserver/caddy/commit/6cdcc2a78208b1d30b37fb06780160fcad48aab4.patch)
-Patch1:         caddy-quic-go-with-go-1.21.patch
 
 
 %description

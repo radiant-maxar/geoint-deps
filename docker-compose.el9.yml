@@ -57,7 +57,7 @@ x-rpmbuild:
       version: &armadillo_version 12.6.2-1
     caddy:
       image: rpmbuild-caddy
-      version: &caddy_version 2.7.3-1
+      version: &caddy_version 2.7.4-1
     gdal:
       image: rpmbuild-gdal
       version: &gdal_version 3.7.1-1
