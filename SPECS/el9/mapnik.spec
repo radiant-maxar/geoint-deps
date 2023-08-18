@@ -14,19 +14,16 @@ Source0:   https://github.com/mapnik/mapnik/releases/download/v%{version}/mapnik
 Source1:   https://github.com/mapnik/test-data/archive/v%{version}/test-data-v%{version}.tar.gz
 Source2:   https://github.com/mapnik/test-data-visual/archive/v%{version}/test-data-visual-v%{version}.tar.gz
 Source3:   mapnik-data.license
-Source4:   mapnik-viewer.desktop
-# Allow the viewer to be built against uninstalled libraries
-Patch0:    mapnik-build-viewer.patch
 # Build against the system version of sparsehash
-Patch1:    mapnik-system-sparsehash.patch
+Patch0:    mapnik-system-sparsehash.patch
 # Allow some minor differences in the visual tests
-Patch2:    mapnik-visual-compare.patch
+Patch1:    mapnik-visual-compare.patch
 # Patch out attempt to set rpath
-Patch3:    mapnik-rpath.patch
+Patch2:    mapnik-rpath.patch
 # https://github.com/mapnik/mapnik/pull/4202
-Patch4:    mapnik-proj.patch
+Patch3:    mapnik-proj.patch
 # https://github.com/mapnik/mapnik/pull/4159
-Patch5:    mapnik-scons4.patch
+Patch4:    mapnik-scons4.patch
 
 Requires: dejavu-lgc-serif-fonts
 Requires: dejavu-lgc-sans-fonts
@@ -58,7 +55,6 @@ BuildRequires: postgresql%{postgres_version}-devel
 BuildRequires: postgresql%{postgres_version}-server
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python3-scons
-BuildRequires: qt5-qtbase-devel
 BuildRequires: sqlite-devel
 BuildRequires: sparsehash-devel
 BuildRequires: zlib-devel
@@ -135,17 +131,6 @@ Miscellaneous utilities distributed with the Mapnik spatial visualization
 library.
 
 
-%package demo
-Summary:  Demo utility and some sample data distributed with mapnik
-License:  GPLv2+ and GeoGratis
-Requires: %{name}-devel = %{version}-%{release}
-Requires: python3-%{name}
-
-%description demo
-Demo application and sample vector datas distributed with the Mapnik
-spatial visualization library.
-
-
 %prep
 %setup -q -n mapnik-v%{version} -a 1 -a 2
 %autopatch -p1
@@ -157,8 +142,6 @@ spatial visualization library.
  -e 's/+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over/epsg:3857/g' \
  -e 's/+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs/epsg:4326/g' \
  test/data-visual/styles/*.xml
-%{_bindir}/iconv -f iso8859-1 -t utf-8 demo/data/COPYRIGHT.txt > COPYRIGHT.conv
-%{__mv} -f COPYRIGHT.conv demo/data/COPYRIGHT.txt
 %{__rm} -rf deps/mapnik/sparsehash
 
 
@@ -183,12 +166,6 @@ GDAL_DATA=$(gdal-config --datadir) \
 # build mapnik
 %{_bindir}/scons %{?_smp_mflags}
 
-# build mapnik viewer app
-pushd demo/viewer
-%qmake_qt5 viewer.pro
-%make_build %{?_smp_mflags}
-popd
-
 
 %install
 # install mapnik
@@ -196,11 +173,6 @@ popd
 
 # get rid of fonts use external instead
 %{__rm} -rf %{buildroot}%{_libdir}/%{name}/fonts
-
-# install more utils
-%{__mkdir_p} %{buildroot}%{_bindir}
-%{__install} -p -m 0755 demo/viewer/viewer %{buildroot}%{_bindir}/
-%{__install} -p -m 0644 %{SOURCE3} demo/data/
 
 # install pkgconfig file
 cat > %{name}.pc <<EOF
@@ -217,10 +189,6 @@ EOF
 
 %{__mkdir_p} %{buildroot}%{_datadir}/pkgconfig
 %{__install} -p -m 0644 %{name}.pc %{buildroot}%{_datadir}/pkgconfig
-
-# install desktop file
-%{__cp} %{SOURCE4} viewer.desktop
-%{_bindir}/desktop-file-install --dir=%{buildroot}%{_datadir}/applications viewer.desktop
 
 
 %check
@@ -276,16 +244,6 @@ LANG="C.UTF-8" %{__make} test
 %{_bindir}/mapnik-render
 %{_bindir}/shapeindex
 %{_bindir}/svg2png
-%{_bindir}/viewer
-%{_datadir}/applications/viewer.desktop
-
-
-%files demo
-%doc demo/c++
-%doc demo/data
-%doc demo/python
-%doc demo/simple-renderer
-%license demo/data/mapnik-data.license
 
 
 %changelog
