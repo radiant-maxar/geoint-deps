@@ -1,13 +1,13 @@
 diff --git a/configure b/configure
-index a4908dc..c870df7 100755
+index 0e94580..e406a2e 100755
 --- a/configure
 +++ b/configure
-@@ -18511,7 +18511,7 @@ $as_echo "$OGR_ENABLED" >&6; }
+@@ -20531,7 +20531,7 @@ $as_echo "$OGR_ENABLED" >&6; }
  				LIBGDAL_CFLAGS=`$GDAL_CONFIG --cflags`
  
  		CPPFLAGS_SAVE="$CPPFLAGS"
 -		CPPFLAGS="$LIBGDAL_CFLAGS"
 +		CPPFLAGS="$LIBGDAL_CFLAGS -fPIC"
  		CFLAGS_SAVE="$CFLAGS"
- 		CFLAGS=`"$PG_CONFIG" --cflags`
  		CC_SAVE="$CC"
+ 
