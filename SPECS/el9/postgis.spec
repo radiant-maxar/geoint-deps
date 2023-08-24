@@ -80,7 +80,7 @@ Requires:	perl-DBD-Pg
 The %{name}-utils package provides the utilities for PostGIS.
 
 
-# Exclude Post
+# Excludes requiring Perl PostgreSQL module packages.
 %global __perl_requires %{SOURCE2}
 
 
