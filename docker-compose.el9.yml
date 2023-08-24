@@ -29,9 +29,9 @@ x-rpmbuild:
   # and runtime requirements.
   version_limits:
     gdal_min_version: &gdal_min_version 3.7.0
-    geos_min_version: &geos_min_version 3.11.0
+    geos_min_version: &geos_min_version 3.12.0
     libosmium_min_version: &libosmium_min_version 2.18.0
-    postgis_min_version: &postgis_min_version 3.3.0
+    postgis_min_version: &postgis_min_version 3.4.0
     proj_min_version: &proj_min_version 9.2.0
     protobuf-c_min_version: &protobuf_c_min_version 1.3.0
     protobuf_min_version: &protobuf_min_version 3.0.0
@@ -60,13 +60,13 @@ x-rpmbuild:
       version: &caddy_version 2.7.4-1
     gdal:
       image: rpmbuild-gdal
-      version: &gdal_version 3.7.1-1
+      version: &gdal_version 3.7.1-2
       defines:
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
-      version: &geos_version 3.11.2-1
+      version: &geos_version 3.12.0-1
     geoserver:
       arch: noarch
       defines:
@@ -157,7 +157,7 @@ x-rpmbuild:
       version: &passenger_version 6.0.18-1
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.3.3-1
+      version: &postgis_version 3.4.0-1
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
