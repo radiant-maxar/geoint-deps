@@ -146,9 +146,10 @@ x-rpmbuild:
         protozero_min_version: *protozero_min_version
     osm2pgsql:
       image: rpmbuild-osm2pgsql
-      version: &osm2pgsql_version 1.8.1-1
+      version: &osm2pgsql_version 1.9.1-1
       defines:
         libosmium_min_version: *libosmium_min_version
+        nlohmann_json_version: 3.11.2
         proj_min_version: *proj_min_version
         postgis_min_version: *postgis_min_version
         protobuf_c_min_version: *protobuf_c_min_version
