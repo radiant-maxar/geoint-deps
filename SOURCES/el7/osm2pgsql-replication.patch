@@ -1,7 +1,31 @@
 diff --git a/scripts/osm2pgsql-replication b/scripts/osm2pgsql-replication
-index 210aac84..e456a4d3 100755
+index 210aac84..99780b8e 100755
 --- a/scripts/osm2pgsql-replication
 +++ b/scripts/osm2pgsql-replication
+@@ -117,12 +117,12 @@ class DBConnection:
+         if args.database and any(part in args.database for part in ['=', '://']):
+             self.conn = psycopg.connect(args.database,
+                                         fallback_application_name="osm2pgsql-replication")
++            self.name = self.conn.info.dbname
+         else:
+             self.conn = psycopg.connect(dbname=args.database, user=args.username,
+                                         host=args.host, port=args.port,
+                                         fallback_application_name="osm2pgsql-replication")
+-
+-        self.name = self.conn.info.dbname
++            self.name = args.database
+ 
+     def __enter__(self):
+         return self
+@@ -138,7 +138,7 @@ class DBConnection:
+             return cur.rowcount > 0
+ 
+     def table_id(self, name):
+-        return sql.Identifier(self.schema, name)
++        return sql.Identifier(name)
+ 
+ 
+ class Osm2pgsqlProperties:
 @@ -214,11 +214,12 @@ class Osm2pgsqlProperties:
  
  class LegacyProperties:
