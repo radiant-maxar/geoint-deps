@@ -36,7 +36,9 @@ Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}.tar
 Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}.pdf
 Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev_version}.tar.gz
 Source4:        postgis-filter-requires-perl-Pg.sh
-Patch0:         postgis-%{postgis_majorversion}-gdalfpic.patch
+Patch0:         postgis-3.1-gdalfpic.patch
+# XXX: Hack to allow upgrade from latest PostGIS 3.2.x version, currently 3.2.5.
+Patch1:         postgis-3.2-upgrade.patch
 
 URL:		http://www.postgis.net/
 
@@ -67,16 +69,6 @@ allowing it to be used as a backend spatial database for geographic information
 systems (GIS), much like ESRI's SDE or Oracle's Spatial extension. PostGIS
 follows the OpenGIS "Simple Features Specification for SQL" and has been
 certified as compliant with the "Types and Functions" profile.
-
-%package devel
-Summary:        Development headers and libraries for PostGIS
-Requires:       %{name}%{?_isa} = %{version}-%{release}
-Provides:       %{name}%{postgis_prev_dotless}_%{postgres_version}-devel = %{version}-%{release}
-
-%description devel
-The %{name}-devel package contains the header files and libraries
-needed to compile C or C++ applications which will directly interact
-with PostGIS.
 
 %package docs
 Summary:	Extra documentation for PostGIS
@@ -180,14 +172,6 @@ fi
 %{postgres_instdir}/doc/extension/README.address_standardizer
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis.sql
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis_comments.sql
-%if 0%{postgis_major} < 3
-%{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis_for_extension.sql
-%endif
-%if 0%{postgis_major} == 3
-%if 0%{postgis_minor} < 1
-%{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis_proc_set_search_path.sql
-%endif
-%endif
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis_upgrade*.sql
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/postgis_restore.pl
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/uninstall_postgis.sql
@@ -200,52 +184,25 @@ fi
 %{postgres_instdir}/share/extension/postgis_sfcgal*.sql
 %{postgres_instdir}/share/extension/postgis_sfcgal.control
 %{postgres_instdir}/share/extension/postgis.control
-%if 0%{postgis_major} < 3
-%{postgres_instdir}/lib/liblwgeom*.so.*
-%{postgres_instdir}/lib/liblwgeom.so
-%endif
 %{postgres_instdir}/lib/postgis_topology-%{postgisliblabel}.so
 %{postgres_instdir}/lib/postgis_topology-%{postgis_prev_majorversion}.so
-%if 0%{postgis_major} >= 3
 %{postgres_instdir}/lib/address_standardizer-%{postgisliblabel}.so
 %{postgres_instdir}/lib/address_standardizer-%{postgis_prev_majorversion}.so
-%if 0%{postgis_major} == 3
-%if 0%{postgis_minor} >= 1
 %{postgres_instdir}/lib/bitcode/
-%endif
-%endif
-%else
-%{postgres_instdir}/lib/address_standardizer.so
-%endif
 %{postgres_instdir}/share/extension/address_standardizer*.sql
 %{postgres_instdir}/share/extension/address_standardizer*.control
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/raster_comments.sql
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/*rtpostgis*.sql
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/uninstall_legacy.sql
 %{postgres_instdir}/share/contrib/postgis-%{postgis_majorversion}/spatial*.sql
-%if 0%{postgis_major} >= 3
 %{postgres_instdir}/lib/postgis_raster-%{postgisliblabel}.so
 %{postgres_instdir}/lib/postgis_sfcgal-%{postgisliblabel}.so
 %{postgres_instdir}/share/extension/postgis_raster-*.sql
 %{postgres_instdir}/share/extension/postgis_raster.control
-%else
-%{postgres_instdir}/lib/rtpostgis-%{postgisliblabel}.so
-%{postgres_instdir}/lib/rtpostgis-%{postgis_prev_majorversion}.so
-%endif
 %{postgres_instdir}/share/extension/postgis_topology-*.sql
 %{postgres_instdir}/share/extension/postgis_topology.control
 %{postgres_instdir}/share/extension/postgis_tiger_geocoder*.sql
 %{postgres_instdir}/share/extension/postgis_tiger_geocoder.control
-
-
-%files devel
-%defattr(0644,root,root)
-%if 0%{postgis_major} < 3
-%{_includedir}/liblwgeom.h
-%{_includedir}/liblwgeom_topo.h
-%{postgres_instdir}/lib/liblwgeom*.a
-%{postgres_instdir}/lib/liblwgeom*.la
-%endif
 
 
 %files utils
@@ -253,6 +210,8 @@ fi
 %doc utils/README
 %attr(0755,root,root) %{_datadir}/%{name}/*.pl
 %attr(0755,root,root) %{postgres_instdir}/bin/pgsql2shp
+%attr(0755,root,root) %{postgres_instdir}/bin/pgtopo_export
+%attr(0755,root,root) %{postgres_instdir}/bin/pgtopo_import
 %attr(0755,root,root) %{postgres_instdir}/bin/raster2pgsql
 %attr(0755,root,root) %{postgres_instdir}/bin/shp2pgsql
 
