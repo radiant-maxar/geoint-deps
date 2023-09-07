@@ -36,7 +36,7 @@ Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}.tar
 Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}.pdf
 Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev_version}.tar.gz
 Source4:        postgis-filter-requires-perl-Pg.sh
-Patch0:         postgis-%{postgis_majorversion}-gdalfpic.patch
+Patch0:         postgis-3.1-gdalfpic.patch
 
 URL:		http://www.postgis.net/
 
@@ -253,6 +253,8 @@ fi
 %doc utils/README
 %attr(0755,root,root) %{_datadir}/%{name}/*.pl
 %attr(0755,root,root) %{postgres_instdir}/bin/pgsql2shp
+%attr(0755,root,root) %{postgres_instdir}/bin/pgtopo_export
+%attr(0755,root,root) %{postgres_instdir}/bin/pgtopo_import
 %attr(0755,root,root) %{postgres_instdir}/bin/raster2pgsql
 %attr(0755,root,root) %{postgres_instdir}/bin/shp2pgsql
 
