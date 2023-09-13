@@ -54,7 +54,7 @@ x-rpmbuild:
         _smp_ncpus_max: 4
     armadillo:
       image: rpmbuild-armadillo
-      version: &armadillo_version 12.6.2-1
+      version: &armadillo_version 12.6.4-1
     caddy:
       image: rpmbuild-caddy
       version: &caddy_version 2.7.4-1
