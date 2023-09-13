@@ -36,6 +36,7 @@ COPY RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/noarch/proj-data-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
+     RPMS/noarch/proj-data-ar-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-au-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
      RPMS/noarch/proj-data-be-${proj_version}${RPMBUILD_DIST}.noarch.rpm \
@@ -91,6 +92,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     "/tmp/proj-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/proj-devel-${proj_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/proj-data-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
+    "/tmp/proj-data-ar-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-at-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-au-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
     "/tmp/proj-data-be-${proj_version}${RPMBUILD_DIST}.noarch.rpm" \
