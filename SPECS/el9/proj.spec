@@ -149,6 +149,7 @@ Supplements:  proj\
 %{extrafile}
 
 
+%data_subpkg -c ar -n Argentina
 %data_subpkg -c at -n Austria
 %data_subpkg -c au -n Australia
 %data_subpkg -c be -n Belgium
