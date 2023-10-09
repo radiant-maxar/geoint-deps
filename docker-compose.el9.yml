@@ -93,7 +93,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     libosmium:
       image: rpmbuild-libosmium
-      version: &libosmium_version 2.19.0-1
+      version: &libosmium_version 2.20.0-1
       arch: noarch
       name: libosmium-devel
       defines:
@@ -140,7 +140,7 @@ x-rpmbuild:
       arch: noarch
     osmium-tool:
       image: rpmbuild-osmium-tool
-      version: &osmium-tool_version 1.15.0-1
+      version: &osmium-tool_version 1.16.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
@@ -188,7 +188,7 @@ x-rpmbuild:
       version: &rubygem_libxml_ruby_version 4.1.1-1
     sbt:
       image: rpmbuild-generic
-      version: &sbt_version 1.9.4-1
+      version: &sbt_version 1.9.7-1
       arch: noarch
     spawn-fcgi:
       image: rpmbuild-generic
@@ -198,10 +198,10 @@ x-rpmbuild:
       version: &sqlite_pcre_version 2007.1.20-1
     step-ca:
       image: rpmbuild-smallstep
-      version: &step_ca_version 0.24.2-1
+      version: &step_ca_version 0.25.0-1
     step-cli:
       image: rpmbuild-smallstep
-      version: &step_cli_version 0.24.4-1
+      version: &step_cli_version 0.25.0-1
     wal-g:
       image: rpmbuild-wal-g
       version: &walg_version 2.0.1-1
