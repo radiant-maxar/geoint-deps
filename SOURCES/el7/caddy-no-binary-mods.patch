@@ -1,8 +1,8 @@
 diff --git a/cmd/commands.go b/cmd/commands.go
-index d1b76f44..d5b8a326 100644
+index e5e1265e..972d24dc 100644
 --- a/cmd/commands.go
 +++ b/cmd/commands.go
-@@ -382,50 +382,6 @@ is always printed to stdout.
+@@ -394,50 +394,6 @@ is always printed to stdout.
  		},
  	})
  
@@ -25,7 +25,7 @@ index d1b76f44..d5b8a326 100644
 -		Short: "Adds Caddy packages (EXPERIMENTAL)",
 -		Long: `
 -Downloads an updated Caddy binary with the specified packages (module/plugin)
--added. Retains existing packages. Returns an error if the any of packages are 
+-added. Retains existing packages. Returns an error if the any of packages are
 -already included. EXPERIMENTAL: May be changed or removed.
 -`,
 -		CobraFunc: func(cmd *cobra.Command) {
@@ -40,8 +40,8 @@ index d1b76f44..d5b8a326 100644
 -		Usage: "<packages...>",
 -		Short: "Removes Caddy packages (EXPERIMENTAL)",
 -		Long: `
--Downloads an updated Caddy binaries without the specified packages (module/plugin). 
--Returns an error if any of the packages are not included. 
+-Downloads an updated Caddy binaries without the specified packages (module/plugin).
+-Returns an error if any of the packages are not included.
 -EXPERIMENTAL: May be changed or removed.
 -`,
 -		CobraFunc: func(cmd *cobra.Command) {
