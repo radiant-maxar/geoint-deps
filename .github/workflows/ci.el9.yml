@@ -78,6 +78,7 @@ jobs:
           - osm2pgsql
           - osmctools
           - osmdbt
+          - osmpbf
           - osmium-tool
           - osmosis
           - passenger

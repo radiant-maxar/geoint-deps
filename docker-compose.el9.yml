@@ -134,6 +134,11 @@ x-rpmbuild:
       defines:
         commit: c03a67558b80ae00cbd881b0b4b2a458bc3540d1
         libosmium_min_version: *libosmium_min_version
+    osmpbf:
+      image: rpmbuild-osmpbf
+      version: &osmpbf_version 1.5.0-1
+      defines:
+        protobuf_min_version: *protobuf_min_version
     osmosis:
       image: rpmbuild-generic
       version: &osmosis_version 0.48.3-2
@@ -376,6 +381,13 @@ services:
         packages: ${RPMBUILD_OSMDBT_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
+  rpmbuild-osmpbf:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_OSMPBF_PACKAGES}
   rpmbuild-osmium-tool:
     <<: *service_defaults
     build:

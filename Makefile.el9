@@ -58,6 +58,7 @@ OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
 OSM2PGSQL_RPM := $(call rpm_file,osm2pgsql)
 OSMCTOOLS_RPM := $(call rpm_file,osmctools)
 OSMDBT_RPM := $(call rpm_file,osmdbt)
+OSMPBF_RPM := $(call rpm_file,osmpbf)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
 PASSENGER_RPM := $(call rpm_file,passenger)
@@ -99,6 +100,7 @@ RPMBUILD_RPMS := \
 	osm2pgsql \
 	osmctools \
 	osmdbt \
+	osmpbf \
 	osmium-tool \
 	osmosis \
 	passenger \
@@ -161,6 +163,7 @@ distclean: .env
 	echo RPMBUILD_OSM2PGSQL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osm2pgsql.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_OSMCTOOLS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmctools.spec) >> .env
 	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmdbt.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_OSMPBF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmpbf.spec) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmium-tool.spec) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/passenger.spec) >> .env
 	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/postgis.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
@@ -218,6 +221,7 @@ openstreetmap-carto: $(OPENSTREETMAP_CARTO_RPM)
 osm2pgsql: $(OSM2PGSQL_RPM)
 osmctools: $(OSMCTOOLS_RPM)
 osmdbt: $(OSMDBT_RPM)
+osmpbf: $(OSMPBF_RPM)
 osmium-tool: $(OSMIUM_TOOL_RPM)
 osmosis: $(OSMOSIS_RPM)
 passenger: $(PASSENGER_RPM)
