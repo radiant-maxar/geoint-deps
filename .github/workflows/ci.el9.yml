@@ -82,6 +82,7 @@ jobs:
           - osmium-tool
           - osmosis
           - passenger
+          - planet-dump-ng
           - postgis
           - proj
           - protozero
