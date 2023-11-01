@@ -51,6 +51,7 @@ GEOSERVER_GEONODE_DATA_RPM := $(call rpm_file,geoserver-geonode)
 JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
+LIBOSMPBF_RPM := $(call rpm_file,libosmpbf)
 LIBPQXX_RPM := $(call rpm_file,libpqxx)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 MAPSERVER_RPM := $(call rpm_file,mapserver)
@@ -92,6 +93,7 @@ RPMBUILD_RPMS := \
 	journald-cloudwatch-logs \
 	libgeotiff \
 	libosmium \
+	libosmpbf \
 	libpqxx \
 	mapnik \
 	mapserver \
@@ -155,6 +157,7 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libosmium.spec) >> .env
 	echo RPMBUILD_LIBPQXX_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libpqxx.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
+	echo RPMBUILD_LIBOSMPBF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libosmpbf.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/mapnik.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_MAPSERVER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/mapserver.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/openstreetmap-carto.spec) >> .env
@@ -211,6 +214,7 @@ journald-cloudwatch-logs: $(JOURNALD_CLOUDWATCH_LOGS_RPM)
 libgeotiff: $(PROJ_RPM) \
             $(LIBGEOTIFF_RPM)
 libosmium: $(LIBOSMIUM_RPM)
+libosmpbf: $(LIBOSMPBF_RPM)
 libpqxx: $(LIBPQXX_RPM)
 mapnik: $(MAPNIK_RPM)
 mapserver: $(MAPSERVER_RPM)
