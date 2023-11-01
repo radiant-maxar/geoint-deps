@@ -27,11 +27,11 @@ Requires:       protobuf-devel >= %{protobuf_min_version}
 Libraries and header files for developing applications with %{name}.
 
 
-%package -n     osmpbf
-Summary:        Binaries for %{name}
+%package -n     osmpbf-outline
+Summary:        Outputs PBF content for debugging use
 
-%description -n osmpbf
-Binary executables, including %{name}-outline.
+%description -n osmpbf-outline
+Shows debug output of PBF file content.
 
 
 %prep
@@ -63,7 +63,7 @@ Binary executables, including %{name}-outline.
 %{_libdir}/libosmpbf.so
 
 
-%files -n osmpbf
+%files -n osmpbf-outline
 %{_bindir}/osmpbf-outline
 %{_mandir}/man1/osmpbf-outline.*
 
