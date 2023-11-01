@@ -71,6 +71,7 @@ jobs:
           - geoserver-geonode
           - journald-cloudwatch-logs
           - libosmium
+          - libosmpbf
           - libpqxx
           - mapnik
           - mapserver
