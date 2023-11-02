@@ -94,6 +94,11 @@ x-rpmbuild:
       name: libosmium-devel
       defines:
         protozero_min_version: *protozero_min_version
+    libosmpbf:
+      image: rpmbuild-libosmpbf
+      version: &libosmpbf_version 1.5.0-1
+      defines:
+        protobuf_min_version: *protobuf_min_version
     mapnik:
       image: rpmbuild-mapnik
       version: &mapnik_version 3.0.24-1
@@ -382,6 +387,14 @@ services:
         packages: ${RPMBUILD_LIBOSMIUM_PACKAGES}
         protozero_version: *protozero_version
       dockerfile: docker/el7/Dockerfile.rpmbuild-libosmium
+  rpmbuild-libosmpbf:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_LIBOSMPBF_PACKAGES}
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-journald-cloudwatch-logs:
     <<: *service_defaults
     build:

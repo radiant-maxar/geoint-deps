@@ -52,6 +52,7 @@ JOURNALD_CLOUDWATCH_LOGS_RPM := $(call rpm_file,journald-cloudwatch-logs)
 LIBGEOTIFF_RPM := $(call rpm_file,libgeotiff)
 LIBKML_RPM := $(call rpm_file,libkml)
 LIBOSMIUM_RPM := $(call rpm_file,libosmium)
+LIBOSMPBF_RPM := $(call rpm_file,libosmpbf)
 MAPNIK_RPM := $(call rpm_file,mapnik)
 OGDI_RPM := $(call rpm_file,ogdi)
 OPENSTREETMAP_CARTO_RPM := $(call rpm_file,openstreetmap-carto)
@@ -100,6 +101,7 @@ RPMBUILD_RPMS := \
 	libgeotiff \
 	libkml \
 	libosmium \
+	libosmpbf \
 	mapnik \
 	ogdi \
 	openstreetmap-carto \
@@ -167,6 +169,7 @@ distclean: .env
 	echo RPMBUILD_LIBGEOTIFF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libgeotiff.spec) >> .env
 	echo RPMBUILD_LIBKML_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libkml.spec) >> .env
 	echo RPMBUILD_LIBOSMIUM_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libosmium.spec) >> .env
+	echo RPMBUILD_LIBOSMPBF_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/libosmpbf.spec) >> .env
 	echo RPMBUILD_MAPNIK_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/mapnik.spec) >> .env
 	echo RPMBUILD_OGDI_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/ogdi.spec) >> .env
 	echo RPMBUILD_OPENSTREETMAP_CARTO_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/openstreetmap-carto.spec) >> .env
@@ -235,6 +238,7 @@ libkml: $(LIBKML_RPM)
 libosmium: $(PROTOBUF_RPM) \
            $(PROTOZERO_RPM) \
            $(LIBOSMIUM_RPM)
+libosmpbf: $(LIBOSMPBF_RPM)
 mapnik: $(MAPNIK_RPM)
 ogdi: $(OGDI_RPM)
 openstreetmap-carto: $(OPENSTREETMAP_CARTO_RPM)
