@@ -146,6 +146,11 @@ x-rpmbuild:
     passenger:
       image: rpmbuild-passenger
       version: &passenger_version 6.0.18-1
+    planet-dump-ng:
+      image: rpmbuild-planet-dump-ng
+      version: &planet_dump_ng_version 1.2.7-1
+      defines:
+        protobuf_min_version: *protobuf_min_version
     postgis:
       image: rpmbuild-postgis
       version: &postgis_version 3.3.2-1
@@ -468,6 +473,14 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PASSENGER_PACKAGES}
+      dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
+  rpmbuild-planet-dump-ng:
+    <<: *service_defaults
+    build:
+      <<: *build_defaults
+      args:
+        <<: *build_args_defaults
+        packages: ${RPMBUILD_PLANET_DUMP_NG_PACKAGES}
       dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-postgis:
     <<: *service_defaults

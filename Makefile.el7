@@ -62,6 +62,7 @@ OSMDBT_RPM := $(call rpm_file,osmdbt)
 OSMIUM_TOOL_RPM := $(call rpm_file,osmium-tool)
 OSMOSIS_RPM := $(call rpm_file,osmosis)
 PASSENGER_RPM := $(call rpm_file,passenger)
+PLANET_DUMP_NG_RPM := $(call rpm_file,planet-dump-ng)
 POSTGIS_RPM := $(call rpm_file,postgis)
 PROJ_RPM := $(call rpm_file,proj)
 PROTOBUF_C_RPM := $(call rpm_file,protobuf-c)
@@ -111,6 +112,7 @@ RPMBUILD_RPMS := \
 	osmium-tool \
 	osmosis \
 	passenger \
+	planet-dump-ng \
 	postgis \
 	proj \
 	protobuf \
@@ -178,6 +180,7 @@ distclean: .env
 	echo RPMBUILD_OSMDBT_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmdbt.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_OSMIUM_TOOL_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/osmium-tool.spec) >> .env
 	echo RPMBUILD_PASSENGER_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/passenger.spec) >> .env
+	echo RPMBUILD_PLANET_DUMP_NG_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/planet-dump-ng.spec) >> .env
 	echo RPMBUILD_POSTGIS_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/postgis.spec --define postgres_version=$(POSTGRES_VERSION)) >> .env
 	echo RPMBUILD_PROJ_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/proj.spec) >> .env
 	echo RPMBUILD_PROTOBUF_C_PACKAGES=$(shell ./scripts/buildrequires.py SPECS/$(EL_VERSION)/protobuf-c.spec) >> .env
@@ -248,6 +251,7 @@ osmdbt: $(OSMDBT_RPM)
 osmium-tool: $(OSMIUM_TOOL_RPM)
 osmosis: $(OSMOSIS_RPM)
 passenger: $(PASSENGER_RPM)
+planet-dump-ng: $(PLANET_DUMP_NG_RPM)
 postgis: $(POSTGIS_RPM)
 proj: $(SQLITE_RPM) \
       $(PROJ_RPM)
