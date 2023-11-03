@@ -72,6 +72,7 @@ jobs:
           - hanazono-fonts
           - journald-cloudwatch-logs
           - libkml
+          - libosmpbf
           - mapnik
           - ogdi
           - openstreetmap-carto
@@ -81,6 +82,7 @@ jobs:
           - osmium-tool
           - osmosis
           - passenger
+          - planet-dump-ng
           - postgis
           - protobuf
           - pyosmium
