@@ -5,12 +5,7 @@ Summary:        GEOS is a C++ port of the Java Topology Suite
 
 License:        LGPLv2
 URL:            https://trac.osgeo.org/geos/
-Source0:        https://download.osgeo.org/%{name}/%{name}-%{version}.tar.bz2
-# File missing in tarball
-Source1:        geos-check_doxygen_errors.cmake
-
-# Honor libsuffix
-Patch1:         geos-libsuffix.patch
+Source0:        https://download.osgeo.org/%{name}/%{name}-%{version}%{?prerelease}.tar.bz2
 
 BuildRequires:  cmake3
 BuildRequires:  doxygen
@@ -40,22 +35,16 @@ This package contains the development files to build applications that
 use GEOS.
 
 %prep
-%autosetup -p1
-%{__cp} -a %{SOURCE1} doc/check_doxygen_errors.cmake
+%autosetup -p1 -n %{name}-%{version}%{?prerelease}
 
 
 %build
-%cmake3 \
-%ifarch armv7hl
-    -DDISABLE_GEOS_INLINE=ON \
-%endif
-    -DBUILD_DOCUMENTATION=ON
+%cmake3
 %cmake3_build
 
 
 %install
 %cmake3_install
-make docs -C %{__cmake3_builddir}
 
 
 %check
@@ -63,16 +52,19 @@ make docs -C %{__cmake3_builddir}
 
 
 %files
-%doc AUTHORS NEWS README.md
+%doc AUTHORS README.md
 %license COPYING
 %{_libdir}/libgeos.so.%{version}
 %{_libdir}/libgeos_c.so.1*
-
+# New CLI utility is not ready for prime time, segfaults on usage errors;
+# exclude it from the RPM.  See, e.g.:
+#   https://trac.osgeo.org/geos/ticket/1126
+%exclude %{_bindir}/geosop
 
 %files devel
-%doc %{__cmake3_builddir}/doc/doxygen_docs
 %{_bindir}/geos-config
 %{_includedir}/geos/
+%{_includedir}/geos.h
 %{_includedir}/geos_c.h
 %{_libdir}/libgeos_c.so
 %{_libdir}/libgeos.so
