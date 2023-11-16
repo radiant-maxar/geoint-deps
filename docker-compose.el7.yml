@@ -62,7 +62,7 @@ x-rpmbuild:
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
-      version: &geos_version 3.9.3-1
+      version: &geos_version 3.11.3-1
     gpsbabel:
       image: rpmbuild-gpsbabel
       version: &gpsbabel_version 1.7.0-1
