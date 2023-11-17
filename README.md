@@ -71,11 +71,9 @@ You will need to have `~/.gnupg-geoint` populated using the `.gpg` file and prov
 ## Requirements
 
 * Linux host and some basics:
-  * Python 3 for `docker-compose` and some of the [scripts](./scripts/).
+  * Python 3 for the [scripts](./scripts/).
   * GNU `make` for [`Makefile.el7`](./Makefile.el7)/[`Makefile.el9`](./Makefile.el9).
 
-* Docker >= 18.09
-  * Recent version recommended to take advantage of [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/).
+* Docker
 
-* Docker Compose >= 1.27
-  * Supports compose format 3.7, for its [`init` option](https://docs.docker.com/compose/compose-file/compose-file-v3/#init).
+* [Docker Compose Plugin](https://docs.docker.com/compose/install/linux/)
