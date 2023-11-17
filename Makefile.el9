@@ -5,7 +5,7 @@ EL_VERSION ?= el9
 CI ?= false
 COMPOSE_FILE ?= docker-compose.$(EL_VERSION).yml
 COMPOSE_PROJECT_NAME ?= geoint-deps-$(RPMBUILD_CHANNEL)-$(EL_VERSION)
-IMAGE_PREFIX ?= $(COMPOSE_PROJECT_NAME)_
+IMAGE_PREFIX ?= $(COMPOSE_PROJECT_NAME)-
 
 
 ## Macro functions.
