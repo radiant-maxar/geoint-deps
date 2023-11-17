@@ -25,6 +25,10 @@ Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}%{?p
 Source1:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}%{?prerelease}-en.pdf
 Source2:        postgis-filter-requires-perl-Pg.sh
 Patch0:         postgis-3.4-gdalfpic.patch
+# https://github.com/postgis/postgis/commit/1cebea67483e05969215878cb3a026295a74c232
+Patch1:         postgis-regress_core_delaunaytriangles.patch
+# https://github.com/postgis/postgis/commit/866418efd50e230e9bf343cd5adc31ce559dd14b
+Patch2:         postgis-regress_core_tickets.patch
 
 URL:		http://www.postgis.net/
 
