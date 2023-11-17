@@ -64,9 +64,11 @@ echo %%g2clib %g2clib > %{buildroot}%{_rpmconfigdir}/macros.d/macros.g2clib
 
 %files devel
 %license LICENSE.md
-%{_libdir}/cmake/%{g2clib}
-%{_libdir}/lib%{g2clib}.so
 %{_includedir}/grib2.h
+%{_libdir}/cmake/%{g2clib}
+%{_libdir}/lib%{g2clib}.a
+%{_libdir}/lib%{g2clib}.so
+%{_libdir}/lib%{g2clib}.so.0
 %{_rpmconfigdir}/macros.d/macros.g2clib
 
 
