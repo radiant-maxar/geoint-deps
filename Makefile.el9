@@ -1,6 +1,6 @@
 ## Conditional variables.
 DOCKER ?= docker
-DOCKER_COMPOSE ?= docker-compose
+DOCKER_COMPOSE ?= docker compose
 EL_VERSION ?= el9
 CI ?= false
 COMPOSE_FILE ?= docker-compose.$(EL_VERSION).yml
@@ -32,7 +32,7 @@ rpmbuild_version = $(call config_version,$(call rpm_package,$(1)))
 
 ## Variables
 DOCKER_VERSION := $(shell $(DOCKER) --version 2>/dev/null)
-DOCKER_COMPOSE_VERSION := $(shell $(DOCKER_COMPOSE) --version 2>/dev/null)
+DOCKER_COMPOSE_VERSION := $(shell $(DOCKER_COMPOSE) version 2>/dev/null)
 POSTGRES_VERSION := $(call rpmbuild_util,postgres_version,--variable)
 RPMBUILD_CHANNEL := $(call rpmbuild_util,channel_name,--variable)
 RPMBUILD_UID := $(shell id -u)
@@ -133,7 +133,7 @@ ifndef DOCKER_VERSION
 	$(error "command docker is not available, please install Docker")
 endif
 ifndef DOCKER_COMPOSE_VERSION
-	$(error "command docker-compose is not available, please install Docker")
+	$(error "command docker compose is not available, please install the Docker Compose plugin")
 endif
 
 all-rpms: $(RPMBUILD_RPMS)
@@ -182,11 +182,6 @@ distclean: .env
 
 ## Image targets
 rpmbuild: .env
-	$(call pull_if_ci,$@)
-	$(call build_unless_image_exists,$@)
-
-rpmbuild-fonts: rpmbuild
-	$(call pull_if_ci,$?)
 	$(call pull_if_ci,$@)
 	$(call build_unless_image_exists,$@)
 
