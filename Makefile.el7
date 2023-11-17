@@ -225,10 +225,7 @@ CGAL: $(CGAL_RPM)
 caddy: $(CADDY_RPM)
 dumb-init: $(DUMB_INIT_RPM)
 FileGDBAPI: $(FILEGDBAPI_RPM)
-gdal: $(CGAL_RPM) $(FILEGDBAPI_RPM) $(GEOS_RPM) $(GPSBABEL_RPM) $(LIBKML_RPM) $(OGDI_RPM) $(SQLITE_RPM) \
-      $(PROJ_RPM) $(SFCGAL_RPM) \
-      $(LIBGEOTIFF_RPM) \
-      $(GDAL_RPM)
+gdal: $(GDAL_RPM)
 geos: $(GEOS_RPM)
 google-noto-fonts-extra: rpmbuild-fonts $(GOOGLE_NOTO_RPM)
 gpsbabel: $(GPSBABEL_RPM)
