@@ -133,7 +133,7 @@ ifndef DOCKER_VERSION
 	$(error "command docker is not available, please install Docker")
 endif
 ifndef DOCKER_COMPOSE_VERSION
-	$(error "command docker-compose is not available, please install the docker-compose")
+	$(error "command docker-compose is not available, please install docker-compose")
 endif
 
 all-rpms: $(RPMBUILD_RPMS)
