@@ -1,11 +1,11 @@
 ## Conditional variables.
 DOCKER ?= docker
-DOCKER_COMPOSE ?= docker compose
+DOCKER_COMPOSE ?= docker-compose
 EL_VERSION ?= el9
 CI ?= false
 COMPOSE_FILE ?= docker-compose.$(EL_VERSION).yml
 COMPOSE_PROJECT_NAME ?= geoint-deps-$(RPMBUILD_CHANNEL)-$(EL_VERSION)
-IMAGE_PREFIX ?= $(COMPOSE_PROJECT_NAME)-
+IMAGE_PREFIX ?= $(COMPOSE_PROJECT_NAME)_
 
 
 ## Macro functions.
@@ -133,7 +133,7 @@ ifndef DOCKER_VERSION
 	$(error "command docker is not available, please install Docker")
 endif
 ifndef DOCKER_COMPOSE_VERSION
-	$(error "command docker compose is not available, please install the Docker Compose plugin")
+	$(error "command docker-compose is not available, please install the docker-compose")
 endif
 
 all-rpms: $(RPMBUILD_RPMS)
