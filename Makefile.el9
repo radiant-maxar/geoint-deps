@@ -1,6 +1,6 @@
 ## Conditional variables.
 DOCKER ?= docker
-DOCKER_COMPOSE ?= docker compose
+DOCKER_COMPOSE ?= docker-compose
 EL_VERSION ?= el9
 CI ?= false
 COMPOSE_FILE ?= docker-compose.$(EL_VERSION).yml
@@ -133,7 +133,7 @@ ifndef DOCKER_VERSION
 	$(error "command docker is not available, please install Docker")
 endif
 ifndef DOCKER_COMPOSE_VERSION
-	$(error "command docker compose is not available, please install the Docker Compose plugin")
+	$(error "command docker-compose is not available, please install docker-compose")
 endif
 
 all-rpms: $(RPMBUILD_RPMS)

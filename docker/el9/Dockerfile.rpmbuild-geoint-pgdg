@@ -24,8 +24,11 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     if [ -n "${gem_packages:-}" ] ; then gem install ${gem_packages}; fi && \
     if [ -n "${python_packages:-}" ] ; then pip3 install --disable-pip-version-check --no-cache-dir ${python_packages}; fi
 
-# Ensure proper permissions on PostgreSQL run directory (again).
-RUN chown -R "${RPMBUILD_USER}:${RPMBUILD_GROUP}" /var/run/postgresql
+# * Ensure proper permissions on PostgreSQL run directory (again).
+# * XXX: Patch out use of clang with invalid options when building bitcode files,
+#   now necessary since PostgreSQL 15.5 development package.
+RUN chown -R "${RPMBUILD_USER}:${RPMBUILD_GROUP}" /var/run/postgresql && \
+    if [ -f /usr/pgsql-15/lib/pgxs/src/Makefile.global ] ; then sed -i -e 's/-no-opaque-pointers //g' /usr/pgsql-15/lib/pgxs/src/Makefile.global; fi
 
 # Switch back to RPM build user.
 USER ${RPMBUILD_USER}
