@@ -58,7 +58,7 @@ x-rpmbuild:
       image: rpmbuild-gdal
       version: &gdal_version 3.8.0-1
       defines:
-        geos_min_version: *geos_min_version
+        geos_min_version: 3.11.0
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
