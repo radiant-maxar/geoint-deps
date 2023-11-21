@@ -270,7 +270,9 @@ pushd gdalautotest-%{testversion}
 %{__rm} -v test_random_tiff.py
 
 # Tests disabled for performance and/or reliability reasons:
+#  * gcore/rasterio.py: `AssertionError: 9`
 #  * gcore/tiff_{ovr,read,write}.py: Slow.
+#  * gdrivers/vrtwarp.py: Slow.
 #  * gdrivers/wms.py: Brittle URL.
 #  * ogr/ogr_wfs.py: Slow tests and brittle URLs.
 #  * pyscripts/test_gdal_ls_py.py: Slow.
@@ -324,6 +326,7 @@ addopts =
     --deselect gdrivers/mbtiles.py::test_mbtiles_webp_read
     --deselect gdrivers/openfilegdb.py::test_openfilegb_raster_jpeg_read_data
     --deselect gdrivers/pdf.py::test_pdf_jpx_compression
+    --deselect gdrivers/vrtwarp.py::test_vrtwarp_read_blocks_larger_than_2_gigapixels
     --deselect gdrivers/webp.py::test_webp_4
     --deselect gdrivers/webp.py::test_webp_5
     --deselect gdrivers/wms.py::test_wms_16

@@ -60,7 +60,7 @@ x-rpmbuild:
       version: &caddy_version 2.7.5-1
     gdal:
       image: rpmbuild-gdal
-      version: &gdal_version 3.7.2-1
+      version: &gdal_version 3.8.0-1
       defines:
         geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
