@@ -168,7 +168,7 @@ x-rpmbuild:
         protobuf_min_version: *protobuf_min_version
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.4.0-1
+      version: &postgis_version 3.4.1-1
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
