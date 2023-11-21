@@ -169,8 +169,16 @@ manipulating GDAL file format library
 # LTO appears to cause some issues.
 # https://bugzilla.redhat.com/show_bug.cgi?id=2065758
 %define _lto_cflags %{nil}
+
+# Compilation configuration notes:
+#  * Explicitly disable HDF4, HDF5, and NetCDF formats as there aren't official EL9 packages.
+#  * Use PostgreSQL library from PGDG's locations.
+#  * Enable use of `ccache` to speed builds.
 %cmake \
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
+    -DGDAL_ENABLE_DRIVER_HDF4:BOOL=OFF \
+    -DGDAL_ENABLE_DRIVER_HDF5:BOOL=OFF \
+    -DGDAL_ENABLE_DRIVER_NETCDF:BOOl=OFF \
     -DGDAL_USE_POSTGRESQL:BOOL=ON \
     -DPostgreSQL_ADDITIONAL_VERSIONS=%{postgres_version} \
     -DUSE_CCACHE:BOOL=ON
@@ -262,7 +270,10 @@ pushd gdalautotest-%{testversion}
 %{__rm} -v test_random_tiff.py
 
 # Tests disabled for performance and/or reliability reasons:
-#  * gcore/tiff_{ovr,read,write}.py: Slow.
+#  * gcore/tiff_ovr.py: Slow.
+#  * gcore/tiff_read.py: Slow.
+#  * gcore/tiff_write.py: Slow.
+#  * gcore/vsizip.py: Slow.
 #  * gdrivers/vrtwarp.py: Slow.
 #  * gdrivers/wms.py: Brittle URL.
 #  * ogr/ogr_wfs.py: Slow tests and brittle URLs.
@@ -305,6 +316,7 @@ addopts =
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate
     --deselect gcore/tiff_write.py::test_tiff_write_deflate_4GB
+    --deselect gcore/vsizip.py::test_vsizip_create_zip64_stream_larger_than_4G
     --deselect gdrivers/vrtwarp.py::test_vrtwarp_read_blocks_larger_than_2_gigapixels
     --deselect gdrivers/wms.py::test_wms_16
     --deselect gdrivers/wms.py::test_wms_19

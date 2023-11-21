@@ -164,9 +164,19 @@ manipulating GDAL file format library
 %build
 # Enable the devtoolset-8 toolchain.
 . /opt/rh/devtoolset-8/enable
+
 # LTO appears to cause some issues.
 # https://bugzilla.redhat.com/show_bug.cgi?id=2065758
 %define _lto_cflags %{nil}
+
+# Compilation configuration notes:
+#  * The EL7 `json-c` will not link to GDAL 3.8.0+ using either GCC 4/8; thus, must
+#    force use of built-in library by pointing to non-existent path with
+#    `JSONC_INCLUDE_DIR` define.
+#  * Explicitly disable HDF4, HDF5, and NetCDF formats as not supported on EL9 and
+#    can add hefty library requirements.
+#  * Use PostgreSQL library from PGDG's locations.
+#  * Enable use of `ccache` to speed builds.
 %cmake3 \
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
     -DJSONC_INCLUDE_DIR=/usr/include/does/not/exist \
@@ -271,7 +281,10 @@ pushd gdalautotest-%{testversion}
 
 # Tests disabled for performance and/or reliability reasons:
 #  * gcore/rasterio.py: `AssertionError: 9`
-#  * gcore/tiff_{ovr,read,write}.py: Slow.
+#  * gcore/tiff_ovr.py: Slow.
+#  * gcore/tiff_read.py: Slow.
+#  * gcore/tiff_write.py: Slow.
+#  * gcore/vsizip.py: Slow.
 #  * gdrivers/vrtwarp.py: Slow.
 #  * gdrivers/wms.py: Brittle URL.
 #  * ogr/ogr_wfs.py: Slow tests and brittle URLs.
@@ -322,6 +335,7 @@ addopts =
     --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate
     --deselect gcore/tiff_srs.py::test_tiff_srs_read_compound_with_EPSG_code[9707]
     --deselect gcore/tiff_write.py::test_tiff_write_deflate_4GB
+    --deselect gcore/vsizip.py::test_vsizip_create_zip64_stream_larger_than_4G
     --deselect gdrivers/rmf.py::test_rmf_31e
     --deselect gdrivers/mbtiles.py::test_mbtiles_webp_read
     --deselect gdrivers/openfilegdb.py::test_openfilegb_raster_jpeg_read_data
