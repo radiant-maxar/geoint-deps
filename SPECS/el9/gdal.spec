@@ -267,12 +267,13 @@ pushd gdalautotest-%{testversion}
 #  * gdrivers/wms.py: Brittle URL.
 #  * ogr/ogr_wfs.py: Slow tests and brittle URLs.
 #  * pyscripts/test_gdal_ls_py.py: Slow.
+#
 # Tests with know failures/errors:
 #  * ogr/ogr_fgdb: Tests randomly fail possibly to conflict with XML library.
 #  * ogr/ogr_pg.py: Invalid PostGIS usage.
+#  * pyscripts/test_gdal2tiles.py: Regressions with test file locations on EL9.
 #  * pyscripts/test_ogr2ogr_py: Invalid PostGIS usage.
 #  * utilities/test_ogr2ogr.py: Invalid PostGIS usage.
-
 
 # Create pytest.ini
 %{_bindir}/cat > pytest.ini <<EOF
@@ -317,6 +318,11 @@ addopts =
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_erdas_apollo
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_tinyows
     --deselect pyscripts/test_gdal_ls_py.py::test_gdal_ls_py_8
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_invalid_srs
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_resampling_option
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_xyz
+    --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_zoom_option
     --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_6
     --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_7
     --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_41
