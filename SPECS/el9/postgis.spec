@@ -25,10 +25,9 @@ Source0:        https://download.osgeo.org/%{name}/source/%{name}-%{version}%{?p
 Source1:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}%{?prerelease}-en.pdf
 Source2:        postgis-filter-requires-perl-Pg.sh
 Patch0:         postgis-3.4-gdalfpic.patch
-Patch1:         postgis-fix-regress-delaunaytriangles.patch
 # XXX: GML/KML test failures since PostgreSQL 15.5 / LLVM 17;
 #      packages from PGDG exhibit same failures.
-Patch2:         postgis-disable-xml-tests.patch
+Patch1:         postgis-disable-xml-tests.patch
 
 URL:		http://www.postgis.net/
 
