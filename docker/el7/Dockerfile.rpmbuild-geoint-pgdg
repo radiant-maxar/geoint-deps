@@ -4,6 +4,8 @@ ARG rpmbuild_image_prefix
 # hadolint ignore=DL3007
 FROM ${rpmbuild_image_prefix}${rpmbuild_image}:latest
 
+ARG geoint_deps_channel=stable
+ARG geoint_deps_gpgcheck=1
 ARG gem_packages
 ARG packages
 ARG python_packages
@@ -15,6 +17,8 @@ USER root
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # hadolint ignore=DL3013,DL3028,DL3032,DL3033
 RUN --mount=type=cache,target=/var/cache/yum \
+    GEOINT_DEPS_CHANNEL=${geoint_deps_channel} \
+    GEOINT_DEPS_GPGCHECK=${geoint_deps_gpgcheck} \
     /usr/local/bin/geoint-deps-repo.sh && \
     if [ -n "${packages}" ] ; then yum -q -y install ${packages}; fi && \
     if [ -n "${gem_packages:-}" ] ; then gem install ${gem_packages}; fi && \
