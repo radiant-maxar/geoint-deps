@@ -26,6 +26,7 @@ USER root
 COPY RPMS/x86_64/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
+     RPMS/x86_64/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm \
      RPMS/x86_64/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm \
@@ -53,6 +54,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
     "/tmp/CGAL-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/CGAL-devel-${cgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/FileGDBAPI-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm" \
+    "/tmp/FileGDBAPI-devel-${filegdbapi_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/SFCGAL-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/SFCGAL-devel-${sfcgal_version}${RPMBUILD_DIST}.x86_64.rpm" \
     "/tmp/geos-${geos_version}${RPMBUILD_DIST}.x86_64.rpm" \
