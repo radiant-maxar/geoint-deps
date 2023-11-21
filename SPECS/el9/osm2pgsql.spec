@@ -14,8 +14,8 @@ Release:        %{rpmbuild_release}%{?dist}
 Summary:        Imports map data from OpenStreetMap to a PostgreSQL database
 
 License:        GPLv2+
-URL:            https://github.com/openstreetmap/osm2pgsql
-Source0:        https://github.com/openstreetmap/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+URL:            https://github.com/osm2pgsql-dev/osm2pgsql
+Source0:        https://github.com/osm2pgsql-dev/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/nlohmann/json/releases/download/v%{nlohmann_json_version}/json.hpp
 Patch0:         osm2pgsql-replication.patch
 
