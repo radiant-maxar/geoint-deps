@@ -28,8 +28,8 @@ x-rpmbuild:
   # Use consistent values for minimum versions for RPM build
   # and runtime requirements.
   minimum_versions:
-    gdal: &gdal_min_version 3.2.0
-    geos: &geos_min_version 3.9.0
+    gdal: &gdal_min_version 3.8.0
+    geos: &geos_min_version 3.11.0
     libosmium: &libosmium_min_version 2.18.0
     postgis_min_version: &postgis_min_version 3.1.0
     proj: &proj_min_version 7.2.0
@@ -58,7 +58,7 @@ x-rpmbuild:
       image: rpmbuild-gdal
       version: &gdal_version 3.8.0-1
       defines:
-        geos_min_version: 3.11.0
+        geos_min_version: *geos_min_version
         proj_min_version: *proj_min_version
     geos:
       image: rpmbuild-generic
@@ -101,7 +101,7 @@ x-rpmbuild:
         protobuf_min_version: *protobuf_min_version
     mapnik:
       image: rpmbuild-mapnik
-      version: &mapnik_version 3.0.24-1
+      version: &mapnik_version 3.0.24-2
       defines:
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
@@ -153,7 +153,7 @@ x-rpmbuild:
         protobuf_min_version: *protobuf_min_version
     postgis:
       image: rpmbuild-postgis
-      version: &postgis_version 3.3.2-1
+      version: &postgis_version 3.3.2-2
       defines:
         gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
