@@ -1,8 +1,11 @@
-# Unfortunately GDAL doesn't seem pin their pytest dependencies,
-# this is what worked with the 3.2.1 test suite.
+# Unfortunately GDAL doesn't pin their pytest dependencies,
+# these are latest versions available with Python 3.6:
+filelock==3.4.1
+jsonschema==3.2.0
 pytest==6.2.2
+pytest-benchmark==3.4.1
 pytest-env==0.6.2
-pytest-sugar==0.9.4
+pytest-sugar==0.9.6
 # These packages are required to build the documentation,
 # and this list was originally sourced from:
 #  https://github.com/OSGeo/gdal/blob/master/gdal/doc/environment.yml#L23-L53
