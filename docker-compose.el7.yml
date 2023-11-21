@@ -415,6 +415,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
+        geoint_deps_channel: staging
         packages: ${RPMBUILD_MAPNIK_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg
@@ -488,8 +489,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        geoint_deps_channel: non-stable/gdal-3.8.0-stage1
-        geoint_deps_gpgcheck: 0
+        geoint_deps_channel: staging
         packages: ${RPMBUILD_POSTGIS_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el7/Dockerfile.rpmbuild-geoint-pgdg

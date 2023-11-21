@@ -110,7 +110,7 @@ x-rpmbuild:
       image: rpmbuild-mapnik
       version: &mapnik_version 3.1.0-3
       defines:
-        gdal_min_version: 3.7.0
+        gdal_min_version: *gdal_min_version
         geos_min_version: *geos_min_version
         postgis_min_version: *postgis_min_version
         proj_min_version: *proj_min_version
@@ -359,6 +359,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
+        geoint_deps_channel: staging
         packages: ${RPMBUILD_MAPNIK_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
@@ -368,8 +369,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        geoint_deps_channel: non-stable/gdal-3.8.0-stage1
-        geoint_deps_gpgcheck: 0
+        geoint_deps_channel: staging
         packages: ${RPMBUILD_MAPSERVER_PACKAGES}
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
@@ -434,8 +434,7 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        geoint_deps_channel: non-stable/gdal-3.8.0-stage1
-        geoint_deps_gpgcheck: 0
+        geoint_deps_channel: staging
         packages: ${RPMBUILD_POSTGIS_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
