@@ -182,9 +182,9 @@ Its data package contains archives that are public domain and
 
 ## osm2pgsql
 
-The [osm2pgsql](https://github.com/openstreetmap/osm2pgsql) source archives are
+The [osm2pgsql](https://github.com/osm2pgsql-dev/osm2pgsql) source archives are
 obtained directly from GitHub and are
-[GPLv2 licensed](https://github.com/openstreetmap/osm2pgsql/blob/master/COPYING).
+[GPLv2 licensed](https://github.com/osm2pgsql-dev/osm2pgsql/blob/master/COPYING).
 Using the same license, the following patch files were derived from changesets in GitHub:
 
 * [`osm2pgsql-replication-analyze.patch`](../SOURCES/el7/osm2pgsql-replication-analyze.patch)
