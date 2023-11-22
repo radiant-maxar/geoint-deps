@@ -22,10 +22,10 @@ Source0:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdal
 Source1:        https://github.com/OSGeo/gdal/releases/download/v%{version}/gdalautotest-%{testversion}.tar.gz
 Source2:        gdal.pom
 
-BuildRequires: automake
-BuildRequires: autoconf
 BuildRequires: ant
 BuildRequires: armadillo-devel
+BuildRequires: automake
+BuildRequires: autoconf
 BuildRequires: bash-completion
 BuildRequires: ccache
 BuildRequires: cfitsio-devel
@@ -58,6 +58,7 @@ BuildRequires: libtool
 BuildRequires: libwebp-devel
 BuildRequires: libxml2-devel
 BuildRequires: librx-devel
+BuildRequires: libzstd-devel
 BuildRequires: lz4-devel
 # For 'mvn_artifact' and 'mvn_install'
 BuildRequires: maven-local
@@ -73,11 +74,14 @@ BuildRequires: postgresql%{postgres_version}-server
 BuildRequires: proj-devel >= %{proj_min_version}
 BuildRequires: python3-devel
 BuildRequires: python3-filelock
+BuildRequires: python3-jsonschema
 BuildRequires: python3-lxml
 BuildRequires: python3-numpy
 BuildRequires: python3-pip
 BuildRequires: python3-psutil
 BuildRequires: python3-pytest
+BuildRequires: python3-pytest-benchmark
+BuildRequires: python3-pytest-env
 BuildRequires: python3-setuptools
 BuildRequires: python3-wheel
 BuildRequires: sqlite-devel
@@ -86,7 +90,6 @@ BuildRequires: unixODBC-devel
 BuildRequires: xerces-c-devel
 BuildRequires: xz-devel
 BuildRequires: zlib-devel
-BuildRequires: libzstd-devel
 
 # Run time dependency for gpsbabel driver.
 Requires:	gpsbabel
@@ -166,8 +169,16 @@ manipulating GDAL file format library
 # LTO appears to cause some issues.
 # https://bugzilla.redhat.com/show_bug.cgi?id=2065758
 %define _lto_cflags %{nil}
+
+# Compilation configuration notes:
+#  * Explicitly disable HDF4, HDF5, and NetCDF formats as there aren't official EL9 packages.
+#  * Use PostgreSQL library from PGDG's locations.
+#  * Enable use of `ccache` to speed builds.
 %cmake \
     -DCMAKE_INSTALL_INCLUDEDIR:PATH=%{_includedir}/%{name} \
+    -DGDAL_ENABLE_DRIVER_HDF4:BOOL=OFF \
+    -DGDAL_ENABLE_DRIVER_HDF5:BOOL=OFF \
+    -DGDAL_ENABLE_DRIVER_NETCDF:BOOl=OFF \
     -DGDAL_USE_POSTGRESQL:BOOL=ON \
     -DPostgreSQL_ADDITIONAL_VERSIONS=%{postgres_version} \
     -DUSE_CCACHE:BOOL=ON
@@ -232,7 +243,7 @@ touch -r NEWS.md %{buildroot}%{_bindir}/%{name}-config
 %{__rm} -v %{buildroot}%{_javadir}/%{name}-%{version}-{javadoc,sources}.jar
 %{__mv} -v %{buildroot}%{_javadir}/%{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}/gdal.jar
 %{__mv} -v %{buildroot}%{_javadir}/%{name}-%{version}.pom %{buildroot}%{_mavenpomdir}/gdal.pom
-%{__mv} -v %{buildroot}%{_javadir}/libgdalalljni.so %{buildroot}%{_jnidir}/%{name}
+%{__mv} -v %{buildroot}%{_libdir}/jni/libgdalalljni.so %{buildroot}%{_jnidir}/%{name}
 %{_bindir}/chrpath --delete %{buildroot}%{_jnidir}/%{name}/libgdalalljni.so
 
 
@@ -258,28 +269,35 @@ pushd gdalautotest-%{testversion}
 #  RuntimeError: /vsimem/test.tif: MissingRequired:TIFF directory is missing required "StripOffsets" field
 %{__rm} -v test_random_tiff.py
 
-# Reasons for deselected test cases:
-#  * gcore/tiff_{ovr,write}.py: Slow.
-#  * gcore/vsi{curl,zip}.py: Incorrect datasource paths.
+# Tests disabled for performance and/or reliability reasons:
+#  * gcore/tiff_ovr.py: Slow.
+#  * gcore/tiff_read.py: Slow.
+#  * gcore/tiff_write.py: Slow.
+#  * gcore/vsizip.py: Slow.
 #  * gdrivers/vrtwarp.py: Slow.
 #  * gdrivers/wms.py: Brittle URL.
-#  * ogr/ogr_fgdb: Known failures disabled on Ubuntu, but not EL.
-#  * ogr/ogr_pg: Trying to use PostGIS when it's not supposed to
 #  * ogr/ogr_wfs.py: Slow tests and brittle URLs.
-#  * pyscripts/test_gdal2tiles.py: Regressions with test file locations on EL.
 #  * pyscripts/test_gdal_ls_py.py: Slow.
+#
+# Tests with know failures/errors:
+#  * ogr/ogr_fgdb: Tests randomly fail possibly to conflict with XML library.
+#  * ogr/ogr_pg.py: Invalid PostGIS usage.
+#  * pyscripts/test_gdal2tiles.py: Regressions with test file locations on EL9.
+#  * pyscripts/test_ogr2ogr_py: Invalid PostGIS usage.
+#  * utilities/test_ogr2ogr.py: Invalid PostGIS usage.
 
 # Create pytest.ini
 %{_bindir}/cat > pytest.ini <<EOF
 [pytest]
 python_files = *.py
-testpaths = ogr gcore gdrivers osr alg gnm utilities pyscripts
+testpaths = ogr gcore gdrivers osr alg gnm utilities pyscripts benchmark
 norecursedirs = ogr/data gdrivers/data cpp
 log_file = autotest.log
 log_file_level = INFO
 gdal_version = %{version}
 
 markers =
+    random_order: Indicates whether tests can be run non-sequentially
     require_curl: Skip test(s) if curl support is absent
     require_creation_option: Skip test(s) if required creation option is not available
     require_driver: Skip test(s) if driver isn't present
@@ -295,11 +313,9 @@ addopts =
     --color=no
     --strict-markers
     --deselect gcore/tiff_ovr.py::test_tiff_ovr_46
+    --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks
+    --deselect gcore/tiff_read.py::test_tiff_read_toomanyblocks_separate
     --deselect gcore/tiff_write.py::test_tiff_write_deflate_4GB
-    --deselect gcore/vsicurl.py::test_vsicurl_1
-    --deselect gcore/vsicurl.py::test_vsicurl_4
-    --deselect gcore/vsicurl.py::test_vsicurl_5
-    --deselect gcore/vsicurl.py::test_vsicurl_7
     --deselect gcore/vsizip.py::test_vsizip_create_zip64_stream_larger_than_4G
     --deselect gdrivers/vrtwarp.py::test_vrtwarp_read_blocks_larger_than_2_gigapixels
     --deselect gdrivers/wms.py::test_wms_16
@@ -313,12 +329,18 @@ addopts =
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_esri_2
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_erdas_apollo
     --deselect ogr/ogr_wfs.py::test_ogr_wfs_tinyows
+    --deselect pyscripts/test_gdal_ls_py.py::test_gdal_ls_py_8
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_invalid_srs
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_resampling_option
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_simple
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_xyz
     --deselect pyscripts/test_gdal2tiles.py::test_gdal2tiles_py_zoom_option
-    --deselect pyscripts/test_gdal_ls_py.py::test_gdal_ls_py_8
+    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_6
+    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_7
+    --deselect pyscripts/test_ogr2ogr_py.py::test_ogr2ogr_py_41
+    --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_6
+    --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_7
+    --deselect utilities/test_ogr2ogr.py::test_ogr2ogr_41
 EOF
 
 # Export test environment variables.
@@ -349,6 +371,7 @@ popd
 %files
 %{_bindir}/gdal_contour
 %{_bindir}/gdal_create
+%{_bindir}/gdal_footprint
 %{_bindir}/gdal_grid
 %{_bindir}/gdal_rasterize
 %{_bindir}/gdal_translate

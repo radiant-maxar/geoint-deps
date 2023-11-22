@@ -43,10 +43,18 @@ def main():
 
     for line in args.spec_file:
         if line.startswith("BuildRequires:"):
-            build_req = line.split("BuildRequires:")[1].split()[0]
+            # Apply define macros on entire line first.
             for define_macro, define_value in build_defines.items():
-                build_req = build_req.replace("%%{%s}" % define_macro, define_value)
-            build_requirements.append(build_req)
+                line = line.replace("%%{%s}" % define_macro, define_value)
+
+            # Parse build requirement.
+            build_splits = line.split("BuildRequires:")[1].split()
+            build_req = build_splits[0]
+            if len(build_splits) >= 3 and build_splits[1] == "=":
+                build_version = build_splits[2]
+                build_requirements.append(f"{build_req}-{build_version}")
+            else:
+                build_requirements.append(build_req)
 
     if args.json:
         output = json.dumps(build_requirements)
