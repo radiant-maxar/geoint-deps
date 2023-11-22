@@ -359,7 +359,6 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        geoint_deps_channel: staging
         packages: ${RPMBUILD_MAPNIK_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
@@ -369,7 +368,6 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        geoint_deps_channel: staging
         packages: ${RPMBUILD_MAPSERVER_PACKAGES}
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-openstreetmap-carto:
@@ -434,7 +432,6 @@ services:
       <<: *build_defaults
       args:
         <<: *build_args_defaults
-        geoint_deps_channel: staging
         packages: ${RPMBUILD_POSTGIS_PACKAGES}
         rpmbuild_image: rpmbuild-pgdg
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-pgdg
