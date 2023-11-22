@@ -37,8 +37,6 @@ Source2:        https://download.osgeo.org/%{name}/docs/%{name}-%{version}.pdf
 Source3:        https://download.osgeo.org/%{name}/source/%{name}-%{postgis_prev_version}.tar.gz
 Source4:        postgis-filter-requires-perl-Pg.sh
 Patch0:         postgis-3.1-gdalfpic.patch
-# XXX: Hack to allow upgrade from latest PostGIS 3.2.x version, currently 3.2.5.
-Patch1:         postgis-3.2-upgrade.patch
 
 URL:		http://www.postgis.net/
 

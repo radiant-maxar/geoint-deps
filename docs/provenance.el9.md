@@ -132,9 +132,9 @@ License](http://fonts.jp/hanazono) and the
 
 ## osm2pgsql
 
-The [osm2pgsql](https://github.com/openstreetmap/osm2pgsql) source archives are
+The [osm2pgsql](https://github.com/osm2pgsql-dev/osm2pgsql) source archives are
 obtained directly from GitHub and are
-[GPLv2 licensed](https://github.com/openstreetmap/osm2pgsql/blob/master/COPYING).
+[GPLv2 licensed](https://github.com/osm2pgsql-dev/osm2pgsql/blob/master/COPYING).
 
 The [`osm2pgsql.spec`](../SPECS/el9/osm2pgsql.spec) originates from
 [Fedora's `osm2pgsql` RPM](https://src.fedoraproject.org/rpms/osm2pgsql)
