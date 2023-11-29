@@ -249,7 +249,7 @@ x-rpmbuild:
       version: &tbb_version 2020.3-1
     wal-g:
       image: rpmbuild-wal-g
-      version: &walg_version 2.0.1-1
+      version: &walg_version 2.0.1-2
   service_volumes: &service_volumes
     - ./RPMS:/rpmbuild/RPMS:rw
     - ./SOURCES/el7:/rpmbuild/SOURCES:rw

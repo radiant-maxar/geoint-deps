@@ -214,7 +214,7 @@ x-rpmbuild:
       version: &step_cli_version 0.25.1-1
     wal-g:
       image: rpmbuild-wal-g
-      version: &walg_version 2.0.1-1
+      version: &walg_version 2.0.1-2
   service_volumes: &service_volumes
     - ./RPMS:/rpmbuild/RPMS:rw
     - ./SOURCES/el9:/rpmbuild/SOURCES:rw
