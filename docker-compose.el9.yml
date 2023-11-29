@@ -189,7 +189,7 @@ x-rpmbuild:
         protobuf_min_version: *protobuf_min_version
     python3-osmium:
       image: rpmbuild-pyosmium
-      version: &pyosmium_version 3.6.0-1
+      version: &pyosmium_version 3.7.0-1
       defines:
         libosmium_min_version: *libosmium_min_version
         protozero_min_version: *protozero_min_version
@@ -449,6 +449,7 @@ services:
       args:
         <<: *build_args_defaults
         packages: ${RPMBUILD_PYOSMIUM_PACKAGES}
+        python_packages: pytest-httpserver==1.0.8
       dockerfile: docker/el9/Dockerfile.rpmbuild-geoint-deps
   rpmbuild-rubygem-libxml-ruby:
     <<: *service_defaults

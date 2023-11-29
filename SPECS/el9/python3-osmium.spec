@@ -49,6 +49,7 @@ for working with OpenStreetMap data in a fast and flexible manner.
 
 
 %check
+export PYTHONPATH=%{_usr}/local/lib/python%{python3_version}/site-packages:%{_usr}/local/lib64/python%{python3_version}/site-packages:%{python3_sitearch}:$(python3 -c "import sys; print(':'.join(sys.path))")
 %pytest
 
 
