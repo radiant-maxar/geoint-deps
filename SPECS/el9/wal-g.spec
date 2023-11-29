@@ -6,6 +6,7 @@ Summary:        Archival and Restoration for Postgres
 License:        ASL 2.0
 URL:            https://github.com/%{name}/%{name}
 Source0:        https://github.com/%{name}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
+Patch0:         wal-g-fix-CVE-2020-26160.patch
 
 
 BuildRequires:  brotli-devel
@@ -25,6 +26,7 @@ cd "${HOME}"
 %{__rm} -fr %{_builddir}/%{name}-%{version}
 %{__git} clone --single-branch -b v%{rpmbuild_version} %{url} %{_builddir}/%{name}-%{version}
 cd %{_builddir}/%{name}-%{version}
+%autopatch -p1
 
 
 %build
